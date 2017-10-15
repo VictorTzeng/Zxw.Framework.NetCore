@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Zxw.Framework.NetCore\Zxw.Framework.NetCore.csproj" />
+    <ProjectReference Include="..\Zxw.Framework.Website.IRepositories\Zxw.Framework.Website.IRepositories.csproj" />
+    <ProjectReference Include="..\Zxw.Framework.Website.Models\Zxw.Framework.Website.Models.csproj" />
+  </ItemGroup>
+
+</Project>

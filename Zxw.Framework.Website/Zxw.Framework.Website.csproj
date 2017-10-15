@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Zxw.Framework.NetCore\Zxw.Framework.NetCore.csproj" />
+    <ProjectReference Include="..\Zxw.Framework.Website.Controllers\Zxw.Framework.Website.Controllers.csproj" />
+    <ProjectReference Include="..\Zxw.Framework.Website.IRepositories\Zxw.Framework.Website.IRepositories.csproj" />
+    <ProjectReference Include="..\Zxw.Framework.Website.IServices\Zxw.Framework.Website.IServices.csproj" />
+    <ProjectReference Include="..\Zxw.Framework.Website.Models\Zxw.Framework.Website.Models.csproj" />
+    <ProjectReference Include="..\Zxw.Framework.Website.Repositories\Zxw.Framework.Website.Repositories.csproj" />
+    <ProjectReference Include="..\Zxw.Framework.Website.Services\Zxw.Framework.Website.Services.csproj" />
+  </ItemGroup>
+
+</Project>
