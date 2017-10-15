@@ -23,8 +23,8 @@ namespace Zxw.Framework.Website.Controllers
         {
             CodeGenerator.Generate();//生成所有实体类对应的Repository和Service层代码文件
             CodeGenerator.GenerateSingle<TutorClassType, int>();//生成单个实体类对应的Repository和Service层代码文件
-
-            return View();
+            var list = iTutorClassTypeService.GetByCache();
+            return View(list);
         }
 
         public IActionResult About()
