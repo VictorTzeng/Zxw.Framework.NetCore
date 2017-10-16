@@ -1,0 +1,10 @@
+﻿using System;
+using Zxw.Framework.IRepositories;
+using {ModelsNamespace};
+
+namespace {IRepositoriesNamespace}
+{
+    public interface I{ModelTypeName}Repository:IRepository<{ModelTypeName}, {KeyTypeName}>
+    {
+    }
+}

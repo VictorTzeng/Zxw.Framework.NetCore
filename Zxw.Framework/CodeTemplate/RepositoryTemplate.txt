@@ -1,0 +1,15 @@
+﻿using System;
+using Zxw.Framework.EfDbContext;
+using Zxw.Framework.Repositories;
+using {IRepositoriesNamespace};
+using {ModelsNamespace};
+
+namespace {RepositoriesNamespace}
+{
+    public class {ModelTypeName}Repository : BaseRepository<{ModelTypeName}, {KeyTypeName}>, I{ModelTypeName}Repository
+    {
+        public {ModelTypeName}Repository(DefaultDbContext dbContext) : base(dbContext)
+        {
+        }
+    }
+}

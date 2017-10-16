@@ -1,0 +1,10 @@
+﻿using System;
+using Zxw.Framework.IServices;
+using {ModelsNamespace};
+
+namespace {IServicsNamespace}
+{
+    public interface I{ModelTypeName}Service:IService<{ModelTypeName}, {KeyTypeName}>
+    {
+    }
+}

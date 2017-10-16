@@ -1,0 +1,15 @@
+﻿using System;
+using Zxw.Framework.Services;
+using {IRepositoriesNamespace};
+using {IServicsNamespace};
+using {ModelsNamespace};
+
+namespace {ServicesNamespace}
+{
+    public class {ModelTypeName}Service: BaseService<{ModelTypeName}, {KeyTypeName}>, I{ModelTypeName}Service
+    {
+        public {ModelTypeName}Service(I{ModelTypeName}Repository repository) : base(repository)
+        {
+        }
+    }
+}
