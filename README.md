@@ -3,3 +3,8 @@
 
 **.net framework版本地址**
 [Zxw.Framework.Nfx](https://github.com/VictorTzeng/Zxw.Framework.Nfx)
+
+
+
+**项目说明**
+请参考我的博客：[http://www.cnblogs.com/zengxw/p/7673952.html](http://www.cnblogs.com/zengxw/p/7673952.html)
