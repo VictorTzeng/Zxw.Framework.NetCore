@@ -23,21 +23,21 @@ namespace Zxw.Framework.NetCore.IServices
             Expression<Func<T, T>> orderby = null, bool asc = true);
         IList<T> GetByPagination<TProperty>(Expression<Func<T, bool>> where, int pageSize, int pageIndex,
             Expression<Func<T, T>> orderby = null, bool asc = true, params Expression<Func<T, TProperty>>[] includes);
-        int Add(T entity);
+        void Add(T entity);
 
-        int AddRange(ICollection<T> entities);
+        void AddRange(ICollection<T> entities);
 
-        int Edit(T entity);
+        void Edit(T entity);
 
-        int EditRange(ICollection<T> entities);
+        void EditRange(ICollection<T> entities);
 
-        int Update(Expression<Func<T, bool>> where, Expression<Func<T, T>> updateExp);
+        void Update(Expression<Func<T, bool>> where, Expression<Func<T, T>> updateExp);
 
-        int Update(T model, params string[] updateColumns);
+        void Update(T model, params string[] updateColumns);
 
-        int Delete(TKey key);
+        void Delete(TKey key);
 
-        int Delete(Expression<Func<T, bool>> where);
+        void Delete(Expression<Func<T, bool>> where);
 
         int ExecuteSqlWithNonQuery(string sql, params object[] parameters);
 

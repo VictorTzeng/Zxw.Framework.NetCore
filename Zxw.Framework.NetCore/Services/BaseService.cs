@@ -62,45 +62,45 @@ namespace Zxw.Framework.NetCore.Services
             return Repository.GetByPagination(where, pageSize, pageIndex, orderby, asc, includes);
         }
 
-        public virtual int Add(T entity)
+        public virtual void Add(T entity)
         {
-            return Repository.Add(entity);
+            /*return*/ Repository.Add(entity);
         }
 
-        public virtual int AddRange(ICollection<T> entities)
+        public virtual void AddRange(ICollection<T> entities)
         {
-            return Repository.AddRange(entities);
+            /*return*/ Repository.AddRange(entities);
         }
 
-        public virtual int Edit(T entity)
+        public virtual void Edit(T entity)
         {
-            return Repository.Edit(entity);
+            /*return*/ Repository.Edit(entity);
         }
 
-        public virtual int EditRange(ICollection<T> entities)
+        public virtual void EditRange(ICollection<T> entities)
         {
-            return Repository.EditRange(entities);
+            /*return*/ Repository.EditRange(entities);
         }
 
-        public virtual int Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
+        public virtual void Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
         {
-            return Repository.Update(@where, updateExp);
+            /*return*/ Repository.Update(@where, updateExp);
 
         }
 
-        public virtual int Update(T model, params string[] updateColumns)
+        public virtual void Update(T model, params string[] updateColumns)
         {
-            return Repository.Update(model, updateColumns);
+            /*return*/ Repository.Update(model, updateColumns);
         }
 
-        public virtual int Delete(TKey key)
+        public virtual void Delete(TKey key)
         {
-            return Repository.Delete(key);
+            /*return*/ Repository.Delete(key);
         }
 
-        public virtual int Delete(Expression<Func<T, bool>> @where)
+        public virtual void Delete(Expression<Func<T, bool>> @where)
         {
-            return Repository.Delete(where);
+            /*return*/ Repository.Delete(where);
         }
 
         public virtual int ExecuteSqlWithNonQuery(string sql, params object[] parameters)

@@ -12,7 +12,9 @@ using Zxw.Framework.NetCore.EfDbContext;
 using Zxw.Framework.NetCore.Filters;
 using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IoC;
+using Zxw.Framework.NetCore.IUnitOfWork;
 using Zxw.Framework.NetCore.Options;
+using Zxw.Framework.NetCore.UnitOfWork;
 
 namespace Zxw.Framework.Website
 {
@@ -100,6 +102,7 @@ namespace Zxw.Framework.Website
             IoCContainer.Register(typeof(DefaultDbContext));//注册EF上下文
             IoCContainer.Register("Zxw.Framework.Website.Repositories", "Zxw.Framework.Website.IRepositories");//注册仓储
             IoCContainer.Register("Zxw.Framework.Website.Services", "Zxw.Framework.Website.IServices");//注册service
+            IoCContainer.Register<IUnitOfWork, EfUnitOfWork>();
             return IoCContainer.Build(services);
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Autofac;
+using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -122,5 +123,19 @@ namespace Zxw.Framework.NetCore.IoC
             return _container.Resolve<T>();
         }
 
+        public static T Resolve<T>(params Parameter[] parameters)
+        {
+            return _container.Resolve<T>(parameters);
+        }
+
+        public static object Resolve(Type targetType)
+        {
+            return _container.Resolve(targetType);
+        }
+
+        public static object Resolve(Type targetType, params Parameter[] parameters)
+        {
+            return _container.Resolve(targetType, parameters);
+        }
     }
 }

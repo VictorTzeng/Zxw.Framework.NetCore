@@ -7,14 +7,14 @@ namespace Zxw.Framework.NetCore.IRepositories
 {
     public interface IRepository<T, TKey>:IDisposable where T : class, IBaseModel<TKey>
     {
-        int Add(T entity);
-        int AddRange(ICollection<T> entities);
+        void Add(T entity);
+        void AddRange(ICollection<T> entities);
         void BulkInsert(IList<T> entities, string destinationTableName = null);
         int Count(Expression<Func<T, bool>> @where = null);
-        int Delete(TKey key);
-        int Delete(Expression<Func<T, bool>> @where);
-        int Edit(T entity);
-        int EditRange(ICollection<T> entities);
+        void Delete(TKey key);
+        void Delete(Expression<Func<T, bool>> @where);
+        void Edit(T entity);
+        void EditRange(ICollection<T> entities);
         bool Exist(Expression<Func<T, bool>> @where = null);
         bool Exist<TProperty>(Expression<Func<T, bool>> @where = null, params Expression<Func<T, TProperty>>[] includes);
         int ExecuteSqlWithNonQuery(string sql, params object[] parameters);
@@ -28,9 +28,9 @@ namespace Zxw.Framework.NetCore.IRepositories
             Expression<Func<T, T>> @orderby = null, bool asc = true);
         IList<T> GetByPagination<TProperty>(Expression<Func<T, bool>> @where, int pageSize, int pageIndex,
             Expression<Func<T, T>> @orderby = null, bool asc = true, params Expression<Func<T, TProperty>>[] includes);
-        int Save();
+        //int Save();
         IList<TView> SqlQuery<TView>(string sql, params object[] parameters) where TView : class, new();
-        int Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp);
-        int Update(T model, params string[] updateColumns);
+        void Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp);
+        void Update(T model, params string[] updateColumns);
     }
 }

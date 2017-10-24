@@ -21,16 +21,16 @@ namespace Zxw.Framework.NetCore.Repositories
             _dbContext.Database.EnsureCreated();
             _set = dbContext.Set<T>();
         }
-        public virtual int Add(T entity)
+        public virtual void Add(T entity)
         {
             _set.Add(entity);
-            return Save();
+            //return Save();
         }
 
-        public virtual int AddRange(ICollection<T> entities)
+        public virtual void AddRange(ICollection<T> entities)
         {
             _set.AddRange(entities);
-            return Save();
+            //return Save();
         }
 
         public virtual void BulkInsert(IList<T> entities, string destinationTableName = null)
@@ -43,27 +43,27 @@ namespace Zxw.Framework.NetCore.Repositories
             return where == null ? _set.Count() : _set.Count(@where);
         }
 
-        public virtual int Delete(TKey key)
+        public virtual void Delete(TKey key)
         {
             var entity = _set.Find(key);
-            if (entity == null) return 0;
+            if (entity == null) return;
             _set.Remove(entity);
-            return Save();
+            //return Save();
         }
 
-        public virtual int Delete(Expression<Func<T, bool>> @where)
+        public virtual void Delete(Expression<Func<T, bool>> @where)
         {
-            return _dbContext.Delete(where);
+            /*return*/ _dbContext.Delete(where);
         }
 
-        public virtual int Edit(T entity)
+        public virtual void Edit(T entity)
         {
-            return _dbContext.Edit(entity);
+            /*return*/ _dbContext.Edit(entity);
         }
 
-        public virtual int EditRange(ICollection<T> entities)
+        public virtual void EditRange(ICollection<T> entities)
         {
-            return _dbContext.EditRange(entities);
+            /*return*/ _dbContext.EditRange(entities);
         }
 
         public virtual bool Exist(Expression<Func<T, bool>> @where = null)
@@ -158,24 +158,24 @@ namespace Zxw.Framework.NetCore.Repositories
                 .ToList();
         }
 
-        public virtual int Save()
-        {
-            return _dbContext.SaveChanges();
-        }
+        //public virtual int Save()
+        //{
+        //    return _dbContext.SaveChanges();
+        //}
 
         public virtual IList<TView> SqlQuery<TView>(string sql, params object[] parameters) where TView : class, new()
         {
             return _dbContext.SqlQuery<T, TView>(sql, parameters);
         }
 
-        public virtual int Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
+        public virtual void Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
         {
-            return _dbContext.Update(where, updateExp);
+            /*return*/ _dbContext.Update(where, updateExp);
         }
 
-        public virtual int Update(T model, params string[] updateColumns)
+        public virtual void Update(T model, params string[] updateColumns)
         {
-            return _dbContext.Update(model, updateColumns);
+            /*return*/ _dbContext.Update(model, updateColumns);
         }
 
         public virtual void Dispose()

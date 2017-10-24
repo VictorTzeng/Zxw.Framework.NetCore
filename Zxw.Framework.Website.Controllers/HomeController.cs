@@ -2,28 +2,30 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Zxw.Framework.NetCore.CodeGenerator;
-using Zxw.Framework.NetCore.Helpers;
-using Zxw.Framework.Website.IServices;
+using Zxw.Framework.NetCore.IUnitOfWork;
+//using Zxw.Framework.Website.IServices;
 using Zxw.Framework.Website.ViewModels;
 using Zxw.Framework.Website.Models;
+using Zxw.Framework.Website.IRepositories;
 
 namespace Zxw.Framework.Website.Controllers
 {
     public class HomeController : Controller
     {
-        private ITutorClassTypeService iTutorClassTypeService;
+        //private ITutorClassTypeService iTutorClassTypeService;
+        private IUnitOfWork _unitOfWork;
 
-        public HomeController(ITutorClassTypeService tutorClassTypeService)
+        public HomeController(IUnitOfWork unitOfWork)
         {
-            if(tutorClassTypeService==null)
-                throw new ArgumentNullException(nameof(tutorClassTypeService));
-            iTutorClassTypeService = tutorClassTypeService;
+            if(unitOfWork == null)
+                throw new ArgumentNullException(nameof(unitOfWork));
+            _unitOfWork = unitOfWork;
         }
         public IActionResult Index()
         {
-            CodeGenerator.Generate();//生成所有实体类对应的Repository和Service层代码文件
-            CodeGenerator.GenerateSingle<TutorClassType, int>();//生成单个实体类对应的Repository和Service层代码文件
-            var list = iTutorClassTypeService.GetByCache();
+            //CodeGenerator.Generate();//生成所有实体类对应的Repository和Service层代码文件
+            //CodeGenerator.GenerateSingle<TutorClassType, int>();//生成单个实体类对应的Repository和Service层代码文件
+            var list = _unitOfWork.Repository<ITutorClassTypeRepository>().Get();
             return View(list);
         }
 
@@ -50,7 +52,7 @@ namespace Zxw.Framework.Website.Controllers
         {
             if (disposing)
             {
-                iTutorClassTypeService.Dispose();
+                _unitOfWork.Dispose();
             }
             base.Dispose(disposing);
         }
