@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Dora.Interception;
+﻿using Dora.Interception;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using System.Linq;
+using System.Threading.Tasks;
 using Zxw.Framework.NetCore.Helpers;
 
 namespace Zxw.Framework.NetCore.Middlewares

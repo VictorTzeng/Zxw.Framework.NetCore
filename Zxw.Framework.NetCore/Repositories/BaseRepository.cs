@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Zxw.Framework.NetCore.EfDbContext;
 using Zxw.Framework.NetCore.Extensions;
-using Zxw.Framework.NetCore.IRepositories;
 using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.NetCore.Repositories
@@ -116,12 +115,12 @@ namespace Zxw.Framework.NetCore.Repositories
             return query.SingleOrDefault(where);
         }
 
-        public virtual IList<T> Get(Expression<Func<T, bool>> @where = null)
+        public virtual IQueryable<T> Get(Expression<Func<T, bool>> @where = null)
         {
-            return (@where != null ? _set.AsNoTracking().Where(@where) : _set.AsNoTracking()).ToList();
+            return (@where != null ? _set.AsNoTracking().Where(@where) : _set.AsNoTracking());
         }
 
-        public virtual IList<T> Get<TProperty>(Expression<Func<T, bool>> @where = null, params Expression<Func<T, TProperty>>[] includes)
+        public virtual IQueryable<T> Get<TProperty>(Expression<Func<T, bool>> @where = null, params Expression<Func<T, TProperty>>[] includes)
         {
             if (includes == null)
                 return Get(where);
@@ -130,32 +129,34 @@ namespace Zxw.Framework.NetCore.Repositories
             {
                 query = query.Include(include);
             }
-            return @where != null ? query.AsNoTracking().Where(@where).ToList() : query.AsNoTracking().ToList();
+            return @where != null ? query.AsNoTracking().Where(@where) : query.AsNoTracking();
         }
 
-        public virtual IList<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, Expression<Func<T, T>> @orderby = null, bool asc = true)
+        public virtual IQueryable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, Expression<Func<T, T>> @orderby = null, bool asc = true)
         {
             var filters = Get(where);
-            if (orderby == null)
-                return filters.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
-            if (asc)
-                return filters.OrderBy(orderby.Compile()).Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
-            return filters.OrderByDescending(orderby.Compile()).Skip(pageSize * (pageIndex - 1)).Take(pageSize)
-                .ToList();
+            if (orderby != null)
+            {
+                filters = asc
+                    ? filters.AsEnumerable().OrderBy(@orderby.Compile()).AsQueryable()
+                    : filters.AsEnumerable().OrderByDescending(@orderby.Compile()).AsQueryable();
+            }
+            return filters.Skip(pageSize * (pageIndex - 1)).Take(pageSize).AsQueryable();
         }
 
-        public virtual IList<T> GetByPagination<TProperty>(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, Expression<Func<T, T>> @orderby = null,
+        public virtual IQueryable<T> GetByPagination<TProperty>(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, Expression<Func<T, T>> @orderby = null,
             bool asc = true, params Expression<Func<T, TProperty>>[] includes)
         {
             var filters = Get(where);
             if (includes != null)
                 filters = Get(where, includes);
-            if (orderby == null)
-                return filters.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
-            if (asc)
-                return filters.OrderBy(orderby.Compile()).Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
-            return filters.OrderByDescending(orderby.Compile()).Skip(pageSize * (pageIndex - 1)).Take(pageSize)
-                .ToList();
+            if (orderby != null)
+            {
+                filters = asc
+                    ? filters.AsEnumerable().OrderBy(@orderby.Compile()).AsQueryable()
+                    : filters.AsEnumerable().OrderByDescending(@orderby.Compile()).AsQueryable();
+            }
+            return filters.Skip(pageSize * (pageIndex - 1)).Take(pageSize).AsQueryable();
         }
 
         //public virtual int Save()
@@ -163,9 +164,9 @@ namespace Zxw.Framework.NetCore.Repositories
         //    return _dbContext.SaveChanges();
         //}
 
-        public virtual IList<TView> SqlQuery<TView>(string sql, params object[] parameters) where TView : class, new()
+        public virtual IQueryable<TView> SqlQuery<TView>(string sql, params object[] parameters) where TView : class, new()
         {
-            return _dbContext.SqlQuery<T, TView>(sql, parameters);
+            return _dbContext.SqlQuery<T, TView>(sql, parameters).AsQueryable();
         }
 
         public virtual void Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)

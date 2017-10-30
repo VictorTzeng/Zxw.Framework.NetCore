@@ -12,7 +12,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Zxw.Framework.NetCore\Zxw.Framework.NetCore.csproj" />
     <ProjectReference Include="..\Zxw.Framework.Website.IRepositories\Zxw.Framework.Website.IRepositories.csproj" />
-    <ProjectReference Include="..\Zxw.Framework.Website.IServices\Zxw.Framework.Website.IServices.csproj" />
     <ProjectReference Include="..\Zxw.Framework.Website.ViewModels\Zxw.Framework.Website.ViewModels.csproj" />
   </ItemGroup>
 

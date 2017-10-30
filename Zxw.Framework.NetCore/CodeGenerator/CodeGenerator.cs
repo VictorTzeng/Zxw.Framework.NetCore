@@ -67,13 +67,12 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         /// <param name="ifExsitedCovered">如果目标文件存在，是否覆盖。默认为false</param>
         private static void GenerateSingle(Type modelType, bool ifExsitedCovered = false)
         {
-            var modelsNamespace = modelType.Namespace;
             var modelTypeName = modelType.Name;
             var keyTypeName = modelType.GetProperty("Id")?.PropertyType.Name;
             GenerateIRepository(modelTypeName, keyTypeName, ifExsitedCovered);
             GenerateRepository(modelTypeName, keyTypeName, ifExsitedCovered);
-            GenerateIService(modelsNamespace, modelTypeName, keyTypeName, ifExsitedCovered);
-            GenerateService(modelsNamespace, modelTypeName, keyTypeName, ifExsitedCovered);
+            //GenerateIService(modelsNamespace, modelTypeName, keyTypeName, ifExsitedCovered);
+            //GenerateService(modelsNamespace, modelTypeName, keyTypeName, ifExsitedCovered);
         }
 
         /// <summary>
@@ -154,69 +153,73 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             WriteAndSave(fullPath, content);
         }
 
-        /// <summary>
-        /// 生成IService文件
-        /// </summary>
-        /// <param name="modelsNamespace"></param>
-        /// <param name="modelTypeName"></param>
-        /// <param name="keyTypeName"></param>
-        /// <param name="ifExsitedCovered"></param>
-        private static void GenerateIService(string modelsNamespace, string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
-        {
-            var iServicsNamespace = _option.IServicsNamespace;
-            var path = AppDomain.CurrentDomain.BaseDirectory;
-            path = path.Substring(0, path.IndexOf("\\bin"));
-            var parentPath = path.Substring(0, path.LastIndexOf("\\"));
-            var iServicesPath = parentPath + "\\" + iServicsNamespace;
-            if (!Directory.Exists(iServicesPath))
-            {
-                iServicesPath = parentPath + "\\IServices";
-                Directory.CreateDirectory(iServicesPath);
-            }
-            var fullPath = iServicesPath + "\\I" + modelTypeName + "Service.cs";
-            if (File.Exists(fullPath) && !ifExsitedCovered)
-                return;
-            var content = ReadTemplate("IServiceTemplate.txt");
-            content = content.Replace("{ModelsNamespace}", modelsNamespace)
-                .Replace("{IServicsNamespace}", iServicsNamespace)
-                .Replace("{ModelTypeName}", modelTypeName)
-                .Replace("{KeyTypeName}", keyTypeName);
-            WriteAndSave(fullPath, content);
-        }
+        #region 注释掉了
 
-        /// <summary>
-        /// 生成Service文件
-        /// </summary>
-        /// <param name="modelsNamespace"></param>
-        /// <param name="modelTypeName"></param>
-        /// <param name="keyTypeName"></param>
-        /// <param name="ifExsitedCovered"></param>
-        private static void GenerateService(string modelsNamespace, string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
-        {
-            var servicesNamespace = _option.ServicesNamespace;
-            var path = AppDomain.CurrentDomain.BaseDirectory;
-            path = path.Substring(0, path.IndexOf("\\bin"));
-            var parentPath = path.Substring(0, path.LastIndexOf("\\"));
-            var servicesPath = parentPath + "\\" + servicesNamespace;
-            if (!Directory.Exists(servicesPath))
-            {
-                servicesPath = parentPath + "\\Services";
-                Directory.CreateDirectory(servicesPath);
-            }
-            var fullPath = servicesPath + "\\" + modelTypeName + "Service.cs";
-            if (File.Exists(fullPath) && !ifExsitedCovered)
-                return;
-            var iServicsNamespace = _option.IServicsNamespace;
-            var content = ReadTemplate("ServiceTemplate.txt");
-            content = content
-                .Replace("{IRepositoriesNamespace}", _option.IRepositoriesNamespace)
-                .Replace("{IServicsNamespace}", iServicsNamespace)
-                .Replace("{ModelsNamespace}", modelsNamespace)
-                .Replace("{ServicesNamespace}", servicesNamespace)
-                .Replace("{ModelTypeName}", modelTypeName)
-                .Replace("{KeyTypeName}", keyTypeName);
-            WriteAndSave(fullPath, content);
-        }
+        ///// <summary>
+        ///// 生成IService文件
+        ///// </summary>
+        ///// <param name="modelsNamespace"></param>
+        ///// <param name="modelTypeName"></param>
+        ///// <param name="keyTypeName"></param>
+        ///// <param name="ifExsitedCovered"></param>
+        //private static void GenerateIService(string modelsNamespace, string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
+        //{
+        //    var iServicsNamespace = _option.IServicsNamespace;
+        //    var path = AppDomain.CurrentDomain.BaseDirectory;
+        //    path = path.Substring(0, path.IndexOf("\\bin"));
+        //    var parentPath = path.Substring(0, path.LastIndexOf("\\"));
+        //    var iServicesPath = parentPath + "\\" + iServicsNamespace;
+        //    if (!Directory.Exists(iServicesPath))
+        //    {
+        //        iServicesPath = parentPath + "\\IServices";
+        //        Directory.CreateDirectory(iServicesPath);
+        //    }
+        //    var fullPath = iServicesPath + "\\I" + modelTypeName + "Service.cs";
+        //    if (File.Exists(fullPath) && !ifExsitedCovered)
+        //        return;
+        //    var content = ReadTemplate("IServiceTemplate.txt");
+        //    content = content.Replace("{ModelsNamespace}", modelsNamespace)
+        //        .Replace("{IServicsNamespace}", iServicsNamespace)
+        //        .Replace("{ModelTypeName}", modelTypeName)
+        //        .Replace("{KeyTypeName}", keyTypeName);
+        //    WriteAndSave(fullPath, content);
+        //}
+
+        ///// <summary>
+        ///// 生成Service文件
+        ///// </summary>
+        ///// <param name="modelsNamespace"></param>
+        ///// <param name="modelTypeName"></param>
+        ///// <param name="keyTypeName"></param>
+        ///// <param name="ifExsitedCovered"></param>
+        //private static void GenerateService(string modelsNamespace, string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
+        //{
+        //    var servicesNamespace = _option.ServicesNamespace;
+        //    var path = AppDomain.CurrentDomain.BaseDirectory;
+        //    path = path.Substring(0, path.IndexOf("\\bin"));
+        //    var parentPath = path.Substring(0, path.LastIndexOf("\\"));
+        //    var servicesPath = parentPath + "\\" + servicesNamespace;
+        //    if (!Directory.Exists(servicesPath))
+        //    {
+        //        servicesPath = parentPath + "\\Services";
+        //        Directory.CreateDirectory(servicesPath);
+        //    }
+        //    var fullPath = servicesPath + "\\" + modelTypeName + "Service.cs";
+        //    if (File.Exists(fullPath) && !ifExsitedCovered)
+        //        return;
+        //    var iServicsNamespace = _option.IServicsNamespace;
+        //    var content = ReadTemplate("ServiceTemplate.txt");
+        //    content = content
+        //        .Replace("{IRepositoriesNamespace}", _option.IRepositoriesNamespace)
+        //        .Replace("{IServicsNamespace}", iServicsNamespace)
+        //        .Replace("{ModelsNamespace}", modelsNamespace)
+        //        .Replace("{ServicesNamespace}", servicesNamespace)
+        //        .Replace("{ModelTypeName}", modelTypeName)
+        //        .Replace("{KeyTypeName}", keyTypeName);
+        //    WriteAndSave(fullPath, content);
+        //}
+
+        #endregion
 
         /// <summary>
         /// 写文件

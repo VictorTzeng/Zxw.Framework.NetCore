@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Net;
 using System.Reflection;
 
 namespace Zxw.Framework.NetCore.Extensions
@@ -135,6 +138,88 @@ namespace Zxw.Framework.NetCore.Extensions
                 dtReturn.Rows.Add(dr);
             }
             return dtReturn;
+        }
+
+        /// <summary>
+        /// 快速复制
+        /// </summary>
+        /// <typeparam name="TIn"></typeparam>
+        /// <typeparam name="TOut"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static TOut FastClone<TIn, TOut>(this TIn source)
+        {
+            return ObjectFastClone<TIn, TOut>.Clone(source);
+        }
+
+        /// <summary>
+        /// 对IP地址列表实现排序
+        /// </summary>
+        /// <param name="ips"></param>
+        /// <param name="asc">true为升序，false为降序</param>
+        /// <returns></returns>
+        public static ICollection<string> Order(this ICollection<string> ips, bool asc = true)
+        {
+            if (ips == null)
+                throw new ArgumentNullException(nameof(ips));
+            foreach (var ip in ips)
+            {
+                IPAddress tmp;
+                if (!IPAddress.TryParse(ip, out tmp))
+                {
+                    throw new Exception("Illegal IPAdress data.");
+                }
+            }
+            Func<string, int, int> func = (s, i) =>
+            {
+                var tmp = s.Split('.');
+                return int.Parse(tmp[i]);
+            };
+            if (asc)
+            {
+                return ips.OrderBy(m => func(m, 0))
+                    .OrderBy(m => func(m, 1))
+                    .OrderBy(m => func(m, 2))
+                    .OrderBy(m => func(m, 3))
+                    .ToList();
+            }
+            return ips.OrderByDescending(m => func(m, 3))
+                .OrderByDescending(m => func(m, 2))
+                .OrderByDescending(m => func(m, 1))
+                .OrderByDescending(m => func(m, 0))
+                .ToList();
+        }
+    }
+
+    /// <summary>
+    /// 运用表达式树实现对象的快速复制
+    /// </summary>
+    /// <typeparam name="TIn">目标对象</typeparam>
+    /// <typeparam name="TOut">输出对象</typeparam>
+    public class ObjectFastClone<TIn, TOut>
+    {
+        private static readonly Func<TIn, TOut> cache = GetFunc();
+        private static Func<TIn, TOut> GetFunc()
+        {
+            var parameterExpression = Expression.Parameter(typeof(TIn), "p");
+            var memberBindingList = new List<MemberBinding>();
+
+            foreach (var item in typeof(TOut).GetRuntimeProperties())
+            {
+                var property = Expression.Property(parameterExpression, typeof(TIn).GetRuntimeProperty(item.Name));
+                var memberBinding = Expression.Bind(item, property);
+                memberBindingList.Add(memberBinding);
+            }
+
+            var memberInitExpression = Expression.MemberInit(Expression.New(typeof(TOut)), memberBindingList.ToArray());
+            var lambda = Expression.Lambda<Func<TIn, TOut>>(memberInitExpression, parameterExpression);
+
+            return lambda.Compile();
+        }
+
+        public static TOut Clone(TIn tIn)
+        {
+            return cache(tIn);
         }
     }
 }

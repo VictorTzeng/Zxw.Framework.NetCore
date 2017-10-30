@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Zxw.Framework.NetCore.Attributes;
-using Zxw.Framework.NetCore.IRepositories;
+using Zxw.Framework.NetCore.Repositories;
 using Zxw.Framework.Website.Models;
 
 namespace Zxw.Framework.Website.IRepositories
