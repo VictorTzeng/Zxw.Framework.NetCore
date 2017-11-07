@@ -96,10 +96,10 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <typeparam name="T"></typeparam>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public int Edit<T>(T entity) where T : class
+        public void Edit<T>(T entity) where T : class
         {
             Entry(entity).State = EntityState.Modified;
-            return SaveChanges();
+            //return SaveChanges();
         }
 
         /// <summary>
@@ -108,23 +108,10 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <typeparam name="T"></typeparam>
         /// <param name="entities"></param>
         /// <returns></returns>
-        public int EditRange<T>(ICollection<T> entities) where T : class
+        public void EditRange<T>(ICollection<T> entities) where T : class
         {
             Set<T>().AttachRange(entities.ToArray());
-            return SaveChanges();
-        }
-
-        /// <summary>
-        /// update query datas by columns.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="where"></param>
-        /// <param name="updateExp"></param>
-        /// <returns></returns>
-        public int Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
-            where T : class
-        {
-            return Set<T>().Where(@where).Update(updateExp);
+            //return SaveChanges();
         }
 
         /// <summary>
@@ -134,7 +121,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <param name="model"></param>
         /// <param name="updateColumns"></param>
         /// <returns></returns>
-        public int Update<T>(T model, params string[] updateColumns) where T : class
+        public void Update<T>(T model, params string[] updateColumns) where T : class
         {
             if (updateColumns != null && updateColumns.Length > 0)
             {
@@ -149,7 +136,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
             {
                 Entry(model).State = EntityState.Modified;
             }
-            return SaveChanges();
+            //return SaveChanges();
         }
 
         /// <summary>
@@ -158,10 +145,10 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <typeparam name="T"></typeparam>
         /// <param name="where"></param>
         /// <returns></returns>
-        public int Delete<T>(Expression<Func<T, bool>> @where) where T : class
+        public void Delete<T>(Expression<Func<T, bool>> @where) where T : class
         {
             Set<T>().Where(@where).Delete();
-            return SaveChanges();
+            //return SaveChanges();
         }
 
         /// <summary>

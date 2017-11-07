@@ -169,11 +169,6 @@ namespace Zxw.Framework.NetCore.Repositories
             return _dbContext.SqlQuery<T, TView>(sql, parameters).AsQueryable();
         }
 
-        public virtual void Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
-        {
-            /*return*/ _dbContext.Update(where, updateExp);
-        }
-
         public virtual void Update(T model, params string[] updateColumns)
         {
             /*return*/ _dbContext.Update(model, updateColumns);

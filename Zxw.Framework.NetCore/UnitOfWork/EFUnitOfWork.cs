@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Autofac;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
+using Z.EntityFramework.Plus;
 using Zxw.Framework.NetCore.EfDbContext;
-using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IoC;
 
 namespace Zxw.Framework.NetCore.UnitOfWork
@@ -49,6 +50,19 @@ namespace Zxw.Framework.NetCore.UnitOfWork
         public IRepo GetRepository<IRepo>()
         {
             return AutofacContainer.Resolve<IRepo>(new TypedParameter(typeof(DefaultDbContext), _context));
+        }
+
+        /// <summary>
+        /// update query datas by columns.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="where"></param>
+        /// <param name="updateExp"></param>
+        /// <returns></returns>
+        public int BatchUpdate<T>(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
+            where T : class
+        {
+            return _context.Set<T>().Where(@where).Update(updateExp);
         }
 
         public int SaveChanges()

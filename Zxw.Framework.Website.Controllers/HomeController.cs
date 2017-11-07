@@ -38,6 +38,18 @@ namespace Zxw.Framework.Website.Controllers
                     TutorClassTypeName = "小学",
                     TutorClassCount = 5
                 });
+                repository.Add(new TutorClassType()
+                {
+                    Active = true,
+                    TutorClassTypeName = "初中",
+                    TutorClassCount = 15
+                });
+                repository.Add(new TutorClassType()
+                {
+                    Active = true,
+                    TutorClassTypeName = "高中",
+                    TutorClassCount = 25
+                });
                 _unitOfWork.SaveChanges();
             }
             return View();
@@ -46,7 +58,7 @@ namespace Zxw.Framework.Website.Controllers
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
-
+            _unitOfWork.BatchUpdate<TutorClassType>(m => m.Active, m => new TutorClassType() {TutorClassCount = 100});
             return View();
         }
 

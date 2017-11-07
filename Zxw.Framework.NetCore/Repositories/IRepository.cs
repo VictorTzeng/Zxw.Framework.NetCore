@@ -31,7 +31,6 @@ namespace Zxw.Framework.NetCore.Repositories
             Expression<Func<T, T>> @orderby = null, bool asc = true, params Expression<Func<T, TProperty>>[] includes);
         //int Save();
         IQueryable<TView> SqlQuery<TView>(string sql, params object[] parameters) where TView : class, new();
-        void Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp);
         void Update(T model, params string[] updateColumns);
     }
 }
