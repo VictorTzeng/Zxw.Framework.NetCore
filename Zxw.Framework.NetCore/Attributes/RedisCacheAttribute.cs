@@ -1,8 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Dora.Interception;
-using Zxw.Framework.NetCore.Middlewares;
+using System.Linq;
+using System.Threading.Tasks;
+using AspectCore.DynamicProxy;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
+using Zxw.Framework.NetCore.Extensions;
+using Zxw.Framework.NetCore.Helpers;
+using Zxw.Framework.NetCore.IoC;
 
 namespace Zxw.Framework.NetCore.Attributes
 {
@@ -13,11 +17,37 @@ namespace Zxw.Framework.NetCore.Attributes
     /// </para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
-    public class RedisCacheAttribute : InterceptorAttribute
+    public class RedisCacheAttribute : AbstractInterceptorAttribute
     {
-        public override void Use(IInterceptorChainBuilder builder)
+        //[FromContainer]
+        private readonly IDistributedCache _cache = AutofacContainer.Resolve<IDistributedCache>();
+
+        //[FromContainer]
+        private readonly IOptions<DistributedCacheEntryOptions> _optionsAccessor = AutofacContainer.Resolve<IOptions<DistributedCacheEntryOptions>>();
+
+        public override async Task Invoke(AspectContext context, AspectDelegate next)
         {
-            builder.Use<RedisCacheInterceptor>(this.Order);
+            var parameters = context.ServiceMethod.GetParameters();
+            //判断Method是否包含ref / out参数
+            if (parameters.Any(it => it.IsIn || it.IsOut))
+            {
+                await next(context);
+            }
+            else
+            {
+                var key = new CacheKey(context.ServiceMethod, parameters).GetHashCode().ToString();
+                var value = _cache.Get(key);
+                if (value != null)
+                {
+                    context.ReturnValue = value.ToObject();
+                }
+                else
+                {
+                    await context.Invoke(next);
+                    _cache.Set(key, context.ReturnValue.ToBytes(), _optionsAccessor.Value);
+                    await next(context);
+                }
+            }
         }
     }
 }

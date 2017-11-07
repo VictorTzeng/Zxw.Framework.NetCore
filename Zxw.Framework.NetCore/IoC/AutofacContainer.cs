@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using AspectCore.Extensions.Autofac;
 using Autofac;
 using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
@@ -12,7 +13,7 @@ namespace Zxw.Framework.NetCore.IoC
     /// <summary>
     /// Autofac IOC 容器
     /// </summary>
-    public class IoCContainer
+    public class AutofacContainer
     {
         private static ContainerBuilder _builder = new ContainerBuilder();
         private static IContainer _container;
@@ -109,6 +110,12 @@ namespace Zxw.Framework.NetCore.IoC
             }
 
             _builder.Populate(services);
+            _builder.RegisterDynamicProxy(
+                //config =>
+                //{
+                //    config.Interceptors.AddTyped<Mem>(Predicates.ForNameSpace("*"));
+                //}
+            );
             _container = _builder.Build();
             return new AutofacServiceProvider(_container);
         }

@@ -9,7 +9,6 @@ namespace Zxw.Framework.Website.IRepositories
 {
     public interface ITutorClassTypeRepository:IRepository<TutorClassType, Int32>
     {
-        [MemoryCache]
         IList<TutorClassType> GetByCached(Expression<Func<TutorClassType, bool>> where = null);
     }
 }

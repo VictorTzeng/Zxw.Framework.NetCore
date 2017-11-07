@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 using Zxw.Framework.NetCore.EfDbContext;
+using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IoC;
 
 namespace Zxw.Framework.NetCore.UnitOfWork
@@ -47,7 +48,7 @@ namespace Zxw.Framework.NetCore.UnitOfWork
 
         public IRepo GetRepository<IRepo>()
         {
-            return IoCContainer.Resolve<IRepo>(new TypedParameter(typeof(DefaultDbContext), _context));
+            return AutofacContainer.Resolve<IRepo>(new TypedParameter(typeof(DefaultDbContext), _context));
         }
 
         public int SaveChanges()

@@ -1,13 +1,17 @@
-﻿using System;
-using System.Text;
-using Dora.Interception;
-using log4net;
+﻿using log4net;
 using log4net.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Text;
+using AspectCore.Configuration;
+using AspectCore.Extensions.Autofac;
+using AspectCore.Extensions.DependencyInjection;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Zxw.Framework.NetCore.EfDbContext;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Filters;
@@ -20,13 +24,13 @@ namespace Zxw.Framework.Website
 {
     public class Startup
     {
-        public static ILoggerRepository repository { get; set; }
+        public static ILoggerRepository Repository { get; set; }
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
             //初始化log4net
-            repository = LogManager.CreateRepository("NETCoreRepository");
-            Log4NetHelper.SetConfig(repository, "log4net.config");
+            Repository = LogManager.CreateRepository("NETCoreRepository");
+            Log4NetHelper.SetConfig(Repository, "log4net.config");
         }
 
         public IConfiguration Configuration { get; }
@@ -34,25 +38,7 @@ namespace Zxw.Framework.Website
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMemoryCache();//启用MemoryCache
-            //services.AddDistributedRedisCache(option =>
-            //{
-            //    option.Configuration = "localhost";//redis连接字符串
-            //    option.InstanceName = "";//Redis实例名称
-            //});//启用Redis
-            services.Configure<MemoryCacheEntryOptions>(
-                options => options.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)); //设置MemoryCache缓存有效时间为5分钟。
-                                                                                               //.Configure<DistributedCacheEntryOptions>(option =>
-                                                                                               //    option.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5));//设置Redis缓存有效时间为5分钟。
-
-            InitIoC(services);
-            services.AddDbContext<DefaultDbContext>();
-            services.AddInterception();
-            services.AddMvc(option=>
-            {
-                option.Filters.Add(new GlobalExceptionFilter());
-            });
-            return IoCContainer.Build(services);
+            return InitIoC(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,8 +67,9 @@ namespace Zxw.Framework.Website
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        private void InitIoC(IServiceCollection services)
+        private IServiceProvider InitIoC(IServiceCollection services)
         {
+            //database connectionstring
             var connectionString = Configuration.GetConnectionString("MsSqlServer");
             var dbContextOption = new DbContextOption
             {
@@ -96,18 +83,34 @@ namespace Zxw.Framework.Website
                 IRepositoriesNamespace = "Zxw.Framework.Website.IRepositories",
                 RepositoriesNamespace = "Zxw.Framework.Website.Repositories"
             };
-            //IoCContainer.Register(Configuration);//注册配置
-            //IoCContainer.Register(dbContextOption);//注册数据库配置信息
-            //IoCContainer.Register(codeGenerateOption);//注册代码生成器相关配置信息
-            //IoCContainer.Register(typeof(DefaultDbContext));//注册EF上下文
-            //IoCContainer.Register("Zxw.Framework.Website.Repositories", "Zxw.Framework.Website.IRepositories");//注册仓储
-            //IoCContainer.Register<IUnitOfWork, EfUnitOfWork>();//注册EF工作单元
-            //return IoCContainer.Build(services);
-            services.AddSingleton(Configuration);
-            services.AddSingleton(dbContextOption);
-            services.AddSingleton(codeGenerateOption);
-            services.RegisterAssembly("Zxw.Framework.Website.IRepositories", "Zxw.Framework.Website.Repositories");
-            services.AddTransient<IUnitOfWork, EfUnitOfWork>();
+            //启用Redis
+            //services.AddDistributedRedisCache(option =>
+            //{
+            //    option.Configuration = "localhost";//redis连接字符串
+            //    option.InstanceName = "";//Redis实例名称
+            //});
+            services.Configure<MemoryCacheEntryOptions>(
+                options => options.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)); //设置MemoryCache缓存有效时间为5分钟。
+            //.Configure<DistributedCacheEntryOptions>(option =>
+            //    option.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5));//设置Redis缓存有效时间为5分钟。
+
+            services.AddMemoryCache();//启用MemoryCache
+            services.AddSingleton(Configuration)
+                .AddSingleton(dbContextOption)
+                .AddSingleton(codeGenerateOption)
+                .AddDbContext<DefaultDbContext>()
+                .RegisterAssembly("Zxw.Framework.Website.IRepositories", "Zxw.Framework.Website.Repositories")
+                .AddTransient<IUnitOfWork, EfUnitOfWork>();
+            services.AddMvc(option =>
+                {
+                    option.Filters.Add(new GlobalExceptionFilter());
+                })
+                .AddControllersAsServices();
+            services.AddDynamicProxy();
+            //services = ServiceLocator.CreateServiceBuilder(services);
+
+            return AutofacContainer.Build(services);//接入Autofac
+            //return services.BuildAspectCoreServiceProvider(); 
         }
     }
 }

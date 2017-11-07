@@ -8,7 +8,7 @@ namespace Zxw.Framework.NetCore.Helpers
         private static readonly IConfiguration configuration;
         static ConfigHelper()
         {
-            configuration = IoCContainer.Resolve<IConfiguration>();
+            configuration = AutofacContainer.Resolve<IConfiguration>();
         }
         public static IConfigurationSection GetSection(string key)
         {

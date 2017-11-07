@@ -7,7 +7,7 @@ namespace Zxw.Framework.NetCore.Extensions
 {
     public static class IoCContainerExtensions
     {
-        public static void AddAspect(this IoCContainer container)
+        public static void AddAspect(this AutofacContainer container)
         {
             if(container==null)
                 throw new ArgumentNullException(nameof(container));

@@ -126,7 +126,7 @@ namespace Zxw.Framework.NetCore.Extensions
         {
             if(provider==null)
                 throw new ArgumentNullException(nameof(provider));
-            return DependencyInjectionManager.GetInstance<T>(provider);
+            return ServiceLocator.GetInstance<T>(provider);
         }
 
     }

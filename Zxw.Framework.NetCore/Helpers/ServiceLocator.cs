@@ -6,11 +6,11 @@ namespace Zxw.Framework.NetCore.Helpers
     /// <summary>
     /// .Net Core自带的DI辅助类
     /// </summary>
-    public class DependencyInjectionManager
+    public class ServiceLocator
     {
         private static IServiceCollection _container;
 
-        static DependencyInjectionManager()
+        static ServiceLocator()
         {
             _container = new ServiceCollection();
         }
