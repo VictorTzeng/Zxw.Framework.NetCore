@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using AspectCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Zxw.Framework.NetCore.Helpers;
+using AspectCore.Configuration;
+using Zxw.Framework.NetCore.IoC;
 
 namespace Zxw.Framework.NetCore.Extensions
 {
@@ -121,13 +124,15 @@ namespace Zxw.Framework.NetCore.Extensions
 
             return service;
         }
-
-        public static T GetInstance<T>(this IServiceProvider provider)
+        public static IServiceProvider BuildAutofacServiceProvider(this IServiceCollection services)
         {
-            if(provider==null)
-                throw new ArgumentNullException(nameof(provider));
-            return ServiceLocator.GetInstance<T>(provider);
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            return AutofacContainer.Build(services);
         }
-
+        public static IServiceProvider BuildAspectCoreWithAutofacServiceProvider(this IServiceCollection services, Action<IAspectConfiguration> configure = null)
+        {
+            if(services==null)throw new ArgumentNullException(nameof(services));
+            return AutofacContainer.Build(services, configure);
+        }
     }
 }

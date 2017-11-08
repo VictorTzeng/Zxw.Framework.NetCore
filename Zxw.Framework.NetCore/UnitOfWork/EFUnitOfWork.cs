@@ -67,12 +67,39 @@ namespace Zxw.Framework.NetCore.UnitOfWork
 
         public int SaveChanges()
         {
-            return _context.SaveChanges();
+            using (var tran = _context.Database.CurrentTransaction ?? _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var result = _context.SaveChanges();
+                    tran.Commit();
+                    return result;
+                }
+                catch (Exception)
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
         }
 
         public async Task<int> SaveChangesAsync()
         {
-            return await _context.SaveChangesAsync();
+            using (var tran = _context.Database.CurrentTransaction ?? await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var result = await _context.SaveChangesAsync();
+                    tran.Commit();
+                    return result;
+
+                }
+                catch (Exception)
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
         }
 
         protected void UseTransaction(IDbContextTransaction transaction)
@@ -101,12 +128,10 @@ namespace Zxw.Framework.NetCore.UnitOfWork
 
                     return count;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-
                     transaction.Rollback();
-
-                    throw ex;
+                    throw;
                 }
             }
         }

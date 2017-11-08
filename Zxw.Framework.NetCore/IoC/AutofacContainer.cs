@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using AspectCore.Configuration;
 using AspectCore.Extensions.Autofac;
 using Autofac;
 using Autofac.Core;
@@ -83,7 +84,7 @@ namespace Zxw.Framework.NetCore.IoC
         /// <summary>
         /// 构建IOC容器，需在各种Register后调用。
         /// </summary>
-        public static IServiceProvider Build(IServiceCollection services)
+        public static IServiceProvider Build(IServiceCollection services, Action<IAspectConfiguration> config = null)
         {
             if (_otherAssembly != null)
             {
@@ -110,12 +111,7 @@ namespace Zxw.Framework.NetCore.IoC
             }
 
             _builder.Populate(services);
-            _builder.RegisterDynamicProxy(
-                //config =>
-                //{
-                //    config.Interceptors.AddTyped<Mem>(Predicates.ForNameSpace("*"));
-                //}
-            );
+            _builder.RegisterDynamicProxy(config);
             _container = _builder.Build();
             return new AutofacServiceProvider(_container);
         }

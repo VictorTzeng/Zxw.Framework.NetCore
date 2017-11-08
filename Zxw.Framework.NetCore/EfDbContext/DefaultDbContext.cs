@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Z.EntityFramework.Plus;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Models;
@@ -16,21 +17,21 @@ namespace Zxw.Framework.NetCore.EfDbContext
 {
     public sealed class DefaultDbContext : DbContext
     {
-        private DbContextOption _option;
+        private readonly DbContextOption _option;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="option"></param>
-        public DefaultDbContext(DbContextOption option)
+        public DefaultDbContext(IOptions<DbContextOption> option)
         {
             if(option==null)
                 throw new ArgumentNullException(nameof(option));
-            if(string.IsNullOrEmpty(option.ConnectionString))
-                throw new ArgumentNullException(nameof(option.ConnectionString));
-            if (string.IsNullOrEmpty(option.ModelAssemblyName))
-                throw new ArgumentNullException(nameof(option.ModelAssemblyName));
-            _option = option;
+            if(string.IsNullOrEmpty(option.Value.ConnectionString))
+                throw new ArgumentNullException(nameof(option.Value.ConnectionString));
+            if (string.IsNullOrEmpty(option.Value.ModelAssemblyName))
+                throw new ArgumentNullException(nameof(option.Value.ModelAssemblyName));
+            _option = option.Value;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -38,7 +39,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
             switch (_option.DbType)
             {
                 case DbType.ORACLE:
-                    throw new NotSupportedException("Oracle EF Core Database Provider is not yet available.");
+                    throw new NotSupportedException("Oracle for EF Core Database Provider is not yet available.");
                 case DbType.MYSQL:
                     optionsBuilder.UseMySql(_option.ConnectionString);
                     break;

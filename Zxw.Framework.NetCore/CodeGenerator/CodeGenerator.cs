@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.Options;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
@@ -25,7 +26,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         /// </summary>
         static CodeGenerator()
         {
-            Option = AutofacContainer.Resolve<CodeGenerateOption>();
+            Option = AutofacContainer.Resolve<IOptions<CodeGenerateOption>>()?.Value;
             if (Option == null)
             {
                 throw new ArgumentNullException(nameof(Option));

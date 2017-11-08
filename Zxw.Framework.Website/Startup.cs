@@ -7,16 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Text;
-using AspectCore.Configuration;
-using AspectCore.Extensions.Autofac;
-using AspectCore.Extensions.DependencyInjection;
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
 using Zxw.Framework.NetCore.EfDbContext;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Filters;
 using Zxw.Framework.NetCore.Helpers;
-using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Options;
 using Zxw.Framework.NetCore.UnitOfWork;
 
@@ -71,46 +65,49 @@ namespace Zxw.Framework.Website
         {
             //database connectionstring
             var connectionString = Configuration.GetConnectionString("MsSqlServer");
-            var dbContextOption = new DbContextOption
-            {
-                ConnectionString = connectionString,
-                ModelAssemblyName = "Zxw.Framework.Website.Models",
-                DbType = DbType.MSSQLSERVER
-            };
-            var codeGenerateOption = new CodeGenerateOption
-            {
-                ModelsNamespace = "Zxw.Framework.Website.Models",
-                IRepositoriesNamespace = "Zxw.Framework.Website.IRepositories",
-                RepositoriesNamespace = "Zxw.Framework.Website.Repositories"
-            };
+
             //启用Redis
             //services.AddDistributedRedisCache(option =>
             //{
             //    option.Configuration = "localhost";//redis连接字符串
             //    option.InstanceName = "";//Redis实例名称
             //});
-            services.Configure<MemoryCacheEntryOptions>(
-                options => options.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)); //设置MemoryCache缓存有效时间为5分钟。
-            //.Configure<DistributedCacheEntryOptions>(option =>
-            //    option.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5));//设置Redis缓存有效时间为5分钟。
+            //设置Redis缓存有效时间为5分钟。
+            //services.Configure<DistributedCacheEntryOptions>(option =>
+            //    option.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5));
 
-            services.AddMemoryCache();//启用MemoryCache
-            services.AddSingleton(Configuration)
-                .AddSingleton(dbContextOption)
-                .AddSingleton(codeGenerateOption)
-                .AddDbContext<DefaultDbContext>()
-                .RegisterAssembly("Zxw.Framework.Website.IRepositories", "Zxw.Framework.Website.Repositories")
-                .AddTransient<IUnitOfWork, EfUnitOfWork>();
+            //启用MemoryCache
+            services.AddMemoryCache();
+            //设置MemoryCache缓存有效时间为5分钟。
+            services.Configure<MemoryCacheEntryOptions>(
+                options => options.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)); 
+
+            //配置DbContextOption
+            services.Configure<DbContextOption>(options =>
+            {
+                options.ConnectionString = connectionString;
+                options.ModelAssemblyName = "Zxw.Framework.Website.Models";
+                options.DbType = DbType.MSSQLSERVER;
+            });
+            //配置CodeGenerateOption
+            services.Configure<CodeGenerateOption>(options =>
+            {
+                options.ModelsNamespace = "Zxw.Framework.Website.Models";
+                options.IRepositoriesNamespace = "Zxw.Framework.Website.IRepositories";
+                options.RepositoriesNamespace = "Zxw.Framework.Website.Repositories";
+            });
+
+            services.AddSingleton(Configuration)//注入Configuration，ConfigHelper要用
+                .AddDbContext<DefaultDbContext>()//注入EF上下文
+                .RegisterAssembly("Zxw.Framework.Website.IRepositories", "Zxw.Framework.Website.Repositories")//注入仓储
+                .AddTransient<IUnitOfWork, EfUnitOfWork>();//注入工作单元
             services.AddMvc(option =>
                 {
                     option.Filters.Add(new GlobalExceptionFilter());
                 })
                 .AddControllersAsServices();
-            services.AddDynamicProxy();
-            //services = ServiceLocator.CreateServiceBuilder(services);
 
-            return AutofacContainer.Build(services);//接入Autofac
-            //return services.BuildAspectCoreServiceProvider(); 
+            return services.BuildAspectCoreWithAutofacServiceProvider();//接入Autofac和AspectCore
         }
     }
 }

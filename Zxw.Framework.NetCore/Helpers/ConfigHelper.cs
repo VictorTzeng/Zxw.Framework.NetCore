@@ -10,9 +10,15 @@ namespace Zxw.Framework.NetCore.Helpers
         {
             configuration = AutofacContainer.Resolve<IConfiguration>();
         }
+
         public static IConfigurationSection GetSection(string key)
         {
             return configuration.GetSection(key);
+        }
+
+        public static string GetConfigurationValue(string key)
+        {
+            return configuration[key];
         }
 
         public static string GetConfigurationValue(string section, string key)
