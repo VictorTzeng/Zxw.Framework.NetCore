@@ -5,6 +5,7 @@ using Zxw.Framework.NetCore.UnitOfWork;
 using Zxw.Framework.Website.ViewModels;
 using Zxw.Framework.Website.Models;
 using Zxw.Framework.Website.IRepositories;
+using Zxw.Framework.NetCore.CodeGenerator;
 
 namespace Zxw.Framework.Website.Controllers
 {
@@ -18,7 +19,7 @@ namespace Zxw.Framework.Website.Controllers
         }
         public IActionResult Index()
         {
-            //CodeGenerator.Generate();//生成所有实体类对应的Repository和Service层代码文件
+            // CodeGenerator.Generate();//生成所有实体类对应的Repository和Service层代码文件
             //CodeGenerator.GenerateSingle<TutorClassType, int>();//生成单个实体类对应的Repository和Service层代码文件
             using (var repository = _unitOfWork.GetRepository<ITutorClassTypeRepository>())
             {

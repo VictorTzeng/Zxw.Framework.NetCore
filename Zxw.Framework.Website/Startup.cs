@@ -64,7 +64,7 @@ namespace Zxw.Framework.Website
         private IServiceProvider InitIoC(IServiceCollection services)
         {
             //database connectionstring
-            var connectionString = Configuration.GetConnectionString("MsSqlServer");
+            var connectionString = Configuration.GetConnectionString("PostgreSQL");
 
             //启用Redis
             //services.AddDistributedRedisCache(option =>
@@ -87,7 +87,7 @@ namespace Zxw.Framework.Website
             {
                 options.ConnectionString = connectionString;
                 options.ModelAssemblyName = "Zxw.Framework.Website.Models";
-                options.DbType = DbType.MSSQLSERVER;
+                options.DbType = DbType.NPGSQL;
             });
             //配置CodeGenerateOption
             services.Configure<CodeGenerateOption>(options =>
