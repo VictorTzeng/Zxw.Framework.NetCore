@@ -79,12 +79,12 @@ namespace Zxw.Framework.Website
         /// <returns></returns>
         private IServiceProvider InitIoC(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("MsSqlServer");
+            var connectionString = Configuration.GetConnectionString("PostgreSQL");
             var dbContextOption = new DbContextOption
             {
                 ConnectionString = connectionString,
                 ModelAssemblyName = "Zxw.Framework.Website.Models",
-                DbType = DbType.MSSQLSERVER
+                DbType = DbType.NPGSQL
             };
             var codeGenerateOption = new CodeGenerateOption
             {

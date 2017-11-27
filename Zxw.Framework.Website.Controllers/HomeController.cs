@@ -21,8 +21,8 @@ namespace Zxw.Framework.Website.Controllers
         }
         public IActionResult Index()
         {
-            CodeGenerator.Generate();//生成所有实体类对应的Repository和Service层代码文件
-            CodeGenerator.GenerateSingle<TutorClassType, int>();//生成单个实体类对应的Repository和Service层代码文件
+            // CodeGenerator.Generate();//生成所有实体类对应的Repository和Service层代码文件
+            // CodeGenerator.GenerateSingle<TutorClassType, int>();//生成单个实体类对应的Repository和Service层代码文件
             var list = iTutorClassTypeService.GetByCache();
             return View(list);
         }
