@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -77,7 +78,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         /// <param name="ifExsitedCovered">如果目标文件存在，是否覆盖。默认为false</param>
         private static void GenerateSingle(Type modelType, bool ifExsitedCovered = false)
         {
-            var modelTypeName = modelType.Name;
+            var modelTypeName = modelType.GetCustomAttribute<TableAttribute>().Name;
             var keyTypeName = modelType.GetProperty("Id")?.PropertyType.Name;
             GenerateIRepository(modelTypeName, keyTypeName, ifExsitedCovered);
             GenerateRepository(modelTypeName, keyTypeName, ifExsitedCovered);
