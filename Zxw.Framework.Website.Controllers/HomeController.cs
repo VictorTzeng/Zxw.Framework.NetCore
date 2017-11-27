@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Zxw.Framework.NetCore.UnitOfWork;
+using Zxw.Framework.NetCore.WeChat;
 using Zxw.Framework.Website.ViewModels;
 using Zxw.Framework.Website.Models;
 using Zxw.Framework.Website.IRepositories;
 
 namespace Zxw.Framework.Website.Controllers
 {
+    [CheckLogin]
     public class HomeController : Controller
     {
         private IUnitOfWork _unitOfWork;

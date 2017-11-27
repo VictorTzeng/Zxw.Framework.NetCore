@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="UnionPay\" />
+    <Folder Include="WeChatPay\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ICanPay.Alipay" Version="1.1.4" />
+    <PackageReference Include="ICanPay.Core" Version="1.1.4" />
+    <PackageReference Include="ICanPay.Unionpay" Version="1.1.4" />
+    <PackageReference Include="ICanPay.Wechatpay" Version="1.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Zxw.Framework.NetCore\Zxw.Framework.NetCore.csproj" />
+  </ItemGroup>
+
+</Project>
