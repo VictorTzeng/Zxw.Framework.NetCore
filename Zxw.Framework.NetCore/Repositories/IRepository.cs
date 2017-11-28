@@ -25,10 +25,10 @@ namespace Zxw.Framework.NetCore.Repositories
         T GetSingle<TProperty>(Expression<Func<T, bool>> @where = null, params Expression<Func<T, TProperty>>[] includes);
         IQueryable<T> Get(Expression<Func<T, bool>> @where = null);
         IQueryable<T> Get<TProperty>(Expression<Func<T, bool>> @where = null, params Expression<Func<T, TProperty>>[] includes);
-        IQueryable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex,
-            Expression<Func<T, T>> @orderby = null, bool asc = true);
         IQueryable<T> GetByPagination<TProperty>(Expression<Func<T, bool>> @where, int pageSize, int pageIndex,
-            Expression<Func<T, T>> @orderby = null, bool asc = true, params Expression<Func<T, TProperty>>[] includes);
+            Expression<Func<T, TProperty>> @orderby = null, bool asc = true);
+        IQueryable<T> GetByPagination<TProperty1,TProperty2>(Expression<Func<T, bool>> @where, int pageSize, int pageIndex,
+            Expression<Func<T, TProperty1>> @orderby = null, bool asc = true, params Expression<Func<T, TProperty2>>[] includes);
         //int Save();
         IQueryable<TView> SqlQuery<TView>(string sql, params object[] parameters) where TView : class, new();
         void Update(T model, params string[] updateColumns);
