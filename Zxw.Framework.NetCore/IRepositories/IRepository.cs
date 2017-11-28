@@ -24,10 +24,10 @@ namespace Zxw.Framework.NetCore.IRepositories
         T GetSingle<TProperty>(Expression<Func<T, bool>> @where = null, params Expression<Func<T, TProperty>>[] includes);
         IList<T> Get(Expression<Func<T, bool>> @where = null);
         IList<T> Get<TProperty>(Expression<Func<T, bool>> @where = null, params Expression<Func<T, TProperty>>[] includes);
-        IList<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex,
-            Expression<Func<T, T>> @orderby = null, bool asc = true);
         IList<T> GetByPagination<TProperty>(Expression<Func<T, bool>> @where, int pageSize, int pageIndex,
-            Expression<Func<T, T>> @orderby = null, bool asc = true, params Expression<Func<T, TProperty>>[] includes);
+            Expression<Func<T, TProperty>> @orderby = null, bool asc = true);
+        IList<T> GetByPagination<TProperty1, TProperty2>(Expression<Func<T, bool>> @where, int pageSize, int pageIndex,
+            Expression<Func<T, TProperty1>> @orderby = null, bool asc = true, params Expression<Func<T, TProperty2>>[] includes);
         int Save();
         IList<TView> SqlQuery<TView>(string sql, params object[] parameters) where TView : class, new();
         int Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp);

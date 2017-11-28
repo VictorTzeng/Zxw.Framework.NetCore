@@ -133,7 +133,7 @@ namespace Zxw.Framework.NetCore.Repositories
             return @where != null ? query.AsNoTracking().Where(@where).ToList() : query.AsNoTracking().ToList();
         }
 
-        public virtual IList<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, Expression<Func<T, T>> @orderby = null, bool asc = true)
+        public virtual IList<T> GetByPagination<TProperty>(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, Expression<Func<T, TProperty>> @orderby = null, bool asc = true)
         {
             var filters = Get(where);
             if (orderby == null)
@@ -144,8 +144,8 @@ namespace Zxw.Framework.NetCore.Repositories
                 .ToList();
         }
 
-        public virtual IList<T> GetByPagination<TProperty>(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, Expression<Func<T, T>> @orderby = null,
-            bool asc = true, params Expression<Func<T, TProperty>>[] includes)
+        public virtual IList<T> GetByPagination<TProperty1,TProperty2>(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, Expression<Func<T, TProperty1>> @orderby = null,
+            bool asc = true, params Expression<Func<T, TProperty2>>[] includes)
         {
             var filters = Get(where);
             if (includes != null)
