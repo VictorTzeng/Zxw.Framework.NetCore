@@ -73,7 +73,11 @@ namespace Zxw.Framework.NetCore.EfDbContext
                 t.GetInterfaces().Any(m => m.GetGenericTypeDefinition() == typeof(IBaseModel<>))).ToList();
             if (list != null && list.Any())
             {
-                list.ForEach(t => modelBuilder.Model.AddEntityType(t));
+                list.ForEach(t =>
+                {
+                    if (modelBuilder.Model.FindEntityType(t) == null)
+                        modelBuilder.Model.AddEntityType(t);
+                });
             }
         }
 
