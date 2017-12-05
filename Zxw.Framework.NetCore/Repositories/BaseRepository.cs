@@ -71,7 +71,7 @@ namespace Zxw.Framework.NetCore.Repositories
             return Get(where).Any();
         }
 
-        public virtual bool Exist<TProperty>(Expression<Func<T, bool>> @where = null, params Expression<Func<T, TProperty>>[] includes)
+        public virtual bool Exist(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes)
         {
             return Get(where, includes).Any();
         }
@@ -86,7 +86,7 @@ namespace Zxw.Framework.NetCore.Repositories
             return _set.Find(key);
         }
 
-        public virtual T GetSingle<TProperty>(TKey key, params Expression<Func<T, TProperty>>[] includes)
+        public T GetSingle(TKey key, params Expression<Func<T, object>>[] includes)
         {
             if (includes == null) return GetSingle(key);
             var query = _set.AsQueryable();
@@ -104,7 +104,7 @@ namespace Zxw.Framework.NetCore.Repositories
             return _set.SingleOrDefault(@where);
         }
 
-        public T GetSingle<TProperty>(Expression<Func<T, bool>> @where = null, params Expression<Func<T, TProperty>>[] includes)
+        public T GetSingle(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes)
         {
             if (includes == null) return GetSingle(where);
             var query = _set.AsQueryable();
@@ -116,12 +116,12 @@ namespace Zxw.Framework.NetCore.Repositories
             return query.SingleOrDefault(where);
         }
 
-        public virtual IList<T> Get(Expression<Func<T, bool>> @where = null)
+        public virtual IQueryable<T> Get(Expression<Func<T, bool>> @where = null)
         {
-            return (@where != null ? _set.AsNoTracking().Where(@where) : _set.AsNoTracking()).ToList();
+            return @where != null ? _set.AsNoTracking().Where(@where) : _set.AsNoTracking();
         }
 
-        public virtual IList<T> Get<TProperty>(Expression<Func<T, bool>> @where = null, params Expression<Func<T, TProperty>>[] includes)
+        public virtual IQueryable<T> Get(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes)
         {
             if (includes == null)
                 return Get(where);
@@ -130,32 +130,20 @@ namespace Zxw.Framework.NetCore.Repositories
             {
                 query = query.Include(include);
             }
-            return @where != null ? query.AsNoTracking().Where(@where).ToList() : query.AsNoTracking().ToList();
+            return @where != null ? query.AsNoTracking().Where(@where) : query.AsNoTracking();
         }
 
-        public virtual IList<T> GetByPagination<TProperty>(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, Expression<Func<T, TProperty>> @orderby = null, bool asc = true)
+        public IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true, params Func<T, object>[] @orderby)
         {
-            var filters = Get(where);
-            if (orderby == null)
-                return filters.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
-            if (asc)
-                return filters.OrderBy(orderby.Compile()).Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
-            return filters.OrderByDescending(orderby.Compile()).Skip(pageSize * (pageIndex - 1)).Take(pageSize)
-                .ToList();
-        }
-
-        public virtual IList<T> GetByPagination<TProperty1,TProperty2>(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, Expression<Func<T, TProperty1>> @orderby = null,
-            bool asc = true, params Expression<Func<T, TProperty2>>[] includes)
-        {
-            var filters = Get(where);
-            if (includes != null)
-                filters = Get(where, includes);
-            if (orderby == null)
-                return filters.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
-            if (asc)
-                return filters.OrderBy(orderby.Compile()).Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
-            return filters.OrderByDescending(orderby.Compile()).Skip(pageSize * (pageIndex - 1)).Take(pageSize)
-                .ToList();
+            var filter = Get(where).AsEnumerable();
+            if (orderby != null)
+            {
+                foreach (var func in orderby)
+                {
+                    filter = asc ? filter.OrderBy(func) : filter.OrderByDescending(func);
+                }
+            }
+            return filter.Skip(pageSize * (pageIndex - 1)).Take(pageSize);
         }
 
         public virtual int Save()

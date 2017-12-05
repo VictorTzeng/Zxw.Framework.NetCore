@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using Zxw.Framework.NetCore.IRepositories;
 using Zxw.Framework.NetCore.IServices;
@@ -25,7 +26,7 @@ namespace Zxw.Framework.NetCore.Services
             return Repository.Exist(where);
         }
 
-        public bool Exists<TProperty>(Expression<Func<T, bool>> @where = null, params Expression<Func<T, TProperty>>[] includes)
+        public bool Exists(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes)
         {
             return Repository.Exist(where, includes);
         }
@@ -35,7 +36,7 @@ namespace Zxw.Framework.NetCore.Services
             return Repository.GetSingle(key);
         }
 
-        public T GetSingle<TProperty>(TKey key, params Expression<Func<T, TProperty>>[] includes)
+        public T GetSingle(TKey key, params Expression<Func<T, object>>[] includes)
         {
             return Repository.GetSingle(key, includes);
         }
@@ -43,23 +44,18 @@ namespace Zxw.Framework.NetCore.Services
 
         public virtual IList<T> Get(Expression<Func<T, bool>> @where = null)
         {
-            return Repository.Get(where);
+            return Repository.Get(where).ToList();
         }
 
-        public IList<T> Get<TProperty>(Expression<Func<T, bool>> @where = null, params Expression<Func<T, TProperty>>[] includes)
+        public IList<T> Get(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes)
         {
-            return Repository.Get(where, includes);
+            return Repository.Get(where, includes).ToList();
         }
 
-        public virtual IList<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, Expression<Func<T, T>> @orderby = null, bool asc = true)
+        public virtual IList<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true, params Func<T, object>[] @orderby)
         {
-            return Repository.GetByPagination(where, pageSize, pageIndex, orderby, asc);
-        }
-
-        public IList<T> GetByPagination<TProperty>(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, Expression<Func<T, T>> @orderby = null,
-            bool asc = true, params Expression<Func<T, TProperty>>[] includes)
-        {
-            return Repository.GetByPagination(where, pageSize, pageIndex, orderby, asc, includes);
+            var filter = Repository.GetByPagination(where, pageSize, pageIndex, asc, orderby);
+            return filter.ToList();
         }
 
         public virtual int Add(T entity)
@@ -85,7 +81,6 @@ namespace Zxw.Framework.NetCore.Services
         public virtual int Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
         {
             return Repository.Update(@where, updateExp);
-
         }
 
         public virtual int Update(T model, params string[] updateColumns)

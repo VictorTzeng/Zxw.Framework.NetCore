@@ -10,19 +10,15 @@ namespace Zxw.Framework.NetCore.IServices
         int Count(Expression<Func<T, bool>> where = null);
 
         bool Exists(Expression<Func<T, bool>> where = null);
-        bool Exists<TProperty>(Expression<Func<T, bool>> where = null, params Expression<Func<T, TProperty>>[] includes);
+        bool Exists(Expression<Func<T, bool>> where = null, params Expression<Func<T, object>>[] includes);
 
         T GetSingle(TKey key);
 
-        T GetSingle<TProperty>(TKey key, params Expression<Func<T, TProperty>>[] includes);
+        T GetSingle(TKey key, params Expression<Func<T, object>>[] includes);
 
         IList<T> Get(Expression<Func<T, bool>> where = null);
-        IList<T> Get<TProperty>(Expression<Func<T, bool>> where = null, params Expression<Func<T, TProperty>>[] includes);
+        IList<T> Get(Expression<Func<T, bool>> where = null, params Expression<Func<T, object>>[] includes);
 
-        IList<T> GetByPagination(Expression<Func<T, bool>> where, int pageSize, int pageIndex,
-            Expression<Func<T, T>> orderby = null, bool asc = true);
-        IList<T> GetByPagination<TProperty>(Expression<Func<T, bool>> where, int pageSize, int pageIndex,
-            Expression<Func<T, T>> orderby = null, bool asc = true, params Expression<Func<T, TProperty>>[] includes);
         int Add(T entity);
 
         int AddRange(ICollection<T> entities);
