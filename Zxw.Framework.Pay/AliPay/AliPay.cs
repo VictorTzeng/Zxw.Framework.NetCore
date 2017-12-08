@@ -4,91 +4,62 @@ using ICanPay.Core;
 
 namespace Zxw.Framework.Pay.AliPay
 {
-    public class AliPay:IAliPay
+    /// <summary>
+    /// 支付宝支付
+    /// </summary>
+    public class AliPay:PayBase<AlipayGateway>
     {
-        private IGateways _gateways;
-
-        public AliPay(IGateways getGateways)
+        public AliPay(IGateways getGateways) : base(getGateways)
         {
-            _gateways = getGateways;
         }
 
         public void BillDownload(string billType, string billDate)
         {
-            var gateway = _gateways.Get<AlipayGateway>();
-
-            gateway.BillDownload(new Auxiliary
-            {
-                BillType = billType,
-                BillDate = billDate
-            });
+            base.BillDownload(new Auxiliary() {BillDate = billDate, BillType = billType});
         }
 
-        public string CreateOrder(IOrder order, GatewayTradeType tradeType,
+        public string CreateOrder(Order order, GatewayTradeType tradeType,
             Action<object, PaymentSucceedEventArgs> succeed = null,
             Action<object, PaymentFailedEventArgs> failed = null)
         {
-            if (order.GetType() != typeof(Order))
-            {
-                throw new ArgumentException($"{nameof(order)} must be a ICanPay.AliPay.Order");
-            }
-            var gateway = _gateways.Get<AlipayGateway>(tradeType);
-            if (tradeType == GatewayTradeType.Barcode)
-            {
-                if (succeed==null)
-                {
-                    throw new ArgumentNullException(nameof(succeed));
-                }
-                if (failed == null)
-                {
-                    throw new ArgumentNullException(nameof(failed));
-                }
-                gateway.PaymentSucceed += succeed;
-                gateway.PaymentFailed += failed;
-            }
-            return gateway.Payment(order);
+            return base.CreateOrder(order, tradeType, succeed, failed);
         }
 
-        public INotify Cancel(string orderNo)
+        public Notify Cancel(string orderNo)
         {
-            var gateway = _gateways.Get<AlipayGateway>();
-            return (Notify)gateway.Cancel(new Auxiliary()
+            return (Notify)base.Cancel(new Auxiliary()
             {
                 OutTradeNo = orderNo
             });
         }
 
-        public INotify Close(string orderNo)
+        public Notify Close(string orderNo)
         {
-            var gateway = _gateways.Get<AlipayGateway>();
-            return (Notify)gateway.Close(new Auxiliary()
+            return (Notify)base.Close(new Auxiliary()
             {
                 OutTradeNo = orderNo
             });
         }
 
-        public INotify Query(string orderNo)
+        public Notify Query(string orderNo)
         {
-            var gateway = _gateways.Get<AlipayGateway>();
-            return (Notify)gateway.Query(new Auxiliary()
+            return (Notify)base.Query(new Auxiliary()
             {
                 OutTradeNo = orderNo
             });
         }
 
-        public INotify Refund(string orderNo)
+        public Notify Refund(string orderNo)
         {
-            var gateway = _gateways.Get<AlipayGateway>();
-            return (Notify)gateway.Refund(new Auxiliary()
+            return (Notify)base.Refund(new Auxiliary()
             {
                 OutTradeNo = orderNo
             });
         }
 
-        public INotify RefundQuery(string orderNo, string refundNo)
+        public Notify RefundQuery(string orderNo, string refundNo)
         {
-            var gateway = _gateways.Get<AlipayGateway>();
-            return (Notify)gateway.RefundQuery(new Auxiliary()
+            return (Notify)base.RefundQuery(new Auxiliary()
             {
                 OutTradeNo = orderNo,
                 OutRefundNo = refundNo

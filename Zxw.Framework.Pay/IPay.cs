@@ -5,35 +5,20 @@ namespace Zxw.Framework.Pay
 {
     public interface IPay
     {
-        void BillDownload(string billType, string billDate);
+        void BillDownload(IAuxiliary auxiliary);
 
         string CreateOrder(IOrder order, GatewayTradeType tradeType,
             Action<object, PaymentSucceedEventArgs> succeed = null,
             Action<object, PaymentFailedEventArgs> failed = null);
 
-        INotify Cancel(string orderNo);
+        INotify Cancel(IAuxiliary auxiliary);
 
-        INotify Close(string orderNo);
+        INotify Close(IAuxiliary auxiliary);
 
-        INotify Query(string orderNo);
+        INotify Query(IAuxiliary auxiliary);
 
-        INotify Refund(string orderNo);
+        INotify Refund(IAuxiliary auxiliary);
 
-        INotify RefundQuery(string orderNo, string refundNo);
-    }
-
-    public interface IAliPay : IPay
-    {
-        
-    }
-
-    public interface IUnoinPay : IPay
-    {
-
-    }
-
-    public interface IWeChatPay : IPay
-    {
-
+        INotify RefundQuery(IAuxiliary auxiliary);
     }
 }

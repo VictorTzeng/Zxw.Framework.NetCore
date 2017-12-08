@@ -132,31 +132,17 @@ namespace Zxw.Framework.NetCore.Repositories
             return @where != null ? query.AsNoTracking().Where(@where) : query.AsNoTracking();
         }
 
-        public virtual IQueryable<T> GetByPagination<TProperty>(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, Expression<Func<T, TProperty>> @orderby = null, bool asc = true)
+        public virtual IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true, params Func<T, object>[] @orderby)
         {
-            var filters = Get(where);
+            var filter = Get(where).AsEnumerable();
             if (orderby != null)
             {
-                filters = asc
-                    ? filters.AsEnumerable().OrderBy(@orderby.Compile()).AsQueryable()
-                    : filters.AsEnumerable().OrderByDescending(@orderby.Compile()).AsQueryable();
+                foreach (var func in orderby)
+                {
+                    filter = asc ? filter.OrderBy(func) : filter.OrderByDescending(func);
+                }
             }
-            return filters.Skip(pageSize * (pageIndex - 1)).Take(pageSize).AsQueryable();
-        }
-
-        public virtual IQueryable<T> GetByPagination<TProperty1, TProperty2>(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, Expression<Func<T, TProperty1>> @orderby = null,
-            bool asc = true, params Expression<Func<T, TProperty2>>[] includes)
-        {
-            var filters = Get(where);
-            if (includes != null)
-                filters = Get(where, includes);
-            if (orderby != null)
-            {
-                filters = asc
-                    ? filters.AsEnumerable().OrderBy(@orderby.Compile()).AsQueryable()
-                    : filters.AsEnumerable().OrderByDescending(@orderby.Compile()).AsQueryable();
-            }
-            return filters.Skip(pageSize * (pageIndex - 1)).Take(pageSize).AsQueryable();
+            return filter.Skip(pageSize * (pageIndex - 1)).Take(pageSize);
         }
 
         //public virtual int Save()
