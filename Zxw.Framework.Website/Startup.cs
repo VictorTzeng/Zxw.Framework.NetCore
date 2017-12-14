@@ -7,12 +7,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Text;
+using AspectCore.Configuration;
 using Zxw.Framework.NetCore.EfDbContext;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Filters;
 using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.Options;
 using Zxw.Framework.NetCore.UnitOfWork;
+using Zxw.Framework.Website.Repositories;
 
 namespace Zxw.Framework.Website
 {
@@ -64,7 +66,7 @@ namespace Zxw.Framework.Website
         private IServiceProvider InitIoC(IServiceCollection services)
         {
             //database connectionstring
-            var connectionString = Configuration.GetConnectionString("MsSqlServer");
+            var connectionString = Configuration.GetConnectionString("PostgreSQL");
 
             //启用Redis
             //services.AddDistributedRedisCache(option =>
@@ -87,7 +89,7 @@ namespace Zxw.Framework.Website
             {
                 options.ConnectionString = connectionString;
                 options.ModelAssemblyName = "Zxw.Framework.Website.Models";
-                options.DbType = DbType.MSSQLSERVER;
+                options.DbType = DbType.NPGSQL;
             });
             //配置CodeGenerateOption
             services.Configure<CodeGenerateOption>(options =>

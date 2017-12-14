@@ -132,6 +132,7 @@ namespace Zxw.Framework.NetCore.Extensions
         public static IServiceProvider BuildAspectCoreWithAutofacServiceProvider(this IServiceCollection services, Action<IAspectConfiguration> configure = null)
         {
             if(services==null)throw new ArgumentNullException(nameof(services));
+            services.AddAspectCoreContainer();
             return AutofacContainer.Build(services, configure);
         }
     }
