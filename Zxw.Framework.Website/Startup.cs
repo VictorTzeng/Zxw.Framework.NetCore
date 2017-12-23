@@ -1,4 +1,8 @@
-﻿using log4net;
+﻿using AspectCore.APM.ApplicationProfiler;
+using AspectCore.APM.AspNetCore;
+using AspectCore.APM.HttpProfiler;
+using AspectCore.APM.LineProtocolCollector;
+using log4net;
 using log4net.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,14 +11,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Text;
-using AspectCore.Configuration;
 using Zxw.Framework.NetCore.EfDbContext;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Filters;
 using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.Options;
 using Zxw.Framework.NetCore.UnitOfWork;
-using Zxw.Framework.Website.Repositories;
 
 namespace Zxw.Framework.Website
 {
@@ -41,6 +43,7 @@ namespace Zxw.Framework.Website
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            app.UseHttpProfiler();      //启动Http请求监控
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -108,7 +111,16 @@ namespace Zxw.Framework.Website
                     option.Filters.Add(new GlobalExceptionFilter());
                 })
                 .AddControllersAsServices();
-
+            services.AddAspectCoreAPM(component =>
+            {
+                component.AddApplicationProfiler(); //注册ApplicationProfiler收集GC和ThreadPool数据
+                component.AddHttpProfiler();        //注册HttpProfiler收集Http请求数据
+                component.AddLineProtocolCollector(options => //注册LineProtocolCollector将数据发送到InfluxDb
+                {
+                    options.Server = "http://localhost:8086"; //你自己的InfluxDB Http地址
+                    options.Database = "aspectcore";    //你自己创建的Database
+                });
+            });
             return services.BuildAspectCoreWithAutofacServiceProvider();//接入Autofac和AspectCore
         }
     }

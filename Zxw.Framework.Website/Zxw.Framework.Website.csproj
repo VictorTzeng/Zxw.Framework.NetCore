@@ -5,6 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspectCore.APM.ApplicationProfiler" Version="0.1.4" />
+    <PackageReference Include="AspectCore.APM.AspNetCore" Version="0.1.4" />
+    <PackageReference Include="AspectCore.APM.LineProtocolCollector" Version="0.1.4" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
   </ItemGroup>
 
