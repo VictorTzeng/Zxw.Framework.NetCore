@@ -267,3 +267,4 @@ __pycache__/
 /Zxw.Framework.Sample.Repositories
 /Zxw.Framework.Sample.Services
 *.pubxml
+Log4net

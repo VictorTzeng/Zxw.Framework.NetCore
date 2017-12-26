@@ -5,10 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ICanPay.Alipay" Version="1.1.7" />
-    <PackageReference Include="ICanPay.Core" Version="1.1.7" />
-    <PackageReference Include="ICanPay.Unionpay" Version="1.1.7" />
-    <PackageReference Include="ICanPay.Wechatpay" Version="1.1.7" />
+    <PackageReference Include="ICanPay.Alipay" Version="1.1.9" />
+    <PackageReference Include="ICanPay.Core" Version="1.2.1" />
+    <PackageReference Include="ICanPay.Unionpay" Version="1.1.9" />
+    <PackageReference Include="ICanPay.Wechatpay" Version="1.1.9" />
   </ItemGroup>
 
   <ItemGroup>

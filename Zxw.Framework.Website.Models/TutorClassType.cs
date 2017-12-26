@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.Website.Models
 {
+    [Serializable]
     public class TutorClassType:IBaseModel<int>
     {
         [Key]

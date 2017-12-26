@@ -16,7 +16,7 @@ namespace Zxw.Framework.Website.Repositories
         {
         }
 
-        [MemoryCache]
+        [RedisCache]
         public IList<TutorClassType> GetByCached(Expression<Func<TutorClassType, bool>> @where = null)
         {
             return Get(where).ToList();

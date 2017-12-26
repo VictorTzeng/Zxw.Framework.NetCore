@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Text;
+using Microsoft.Extensions.Caching.Distributed;
 using Zxw.Framework.NetCore.EfDbContext;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Filters;
@@ -69,28 +70,29 @@ namespace Zxw.Framework.Website
         private IServiceProvider InitIoC(IServiceCollection services)
         {
             //database connectionstring
-            var connectionString = Configuration.GetConnectionString("PostgreSQL");
+            var dbConnectionString = Configuration.GetConnectionString("PostgreSQL");
 
+            var redisConnectionString = Configuration.GetConnectionString("Redis");
             //启用Redis
-            //services.AddDistributedRedisCache(option =>
-            //{
-            //    option.Configuration = "localhost";//redis连接字符串
-            //    option.InstanceName = "";//Redis实例名称
-            //});
+            services.AddDistributedRedisCache(option =>
+            {
+                option.Configuration = redisConnectionString;//redis连接字符串
+                option.InstanceName = "sample";//Redis实例名称
+            });
             //设置Redis缓存有效时间为5分钟。
-            //services.Configure<DistributedCacheEntryOptions>(option =>
-            //    option.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5));
+            services.Configure<DistributedCacheEntryOptions>(option =>
+                option.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5));
 
-            //启用MemoryCache
-            services.AddMemoryCache();
-            //设置MemoryCache缓存有效时间为5分钟。
-            services.Configure<MemoryCacheEntryOptions>(
-                options => options.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)); 
+            ////启用MemoryCache
+            //services.AddMemoryCache();
+            ////设置MemoryCache缓存有效时间为5分钟。
+            //services.Configure<MemoryCacheEntryOptions>(
+            //    options => options.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)); 
 
             //配置DbContextOption
             services.Configure<DbContextOption>(options =>
             {
-                options.ConnectionString = connectionString;
+                options.ConnectionString = dbConnectionString;
                 options.ModelAssemblyName = "Zxw.Framework.Website.Models";
                 options.DbType = DbType.NPGSQL;
             });
@@ -121,6 +123,7 @@ namespace Zxw.Framework.Website
                     options.Database = "aspectcore";    //你自己创建的Database
                 });
             });
+            services.AddOptions();
             return services.BuildAspectCoreWithAutofacServiceProvider();//接入Autofac和AspectCore
         }
     }
