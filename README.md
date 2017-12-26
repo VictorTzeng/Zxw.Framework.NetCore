@@ -10,8 +10,8 @@
 请参考我的博客：[http://www.cnblogs.com/zengxw/p/7673952.html](http://www.cnblogs.com/zengxw/p/7673952.html)
 
 
-# dev分支加入功能说明
-
+# dev分支日志
+ 
 **2017/12/26**
 
 1.测试Redis
