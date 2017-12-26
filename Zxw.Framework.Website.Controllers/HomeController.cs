@@ -26,8 +26,8 @@ namespace Zxw.Framework.Website.Controllers
             //CodeGenerator.GenerateSingle<TutorClassType, int>();//生成单个实体类对应的Repository和Service层代码文件
             using (var repository = _unitOfWork.GetRepository<ITutorClassTypeRepository>())
             {
-                var list = repository.GetByCached(t=>true);
-                return View(list);
+                var list1 = repository.GetByMemoryCached(t=>true);
+                return View(list1);
             }
         }
 
@@ -55,8 +55,9 @@ namespace Zxw.Framework.Website.Controllers
                     TutorClassCount = 25
                 });
                 _unitOfWork.SaveChanges();
+                var list2 = repository.GetByRedisCached(t => true);
+                return View(list2);
             }
-            return View();
         }
 
         public IActionResult Contact()

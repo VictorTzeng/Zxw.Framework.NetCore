@@ -70,7 +70,9 @@ namespace Zxw.Framework.Website
         private IServiceProvider InitIoC(IServiceCollection services)
         {
             //database connectionstring
-            var dbConnectionString = Configuration.GetConnectionString("PostgreSQL");
+            var dbConnectionString = Configuration.GetConnectionString("MsSqlServer");
+
+            #region Redis
 
             var redisConnectionString = Configuration.GetConnectionString("Redis");
             //启用Redis
@@ -83,19 +85,32 @@ namespace Zxw.Framework.Website
             services.Configure<DistributedCacheEntryOptions>(option =>
                 option.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5));
 
-            ////启用MemoryCache
-            //services.AddMemoryCache();
-            ////设置MemoryCache缓存有效时间为5分钟。
-            //services.Configure<MemoryCacheEntryOptions>(
-            //    options => options.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)); 
+            #endregion
+
+            #region MemoryCache
+
+            //启用MemoryCache
+            services.AddMemoryCache();
+            //设置MemoryCache缓存有效时间为5分钟。
+            services.Configure<MemoryCacheEntryOptions>(
+                options => options.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5));
+
+            #endregion
+
+            #region 配置DbContextOption
 
             //配置DbContextOption
             services.Configure<DbContextOption>(options =>
             {
                 options.ConnectionString = dbConnectionString;
                 options.ModelAssemblyName = "Zxw.Framework.Website.Models";
-                options.DbType = DbType.NPGSQL;
+                options.DbType = DbType.MSSQLSERVER;
             });
+
+            #endregion
+
+            #region 配置CodeGenerateOption
+
             //配置CodeGenerateOption
             services.Configure<CodeGenerateOption>(options =>
             {
@@ -103,6 +118,8 @@ namespace Zxw.Framework.Website
                 options.IRepositoriesNamespace = "Zxw.Framework.Website.IRepositories";
                 options.RepositoriesNamespace = "Zxw.Framework.Website.Repositories";
             });
+
+            #endregion
 
             services.AddSingleton(Configuration)//注入Configuration，ConfigHelper要用
                 .AddDbContext<DefaultDbContext>()//注入EF上下文
@@ -113,6 +130,9 @@ namespace Zxw.Framework.Website
                     option.Filters.Add(new GlobalExceptionFilter());
                 })
                 .AddControllersAsServices();
+
+            #region APM
+
             services.AddAspectCoreAPM(component =>
             {
                 component.AddApplicationProfiler(); //注册ApplicationProfiler收集GC和ThreadPool数据
@@ -123,6 +143,9 @@ namespace Zxw.Framework.Website
                     options.Database = "aspectcore";    //你自己创建的Database
                 });
             });
+
+            #endregion
+
             services.AddOptions();
             return services.BuildAspectCoreWithAutofacServiceProvider();//接入Autofac和AspectCore
         }
