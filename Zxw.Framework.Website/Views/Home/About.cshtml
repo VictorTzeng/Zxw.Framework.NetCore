@@ -1,7 +1,15 @@
-﻿@{
+﻿@model IEnumerable<TutorClassType>
+@{
     ViewData["Title"] = "About";
 }
 <h2>@ViewData["Title"]</h2>
 <h3>@ViewData["Message"]</h3>
 
 <p>Use this area to provide additional information.</p>
+
+<ul class="list-group">
+    @foreach (var item in Model)
+    {
+        <li class="list-group-item">@item.TutorClassTypeName</li>
+    }
+</ul>
