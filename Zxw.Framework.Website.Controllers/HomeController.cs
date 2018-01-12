@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Zxw.Framework.NetCore.UnitOfWork;
-using Zxw.Framework.Pay.AliPay;
-using Zxw.Framework.Pay.UnionPay;
 using Zxw.Framework.Website.ViewModels;
 using Zxw.Framework.Website.Models;
 using Zxw.Framework.Website.IRepositories;
