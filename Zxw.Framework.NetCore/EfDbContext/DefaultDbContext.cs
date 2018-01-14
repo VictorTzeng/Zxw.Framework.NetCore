@@ -1,17 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Options;
+using MySql.Data.MySqlClient;
 using Z.EntityFramework.Plus;
 using Zxw.Framework.NetCore.Extensions;
+using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
+using DbType = Zxw.Framework.NetCore.Options.DbType;
 
 namespace Zxw.Framework.NetCore.EfDbContext
 {
@@ -160,41 +167,102 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// bulk insert by sqlbulkcopy, and with transaction.
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
         /// <param name="entities"></param>
         /// <param name="destinationTableName"></param>
-        public void BulkInsert<T>(IList<T> entities, string destinationTableName = null) where T : class
+        public void BulkInsert<T, TKey>(IList<T> entities, string destinationTableName = null) where T : class, IBaseModel<TKey>
         {
             if (entities == null || !entities.Any()) return;
             if (string.IsNullOrEmpty(destinationTableName))
             {
                 var mappingTableName = typeof(T).GetCustomAttribute<TableAttribute>()?.Name;
-                destinationTableName = string.IsNullOrEmpty(mappingTableName) ? typeof(T).Name : mappingTableName; 
+                destinationTableName = string.IsNullOrEmpty(mappingTableName) ? typeof(T).Name : mappingTableName;
             }
+            if (_option.DbType == DbType.MSSQLSERVER)
+                SqlBulkInsert<T,TKey>(entities, destinationTableName);
+            else if (_option.DbType == DbType.MYSQL)
+                MySqlBulkInsert(entities, destinationTableName);
+            else throw new NotSupportedException("This method only support for SQL Server or MySql.");
+
+        }
+
+        private void SqlBulkInsert<T,TKey>(IList<T> entities, string destinationTableName = null) where T : class,IBaseModel<TKey>
+        {
             using (var dt = entities.ToDataTable())
             {
-                using (var conn = new SqlConnection(_option.ConnectionString))
+                dt.TableName = destinationTableName;
+                using (var conn = Database.GetDbConnection() as SqlConnection ?? new SqlConnection(_option.ConnectionString))
                 {
-                    conn.Open();
+                    if (conn.State != ConnectionState.Open)
+                        conn.Open();
+                    ;
                     using (var tran = conn.BeginTransaction())
                     {
                         try
                         {
-                            var bulk = new SqlBulkCopy(conn, SqlBulkCopyOptions.Default, tran);
-                            bulk.BatchSize = entities.Count;
-                            bulk.DestinationTableName = destinationTableName;
-                            bulk.EnableStreaming = true;
-                            bulk.WriteToServerAsync(dt);
+                            var bulk = new SqlBulkCopy(conn, SqlBulkCopyOptions.Default, tran)
+                            {
+                                BatchSize = entities.Count,
+                                DestinationTableName = dt.TableName,
+                            };
+                            GenerateColumnMappings<T, TKey>(bulk.ColumnMappings);
+                            bulk.WriteToServer(dt);
                             tran.Commit();
                         }
-                        catch (Exception)
+                        catch (Exception e)
                         {
                             tran.Rollback();
                             throw;
-                        }
+                        }                        
                     }
                     conn.Close();
                 }
             }
+        }
+
+        private void GenerateColumnMappings<T, TKey>(SqlBulkCopyColumnMappingCollection mappings)
+            where T : class, IBaseModel<TKey>
+        {
+            var properties = typeof(T).GetProperties();
+            foreach (var property in properties)
+            {
+                if (property.GetCustomAttributes<KeyAttribute>().Any())
+                {
+                    mappings.Add(new SqlBulkCopyColumnMapping(property.Name, typeof(T).Name + property.Name));
+                }
+                else
+                {
+                    mappings.Add(new SqlBulkCopyColumnMapping(property.Name, property.Name));                    
+                }
+            }
+        }
+
+        private void MySqlBulkInsert<T>(IList<T> entities, string destinationTableName) where T : class
+        {
+            var tmpDir = Path.Combine(AppContext.BaseDirectory, "Temp");
+            if (!Directory.Exists(tmpDir))
+                Directory.CreateDirectory(tmpDir);
+            var csvFileName = Path.Combine(tmpDir, $"{DateTime.Now:yyyyMMddHHmmssfff}.csv");
+            if (!File.Exists(csvFileName))
+                File.Create(csvFileName);
+            var separator = ",";
+            entities.SaveToCsv(csvFileName, separator);
+            using (var conn = Database.GetDbConnection() as MySqlConnection ?? new MySqlConnection(_option.ConnectionString))
+            {
+                conn.Open();
+                var bulk = new MySqlBulkLoader(conn)
+                {
+                    NumberOfLinesToSkip = 0,
+                    TableName = destinationTableName,
+                    FieldTerminator = separator,
+                    FieldQuotationCharacter = '"',
+                    EscapeCharacter = '"',
+                    LineTerminator = "\r\n"
+                };
+                bulk.Load();
+                conn.Close();
+            }
+            File.Delete(csvFileName);
         }
 
         public List<TView> SqlQuery<T,TView>(string sql, params object[] parameters) 

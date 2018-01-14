@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
@@ -101,10 +102,10 @@ namespace Zxw.Framework.NetCore.Extensions
         {
             DataTable dtReturn = new DataTable();
 
-            // column names 
-            PropertyInfo[] oProps = null;
 
             if (source == null) return dtReturn;
+            // column names 
+            PropertyInfo[] oProps = null;
 
             foreach (var rec in source)
             {
@@ -116,9 +117,13 @@ namespace Zxw.Framework.NetCore.Extensions
                     {
                         var colType = pi.PropertyType;
 
-                        if ((colType.IsGenericType) && (colType.GetGenericTypeDefinition() == typeof(Nullable<>)))
+                        if (colType.IsNullable())
                         {
                             colType = colType.GetGenericArguments()[0];
+                        }
+                        if (colType == typeof(Boolean))
+                        {
+                            colType = typeof(int);
                         }
 
                         dtReturn.Columns.Add(new DataColumn(pi.Name, colType));
@@ -129,10 +134,15 @@ namespace Zxw.Framework.NetCore.Extensions
 
                 foreach (var pi in oProps)
                 {
-                    dr[pi.Name] = pi.GetValue(rec, null) == null
-                        ? DBNull.Value
-                        : pi.GetValue
-                            (rec, null);
+                    var value = pi.GetValue(rec, null) ?? DBNull.Value;
+                    if (value is bool)
+                    {
+                        dr[pi.Name] = (bool)value ? 1 : 0;
+                    }
+                    else
+                    {
+                        dr[pi.Name] = value;
+                    }
                 }
 
                 dtReturn.Rows.Add(dr);
@@ -188,6 +198,20 @@ namespace Zxw.Framework.NetCore.Extensions
                 .OrderByDescending(m => func(m, 1))
                 .OrderByDescending(m => func(m, 0))
                 .ToList();
+        }
+
+        public static void SaveToCsv<T>(this IEnumerable<T> source, string csvFullName, string separator=",")
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+            if (string.IsNullOrEmpty(separator))
+                separator = ",";
+            var csv = string.Join(separator, source);
+            using (var sw = new StreamWriter(csvFullName, false))
+            {
+                sw.Write(csv);
+                sw.Close();
+            }
         }
     }
 

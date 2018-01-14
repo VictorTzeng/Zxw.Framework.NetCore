@@ -34,7 +34,7 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public virtual void BulkInsert(IList<T> entities, string destinationTableName = null)
         {
-            _dbContext.BulkInsert(entities, destinationTableName);
+            _dbContext.BulkInsert<T, TKey>(entities, destinationTableName);
         }
 
         public virtual int Count(Expression<Func<T, bool>> @where = null)

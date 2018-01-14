@@ -121,6 +121,8 @@ namespace Zxw.Framework.Website
 
             #endregion
 
+            #region 依赖注入
+
             services.AddSingleton(Configuration)//注入Configuration，ConfigHelper要用
                 .AddDbContext<DefaultDbContext>()//注入EF上下文
                 .RegisterAssembly("Zxw.Framework.Website.IRepositories", "Zxw.Framework.Website.Repositories")//注入仓储
@@ -130,6 +132,8 @@ namespace Zxw.Framework.Website
                     option.Filters.Add(new GlobalExceptionFilter());
                 })
                 .AddControllersAsServices();
+            
+            #endregion
 
             #region APM
 

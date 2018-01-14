@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
@@ -63,7 +64,19 @@ namespace Zxw.Framework.Website.Controllers
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
-            _unitOfWork.BatchUpdate<TutorClassType>(m => m.Active, m => new TutorClassType() {TutorClassCount = 100});
+            //_unitOfWork.BatchUpdate<TutorClassType>(m => m.Active, m => new TutorClassType() {TutorClassCount = 100});
+            var list = new List<TutorClassType>();
+            for (int i = 0; i < 1000000; i++)
+            {
+                list.Add(new TutorClassType()
+                {
+                    Active = true,
+                    TutorClassTypeName = "高中" + (i + 1),
+                    TutorClassCount = i + 1,
+                    Remark = "test"
+                });
+            }
+            _unitOfWork.GetRepository<ITutorClassTypeRepository>().BulkInsert(list, "TutorClassType");
             return View();
         }
 
