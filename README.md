@@ -15,3 +15,7 @@
 **2017/12/26**
 
 1.测试Redis
+
+**2018/1/14**
+1.add bulkinsert for mysql
+2.modify and test bulkinsert for mssql
