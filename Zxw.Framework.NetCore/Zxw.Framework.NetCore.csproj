@@ -16,6 +16,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="CodeTemplate\ApiControllerTemplate.txt" />
+    <None Remove="CodeTemplate\ControllerTemplate.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="CodeTemplate\ApiControllerTemplate.txt" />
+    <EmbeddedResource Include="CodeTemplate\ControllerTemplate.txt" />
     <EmbeddedResource Include="CodeTemplate\IRepositoryTemplate.txt" />
     <EmbeddedResource Include="CodeTemplate\RepositoryTemplate.txt" />
   </ItemGroup>

@@ -1,0 +1,29 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using Zxw.Framework.NetCore.UnitOfWork;
+using {ModelsNamespace};
+using {IRepositoriesNamespace};
+
+namespace {ControllersNamespace}
+{
+    public class {ModelTypeName}Controller : Controller
+    {
+        private IUnitOfWork _unitOfWork;
+        
+        public {ModelTypeName}Controller(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        }
+
+		protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _unitOfWork.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+	}
+}

@@ -81,6 +81,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             var keyTypeName = modelType.GetProperty("Id")?.PropertyType.Name;
             GenerateIRepository(modelTypeName, keyTypeName, ifExsitedCovered);
             GenerateRepository(modelTypeName, keyTypeName, ifExsitedCovered);
+            GenerateController(modelTypeName, keyTypeName, ifExsitedCovered);
         }
 
         /// <summary>
@@ -150,6 +151,32 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             content = content.Replace("{ModelsNamespace}", Option.ModelsNamespace)
                 .Replace("{IRepositoriesNamespace}", Option.IRepositoriesNamespace)
                 .Replace("{RepositoriesNamespace}", Option.RepositoriesNamespace)
+                .Replace("{ModelTypeName}", modelTypeName)
+                .Replace("{KeyTypeName}", keyTypeName);
+            WriteAndSave(fullPath, content);
+        }
+
+        /// <summary>
+        /// 生成Controller层代码文件
+        /// </summary>
+        /// <param name="modelTypeName"></param>
+        /// <param name="keyTypeName"></param>
+        /// <param name="ifExsitedCovered"></param>
+        private static void GenerateController(string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
+        {
+            var controllerPath = ParentPath + Delimiter + Option.ControllersNamespace;
+            if (!Directory.Exists(controllerPath))
+            {
+                controllerPath = ParentPath + Delimiter + "Controllers";
+                Directory.CreateDirectory(controllerPath);
+            }
+            var fullPath = controllerPath + Delimiter + modelTypeName + "Controller.cs";
+            if (File.Exists(fullPath) && !ifExsitedCovered)
+                return;
+            var content = ReadTemplate("ControllerTemplate.txt");
+            content = content.Replace("{ModelsNamespace}", Option.ModelsNamespace)
+                .Replace("{IRepositoriesNamespace}", Option.IRepositoriesNamespace)
+                .Replace("{ControllersNamespace}", Option.RepositoriesNamespace)
                 .Replace("{ModelTypeName}", modelTypeName)
                 .Replace("{KeyTypeName}", keyTypeName);
             WriteAndSave(fullPath, content);

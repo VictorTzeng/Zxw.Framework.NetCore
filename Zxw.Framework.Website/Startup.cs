@@ -117,11 +117,12 @@ namespace Zxw.Framework.Website
                 options.ModelsNamespace = "Zxw.Framework.Website.Models";
                 options.IRepositoriesNamespace = "Zxw.Framework.Website.IRepositories";
                 options.RepositoriesNamespace = "Zxw.Framework.Website.Repositories";
+                options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
             });
 
             #endregion
 
-            #region 依赖注入
+            #region 各种注入
 
             services.AddSingleton(Configuration)//注入Configuration，ConfigHelper要用
                 .AddDbContext<DefaultDbContext>()//注入EF上下文
