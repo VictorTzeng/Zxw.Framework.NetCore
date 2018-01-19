@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Z.EntityFramework.Plus;
 using Zxw.Framework.NetCore.EfDbContext;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Models;
@@ -23,18 +24,28 @@ namespace Zxw.Framework.NetCore.Repositories
         public virtual void Add(T entity)
         {
             _set.Add(entity);
-            //return Save();
         }
 
         public virtual void AddRange(ICollection<T> entities)
         {
             _set.AddRange(entities);
-            //return Save();
         }
 
         public virtual void BulkInsert(IList<T> entities, string destinationTableName = null)
         {
             _dbContext.BulkInsert<T, TKey>(entities, destinationTableName);
+        }
+
+        /// <summary>
+        /// update query datas by columns.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="where"></param>
+        /// <param name="updateExp"></param>
+        /// <returns></returns>
+        public int BatchUpdate(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
+        {
+            return _dbContext.Set<T>().Where(@where).Update(updateExp);
         }
 
         public virtual int Count(Expression<Func<T, bool>> @where = null)
@@ -47,22 +58,21 @@ namespace Zxw.Framework.NetCore.Repositories
             var entity = _set.Find(key);
             if (entity == null) return;
             _set.Remove(entity);
-            //return Save();
         }
 
         public virtual void Delete(Expression<Func<T, bool>> @where)
         {
-            /*return*/ _dbContext.Delete(where);
+            _dbContext.Delete(where);
         }
 
         public virtual void Edit(T entity)
         {
-            /*return*/ _dbContext.Edit(entity);
+            _dbContext.Edit(entity);
         }
 
         public virtual void EditRange(ICollection<T> entities)
         {
-            /*return*/ _dbContext.EditRange(entities);
+            _dbContext.EditRange(entities);
         }
 
         public virtual bool Exist(Expression<Func<T, bool>> @where = null)
@@ -70,7 +80,7 @@ namespace Zxw.Framework.NetCore.Repositories
             return Get(where).Any();
         }
 
-        public virtual bool Exist<TProperty>(Expression<Func<T, bool>> @where = null, params Expression<Func<T, TProperty>>[] includes)
+        public virtual bool Exist(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes)
         {
             return Get(where, includes).Any();
         }
@@ -85,7 +95,7 @@ namespace Zxw.Framework.NetCore.Repositories
             return _set.Find(key);
         }
 
-        public virtual T GetSingle<TProperty>(TKey key, params Expression<Func<T, TProperty>>[] includes)
+        public virtual T GetSingle(TKey key, params Expression<Func<T, object>>[] includes)
         {
             if (includes == null) return GetSingle(key);
             var query = _set.AsQueryable();
@@ -103,7 +113,7 @@ namespace Zxw.Framework.NetCore.Repositories
             return _set.SingleOrDefault(@where);
         }
 
-        public T GetSingle<TProperty>(Expression<Func<T, bool>> @where = null, params Expression<Func<T, TProperty>>[] includes)
+        public T GetSingle(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes)
         {
             if (includes == null) return GetSingle(where);
             var query = _set.AsQueryable();
@@ -120,7 +130,7 @@ namespace Zxw.Framework.NetCore.Repositories
             return (@where != null ? _set.AsNoTracking().Where(@where) : _set.AsNoTracking());
         }
 
-        public virtual IQueryable<T> Get<TProperty>(Expression<Func<T, bool>> @where = null, params Expression<Func<T, TProperty>>[] includes)
+        public virtual IQueryable<T> Get(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes)
         {
             if (includes == null)
                 return Get(where);
@@ -144,11 +154,6 @@ namespace Zxw.Framework.NetCore.Repositories
             }
             return filter.Skip(pageSize * (pageIndex - 1)).Take(pageSize);
         }
-
-        //public virtual int Save()
-        //{
-        //    return _dbContext.SaveChanges();
-        //}
 
         public virtual IQueryable<TView> SqlQuery<TView>(string sql, params object[] parameters) where TView : class, new()
         {
