@@ -8,3 +8,6 @@
 
 **项目说明**
 请参考我的博客：[http://www.cnblogs.com/zengxw/p/7673952.html](http://www.cnblogs.com/zengxw/p/7673952.html)
+
+
+# 最新功能请参考[dev](https://gitee.com/ceo_bitch/Zxw.Framework.NetCore/tree/dev)分支
