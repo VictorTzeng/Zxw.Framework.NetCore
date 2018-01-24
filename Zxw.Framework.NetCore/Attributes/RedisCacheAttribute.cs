@@ -19,11 +19,15 @@ namespace Zxw.Framework.NetCore.Attributes
     [AttributeUsage(AttributeTargets.Method)]
     public class RedisCacheAttribute : AbstractInterceptorAttribute
     {
+        /// <summary>
+        /// 缓存有限期，单位：分钟。默认值：10。
+        /// </summary>
+        public int Expiration { get; set; } = 10;
         //[FromContainer]
         private readonly IDistributedCache _cache = AutofacContainer.Resolve<IDistributedCache>();
 
         //[FromContainer]
-        private readonly IOptions<DistributedCacheEntryOptions> _optionsAccessor = AutofacContainer.Resolve<IOptions<DistributedCacheEntryOptions>>();
+        //private readonly IOptions<DistributedCacheEntryOptions> _optionsAccessor = AutofacContainer.Resolve<IOptions<DistributedCacheEntryOptions>>();
 
         public override async Task Invoke(AspectContext context, AspectDelegate next)
         {
@@ -44,7 +48,11 @@ namespace Zxw.Framework.NetCore.Attributes
                 else
                 {
                     await context.Invoke(next);
-                    _cache.Set(key, context.ReturnValue.ToBytes(), _optionsAccessor.Value);
+                    _cache.Set(key, context.ReturnValue.ToBytes(),
+                        new DistributedCacheEntryOptions()
+                        {
+                            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(Expiration)
+                        });
                     await next(context);
                 }
             }

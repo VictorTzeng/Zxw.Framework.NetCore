@@ -12,7 +12,7 @@ namespace Zxw.Framework.Website.IRepositories
         [MemoryCache]
         IList<TutorClassType> GetByMemoryCached(Expression<Func<TutorClassType, bool>> where = null);
 
-        [RedisCache]
+        [RedisCache(Expiration = 5)]
         IList<TutorClassType> GetByRedisCached(Expression<Func<TutorClassType, bool>> where = null);
     }
 }

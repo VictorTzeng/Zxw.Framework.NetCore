@@ -149,6 +149,11 @@ namespace Zxw.Framework.NetCore.EfDbContext
             //return SaveChanges();
         }
 
+        public void Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
+        {
+            Set<T>().Where(where).Update(updateFactory);
+        }
+
         /// <summary>
         /// delete by query.
         /// </summary>

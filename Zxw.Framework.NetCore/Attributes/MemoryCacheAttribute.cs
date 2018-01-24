@@ -18,11 +18,15 @@ namespace Zxw.Framework.NetCore.Attributes
     [AttributeUsage(AttributeTargets.Method)]
     public class MemoryCacheAttribute : AbstractInterceptorAttribute
     {
+        /// <summary>
+        /// 缓存有限期，单位：分钟。默认值：10。
+        /// </summary>
+        public int Expiration { get; set; } = 10;
         //[FromContainer]
         private readonly IMemoryCache _cache = AutofacContainer.Resolve<IMemoryCache>();
 
         //[FromContainer]
-        private readonly IOptions<MemoryCacheEntryOptions> _optionsAccessor = AutofacContainer.Resolve<IOptions<MemoryCacheEntryOptions>>();
+        //private readonly IOptions<MemoryCacheEntryOptions> _optionsAccessor = AutofacContainer.Resolve<IOptions<MemoryCacheEntryOptions>>();
 
 
         public override async Task Invoke(AspectContext context, AspectDelegate next)
@@ -43,7 +47,10 @@ namespace Zxw.Framework.NetCore.Attributes
                 else
                 {
                     await context.Invoke(next);
-                    _cache.Set(key, context.ReturnValue, _optionsAccessor.Value);
+                    _cache.Set(key, context.ReturnValue, new MemoryCacheEntryOptions()
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(Expiration)
+                    });
                     await next(context);
                 }                
             }

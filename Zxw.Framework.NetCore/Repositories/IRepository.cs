@@ -30,5 +30,6 @@ namespace Zxw.Framework.NetCore.Repositories
             params Func<T, object>[] @orderby);
         IQueryable<TView> SqlQuery<TView>(string sql, params object[] parameters) where TView : class, new();
         void Update(T model, params string[] updateColumns);
+        void Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory);
     }
 }

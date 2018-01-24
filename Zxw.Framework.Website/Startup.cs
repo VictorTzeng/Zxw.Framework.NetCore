@@ -81,9 +81,9 @@ namespace Zxw.Framework.Website
                 option.Configuration = redisConnectionString;//redis连接字符串
                 option.InstanceName = "sample";//Redis实例名称
             });
-            //设置Redis缓存有效时间为5分钟。
-            services.Configure<DistributedCacheEntryOptions>(option =>
-                option.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5));
+            //全局设置Redis缓存有效时间为5分钟。
+            //services.Configure<DistributedCacheEntryOptions>(option =>
+            //    option.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5));
 
             #endregion
 
@@ -91,9 +91,9 @@ namespace Zxw.Framework.Website
 
             //启用MemoryCache
             services.AddMemoryCache();
-            //设置MemoryCache缓存有效时间为5分钟。
-            services.Configure<MemoryCacheEntryOptions>(
-                options => options.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5));
+            //全局设置MemoryCache缓存有效时间为5分钟。
+            //services.Configure<MemoryCacheEntryOptions>(
+            //    options => options.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5));
 
             #endregion
 

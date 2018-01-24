@@ -165,6 +165,11 @@ namespace Zxw.Framework.NetCore.Repositories
             /*return*/ _dbContext.Update(model, updateColumns);
         }
 
+        public void Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
+        {
+            _dbContext.Update(where, updateFactory);
+        }
+
         public virtual void Dispose()
         {
             if (_dbContext != null)
