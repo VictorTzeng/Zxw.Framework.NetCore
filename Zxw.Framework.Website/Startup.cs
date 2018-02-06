@@ -138,16 +138,16 @@ namespace Zxw.Framework.Website
 
             #region APM
 
-            services.AddAspectCoreAPM(component =>
-            {
-                component.AddApplicationProfiler(); //注册ApplicationProfiler收集GC和ThreadPool数据
-                component.AddHttpProfiler();        //注册HttpProfiler收集Http请求数据
-                component.AddLineProtocolCollector(options => //注册LineProtocolCollector将数据发送到InfluxDb
-                {
-                    options.Server = "http://localhost:8086"; //你自己的InfluxDB Http地址
-                    options.Database = "aspectcore";    //你自己创建的Database
-                });
-            });
+            // services.AddAspectCoreAPM(component =>
+            // {
+            //     component.AddApplicationProfiler(); //注册ApplicationProfiler收集GC和ThreadPool数据
+            //     component.AddHttpProfiler();        //注册HttpProfiler收集Http请求数据
+            //     component.AddLineProtocolCollector(options => //注册LineProtocolCollector将数据发送到InfluxDb
+            //     {
+            //         options.Server = "http://localhost:8086"; //你自己的InfluxDB Http地址
+            //         options.Database = "aspectcore";    //你自己创建的Database
+            //     });
+            // });
 
             #endregion
 
