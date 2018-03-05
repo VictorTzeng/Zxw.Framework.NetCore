@@ -104,7 +104,7 @@ namespace Zxw.Framework.Website
             {
                 options.ConnectionString = dbConnectionString;
                 options.ModelAssemblyName = "Zxw.Framework.Website.Models";
-                options.DbType = DbType.MSSQLSERVER;
+                options.DbType = DbType.NPGSQL;
             });
 
             #endregion
