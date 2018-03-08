@@ -2,7 +2,7 @@
 基于EF Core的Code First模式的DotNetCore快速开发框架
 
 **开发环境**
-* VS2017
+* VS2017 / VS Code
 * .net core 2.0
 
 **支持的数据库**
