@@ -7,6 +7,10 @@ using Newtonsoft.Json;
 
 namespace Zxw.Framework.NetCore.Extensions
 {
+    /// <summary>
+    /// 表达式树常用扩展方法
+    /// 源自：https://gitee.com/yubaolee/OpenAuth.Net/blob/bestflow/Infrastructure/DynamicLinq.cs
+    /// </summary>
     public static class ExpressionExtensions
     {
         public static ParameterExpression CreateLambdaParam<T>(string name)
