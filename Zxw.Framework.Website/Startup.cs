@@ -70,7 +70,7 @@ namespace Zxw.Framework.Website
         private IServiceProvider InitIoC(IServiceCollection services)
         {
             //database connectionstring
-            var dbConnectionString = Configuration.GetConnectionString("MsSqlServer");
+            var dbConnectionString = Configuration.GetConnectionString("PostgreSQL");
 
             #region Redis
 
