@@ -28,12 +28,13 @@
 
     public interface ITutorClassTypeRepository:IRepository<TutorClassType, Int32>
     {
-        [MemoryCache]
+        [MemoryCache]//使用MemoryCache，缓存有效时间默认10分钟
         IList<TutorClassType> GetByMemoryCached(Expression<Func<TutorClassType, bool>> where = null);
 
-        [RedisCache(Expiration = 5)]
+        [RedisCache(Expiration = 5)]//使用Redis，缓存有效时间为5分钟
         IList<TutorClassType> GetByRedisCached(Expression<Func<TutorClassType, bool>> where = null);
     }
+
 
 **.net framework版本地址**
 
