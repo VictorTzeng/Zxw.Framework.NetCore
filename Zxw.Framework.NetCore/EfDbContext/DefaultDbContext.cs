@@ -9,6 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
@@ -100,6 +101,13 @@ namespace Zxw.Framework.NetCore.EfDbContext
                 parameters);
         }
 
+        public Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters)
+        {
+            return Database.ExecuteSqlCommandAsync(sql,
+                CancellationToken.None,
+                parameters);
+        }
+
         /// <summary>
         /// edit an entity.
         /// </summary>
@@ -109,7 +117,6 @@ namespace Zxw.Framework.NetCore.EfDbContext
         public void Edit<T>(T entity) where T : class
         {
             Entry(entity).State = EntityState.Modified;
-            //return SaveChanges();
         }
 
         /// <summary>
@@ -121,7 +128,6 @@ namespace Zxw.Framework.NetCore.EfDbContext
         public void EditRange<T>(ICollection<T> entities) where T : class
         {
             Set<T>().AttachRange(entities.ToArray());
-            //return SaveChanges();
         }
 
         /// <summary>
@@ -146,12 +152,16 @@ namespace Zxw.Framework.NetCore.EfDbContext
             {
                 Entry(model).State = EntityState.Modified;
             }
-            //return SaveChanges();
         }
 
-        public void Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
+        public int Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
         {
-            Set<T>().Where(where).Update(updateFactory);
+            return Set<T>().Where(where).Update(updateFactory);
+        }
+
+        public Task<int> UpdateAsync<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
+        {
+            return Set<T>().Where(where).UpdateAsync(updateFactory);
         }
 
         /// <summary>
@@ -160,10 +170,14 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <typeparam name="T"></typeparam>
         /// <param name="where"></param>
         /// <returns></returns>
-        public void Delete<T>(Expression<Func<T, bool>> @where) where T : class
+        public int Delete<T>(Expression<Func<T, bool>> @where) where T : class
         {
-            Set<T>().Where(@where).Delete();
-            //return SaveChanges();
+            return Set<T>().Where(@where).Delete();
+        }
+
+        public Task<int> DeleteAsync<T>(Expression<Func<T, bool>> @where) where T : class
+        {
+            return Set<T>().Where(@where).DeleteAsync();
         }
 
         /// <summary>
@@ -198,7 +212,6 @@ namespace Zxw.Framework.NetCore.EfDbContext
                 {
                     if (conn.State != ConnectionState.Open)
                         conn.Open();
-                    ;
                     using (var tran = conn.BeginTransaction())
                     {
                         try
@@ -209,7 +222,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
                                 DestinationTableName = dt.TableName,
                             };
                             GenerateColumnMappings<T, TKey>(bulk.ColumnMappings);
-                            bulk.WriteToServer(dt);
+                            bulk.WriteToServerAsync(dt);
                             tran.Commit();
                         }
                         catch (Exception e)
@@ -262,7 +275,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
                     EscapeCharacter = '"',
                     LineTerminator = "\r\n"
                 };
-                bulk.Load();
+                bulk.LoadAsync();
                 conn.Close();
             }
             File.Delete(csvFileName);
@@ -273,6 +286,13 @@ namespace Zxw.Framework.NetCore.EfDbContext
             where TView : class
         {
             return Set<T>().FromSql(sql, parameters).Cast<TView>().ToList();
+        }
+
+        public Task<List<TView>> SqlQueryAsync<T,TView>(string sql, params object[] parameters) 
+            where T : class
+            where TView : class
+        {
+            return Set<T>().FromSql(sql, parameters).Cast<TView>().ToListAsync();
         }
     }
 }
