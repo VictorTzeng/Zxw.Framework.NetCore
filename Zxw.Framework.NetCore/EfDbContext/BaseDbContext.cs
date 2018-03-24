@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using Z.EntityFramework.Plus;
@@ -18,18 +19,19 @@ using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
 using DbType = Zxw.Framework.NetCore.Options.DbType;
+using Z.EntityFramework.Plus;
 
 namespace Zxw.Framework.NetCore.EfDbContext
 {
-    public sealed class DefaultDbContext : DbContext
+    public abstract class BaseDbContext : DbContext, IEfDbContext
     {
-        private readonly DbContextOption _option;
+        protected readonly DbContextOption _option;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="option"></param>
-        public DefaultDbContext(IOptions<DbContextOption> option)
+        public BaseDbContext(IOptions<DbContextOption> option)
         {
             if(option==null)
                 throw new ArgumentNullException(nameof(option));
@@ -38,31 +40,6 @@ namespace Zxw.Framework.NetCore.EfDbContext
             if (string.IsNullOrEmpty(option.Value.ModelAssemblyName))
                 throw new ArgumentNullException(nameof(option.Value.ModelAssemblyName));
             _option = option.Value;
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            switch (_option.DbType)
-            {
-                case DbType.ORACLE:
-                    throw new NotSupportedException("Oracle for EF Core Database Provider is not yet available.");
-                case DbType.MYSQL:
-                    optionsBuilder.UseMySql(_option.ConnectionString);
-                    break;
-                case DbType.SQLITE:
-                    optionsBuilder.UseSqlite(_option.ConnectionString);
-                    break;
-                case DbType.MEMORY:
-                    optionsBuilder.UseInMemoryDatabase(_option.ConnectionString);
-                    break;
-                case DbType.NPGSQL:
-                    optionsBuilder.UseNpgsql(_option.ConnectionString);
-                    break;
-                default:
-                    optionsBuilder.UseSqlServer(_option.ConnectionString);
-                    break;
-            }
-            base.OnConfiguring(optionsBuilder);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -86,6 +63,26 @@ namespace Zxw.Framework.NetCore.EfDbContext
                         modelBuilder.Model.AddEntityType(t);
                 });
             }
+        }
+
+        public Task AddAsync<T>(T entity) where T : class
+        {
+            return Set<T>().AddAsync(entity);
+        }
+
+        public Task AddRangeAsync<T>(ICollection<T> entities) where T : class
+        {
+            return Set<T>().AddRangeAsync(entities);
+        }
+
+        public DatabaseFacade GetDatabase()
+        {
+            return Database;
+        }
+
+        public DbSet<T> GetDbSet<T>() where T : class
+        {
+            return Set<T>();
         }
 
         /// <summary>
@@ -293,6 +290,16 @@ namespace Zxw.Framework.NetCore.EfDbContext
             where TView : class
         {
             return Set<T>().FromSql(sql, parameters).Cast<TView>().ToListAsync();
+        }
+
+        public Task<int> SaveAsync()
+        {
+            return this.SaveChangesAsync();
+        }
+
+        public Task<int> SaveAsync(bool acceptAllChangesOnSuccess)
+        {
+            return this.SaveChangesAsync(acceptAllChangesOnSuccess);
         }
     }
 }

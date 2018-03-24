@@ -17,15 +17,15 @@ namespace Zxw.Framework.NetCore.UnitOfWork
     public class EfUnitOfWork : IUnitOfWork
     {
         private bool disposed = false;
-        private DefaultDbContext _context;
-        public EfUnitOfWork(DefaultDbContext context)
+        private IEfDbContext _context;
+        public EfUnitOfWork(IEfDbContext context)
         {
             _context = context;
         }
 
         public IRepo GetRepository<IRepo>()
         {
-            return AutofacContainer.Resolve<IRepo>(new TypedParameter(typeof(DefaultDbContext), _context));
+            return AutofacContainer.Resolve<IRepo>(new TypedParameter(typeof(IEfDbContext), _context));
         }
 
         public int Commit()
@@ -33,9 +33,9 @@ namespace Zxw.Framework.NetCore.UnitOfWork
             return _context.SaveChanges(true);
         }
 
-        public async Task<int> CommitAsync()
+        public Task<int> CommitAsync()
         {
-            return await _context.SaveChangesAsync(true);
+            return _context.SaveAsync(true);
         }
 
         protected virtual void Dispose(bool disposing)

@@ -13,13 +13,13 @@ namespace Zxw.Framework.NetCore.Repositories
 {
     public abstract class BaseRepository<T, TKey>:IRepository<T, TKey> where T : class, IBaseModel<TKey>
     {
-        private readonly DefaultDbContext _dbContext;
+        private readonly IEfDbContext _dbContext;
         private readonly DbSet<T> _set;
-        public BaseRepository(DefaultDbContext dbContext)
+        public BaseRepository(IEfDbContext dbContext)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _dbContext.Database.EnsureCreated();
-            _set = dbContext.Set<T>();
+            _dbContext.GetDatabase().EnsureCreated();
+            _set = dbContext.GetDbSet<T>();
         }
         public virtual void Add(T entity)
         {

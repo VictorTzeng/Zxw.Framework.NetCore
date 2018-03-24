@@ -8,7 +8,7 @@ namespace Zxw.Framework.Website.Repositories
 {
     public class CacheRepository : BaseRepository<Cache, Int32>, ICacheRepository
     {
-        public CacheRepository(DefaultDbContext dbContext) : base(dbContext)
+        public CacheRepository(IEfDbContext dbContext) : base(dbContext)
         {
         }
     }
