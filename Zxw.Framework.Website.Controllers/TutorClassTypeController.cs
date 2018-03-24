@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Zxw.Framework.NetCore.UnitOfWork;
-using Zxw.Framework.Website.Models;
-using Zxw.Framework.Website.IRepositories;
 
-namespace Zxw.Framework.Website.Repositories
+namespace Zxw.Framework.Website.Controllers
 {
     public class TutorClassTypeController : Controller
     {
