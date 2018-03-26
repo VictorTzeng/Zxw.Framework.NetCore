@@ -18,8 +18,6 @@ using Z.EntityFramework.Plus;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
-using DbType = Zxw.Framework.NetCore.Options.DbType;
-using Z.EntityFramework.Plus;
 
 namespace Zxw.Framework.NetCore.EfDbContext
 {
@@ -192,9 +190,9 @@ namespace Zxw.Framework.NetCore.EfDbContext
                 var mappingTableName = typeof(T).GetCustomAttribute<TableAttribute>()?.Name;
                 destinationTableName = string.IsNullOrEmpty(mappingTableName) ? typeof(T).Name : mappingTableName;
             }
-            if (_option.DbType == DbType.MSSQLSERVER)
+            if (Database.IsSqlServer())
                 SqlBulkInsert<T,TKey>(entities, destinationTableName);
-            else if (_option.DbType == DbType.MYSQL)
+            else if (Database.IsMySql())
                 MySqlBulkInsert(entities, destinationTableName);
             else throw new NotSupportedException("This method only support for SQL Server or MySql.");
 
