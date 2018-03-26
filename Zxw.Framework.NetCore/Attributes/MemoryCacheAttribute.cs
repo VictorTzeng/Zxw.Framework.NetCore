@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using AspectCore.DynamicProxy;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 using Zxw.Framework.NetCore.Helpers;
 using System.Linq;
 using Zxw.Framework.NetCore.IoC;
@@ -22,12 +21,8 @@ namespace Zxw.Framework.NetCore.Attributes
         /// 缓存有限期，单位：分钟。默认值：10。
         /// </summary>
         public int Expiration { get; set; } = 10;
-        //[FromContainer]
+
         private readonly IMemoryCache _cache = AutofacContainer.Resolve<IMemoryCache>();
-
-        //[FromContainer]
-        //private readonly IOptions<MemoryCacheEntryOptions> _optionsAccessor = AutofacContainer.Resolve<IOptions<MemoryCacheEntryOptions>>();
-
 
         public override async Task Invoke(AspectContext context, AspectDelegate next)
         {
@@ -39,7 +34,7 @@ namespace Zxw.Framework.NetCore.Attributes
             }
             else
             {
-                var key = new CacheKey(context.ServiceMethod, parameters);
+                var key = new CacheKey(context.ServiceMethod, parameters).GetHashCode().ToString();
                 if (_cache.TryGetValue(key, out object value))
                 {
                     context.ReturnValue = value;
