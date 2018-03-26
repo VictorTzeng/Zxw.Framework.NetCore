@@ -12,7 +12,7 @@ namespace Zxw.Framework.Website.Repositories
 {
     public class TutorClassTypeRepository : BaseRepository<TutorClassType, Int32>, ITutorClassTypeRepository
     {
-        public TutorClassTypeRepository(DefaultDbContext dbContext) : base(dbContext)
+        public TutorClassTypeRepository(IEfDbContext dbContext) : base(dbContext)
         {
         }
 

@@ -9,7 +9,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using Z.EntityFramework.Plus;
@@ -17,18 +19,19 @@ using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
 using DbType = Zxw.Framework.NetCore.Options.DbType;
+using Z.EntityFramework.Plus;
 
 namespace Zxw.Framework.NetCore.EfDbContext
 {
-    public sealed class DefaultDbContext : DbContext
+    public abstract class BaseDbContext : DbContext, IEfDbContext
     {
-        private readonly DbContextOption _option;
+        protected readonly DbContextOption _option;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="option"></param>
-        public DefaultDbContext(IOptions<DbContextOption> option)
+        public BaseDbContext(IOptions<DbContextOption> option)
         {
             if(option==null)
                 throw new ArgumentNullException(nameof(option));
@@ -37,31 +40,6 @@ namespace Zxw.Framework.NetCore.EfDbContext
             if (string.IsNullOrEmpty(option.Value.ModelAssemblyName))
                 throw new ArgumentNullException(nameof(option.Value.ModelAssemblyName));
             _option = option.Value;
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            switch (_option.DbType)
-            {
-                case DbType.ORACLE:
-                    throw new NotSupportedException("Oracle for EF Core Database Provider is not yet available.");
-                case DbType.MYSQL:
-                    optionsBuilder.UseMySql(_option.ConnectionString);
-                    break;
-                case DbType.SQLITE:
-                    optionsBuilder.UseSqlite(_option.ConnectionString);
-                    break;
-                case DbType.MEMORY:
-                    optionsBuilder.UseInMemoryDatabase(_option.ConnectionString);
-                    break;
-                case DbType.NPGSQL:
-                    optionsBuilder.UseNpgsql(_option.ConnectionString);
-                    break;
-                default:
-                    optionsBuilder.UseSqlServer(_option.ConnectionString);
-                    break;
-            }
-            base.OnConfiguring(optionsBuilder);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -87,6 +65,26 @@ namespace Zxw.Framework.NetCore.EfDbContext
             }
         }
 
+        public Task AddAsync<T>(T entity) where T : class
+        {
+            return Set<T>().AddAsync(entity);
+        }
+
+        public Task AddRangeAsync<T>(ICollection<T> entities) where T : class
+        {
+            return Set<T>().AddRangeAsync(entities);
+        }
+
+        public DatabaseFacade GetDatabase()
+        {
+            return Database;
+        }
+
+        public DbSet<T> GetDbSet<T>() where T : class
+        {
+            return Set<T>();
+        }
+
         /// <summary>
         /// ExecuteSqlWithNonQuery
         /// </summary>
@@ -100,6 +98,13 @@ namespace Zxw.Framework.NetCore.EfDbContext
                 parameters);
         }
 
+        public Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters)
+        {
+            return Database.ExecuteSqlCommandAsync(sql,
+                CancellationToken.None,
+                parameters);
+        }
+
         /// <summary>
         /// edit an entity.
         /// </summary>
@@ -109,7 +114,6 @@ namespace Zxw.Framework.NetCore.EfDbContext
         public void Edit<T>(T entity) where T : class
         {
             Entry(entity).State = EntityState.Modified;
-            //return SaveChanges();
         }
 
         /// <summary>
@@ -121,7 +125,6 @@ namespace Zxw.Framework.NetCore.EfDbContext
         public void EditRange<T>(ICollection<T> entities) where T : class
         {
             Set<T>().AttachRange(entities.ToArray());
-            //return SaveChanges();
         }
 
         /// <summary>
@@ -146,12 +149,16 @@ namespace Zxw.Framework.NetCore.EfDbContext
             {
                 Entry(model).State = EntityState.Modified;
             }
-            //return SaveChanges();
         }
 
-        public void Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
+        public int Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
         {
-            Set<T>().Where(where).Update(updateFactory);
+            return Set<T>().Where(where).Update(updateFactory);
+        }
+
+        public Task<int> UpdateAsync<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
+        {
+            return Set<T>().Where(where).UpdateAsync(updateFactory);
         }
 
         /// <summary>
@@ -160,10 +167,14 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <typeparam name="T"></typeparam>
         /// <param name="where"></param>
         /// <returns></returns>
-        public void Delete<T>(Expression<Func<T, bool>> @where) where T : class
+        public int Delete<T>(Expression<Func<T, bool>> @where) where T : class
         {
-            Set<T>().Where(@where).Delete();
-            //return SaveChanges();
+            return Set<T>().Where(@where).Delete();
+        }
+
+        public Task<int> DeleteAsync<T>(Expression<Func<T, bool>> @where) where T : class
+        {
+            return Set<T>().Where(@where).DeleteAsync();
         }
 
         /// <summary>
@@ -198,7 +209,6 @@ namespace Zxw.Framework.NetCore.EfDbContext
                 {
                     if (conn.State != ConnectionState.Open)
                         conn.Open();
-                    ;
                     using (var tran = conn.BeginTransaction())
                     {
                         try
@@ -209,7 +219,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
                                 DestinationTableName = dt.TableName,
                             };
                             GenerateColumnMappings<T, TKey>(bulk.ColumnMappings);
-                            bulk.WriteToServer(dt);
+                            bulk.WriteToServerAsync(dt);
                             tran.Commit();
                         }
                         catch (Exception e)
@@ -262,7 +272,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
                     EscapeCharacter = '"',
                     LineTerminator = "\r\n"
                 };
-                bulk.Load();
+                bulk.LoadAsync();
                 conn.Close();
             }
             File.Delete(csvFileName);
@@ -273,6 +283,23 @@ namespace Zxw.Framework.NetCore.EfDbContext
             where TView : class
         {
             return Set<T>().FromSql(sql, parameters).Cast<TView>().ToList();
+        }
+
+        public Task<List<TView>> SqlQueryAsync<T,TView>(string sql, params object[] parameters) 
+            where T : class
+            where TView : class
+        {
+            return Set<T>().FromSql(sql, parameters).Cast<TView>().ToListAsync();
+        }
+
+        public Task<int> SaveAsync()
+        {
+            return this.SaveChangesAsync();
+        }
+
+        public Task<int> SaveAsync(bool acceptAllChangesOnSuccess)
+        {
+            return this.SaveChangesAsync(acceptAllChangesOnSuccess);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace {RepositoriesNamespace}
 {
     public class {ModelTypeName}Repository : BaseRepository<{ModelTypeName}, {KeyTypeName}>, I{ModelTypeName}Repository
     {
-        public {ModelTypeName}Repository(DefaultDbContext dbContext) : base(dbContext)
+        public {ModelTypeName}Repository(IEfDbContext dbContext) : base(dbContext)
         {
         }
     }

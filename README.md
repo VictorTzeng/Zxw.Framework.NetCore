@@ -12,6 +12,11 @@
 * InMemory
 * PostgreSQL
 
+**日志组件**
+* log4net
+
+**DI组件**
+* Autofac
 
 **缓存组件使用**
 
@@ -23,12 +28,13 @@
 
     public interface ITutorClassTypeRepository:IRepository<TutorClassType, Int32>
     {
-        [MemoryCache]
+        [MemoryCache]//使用MemoryCache，缓存有效时间默认10分钟
         IList<TutorClassType> GetByMemoryCached(Expression<Func<TutorClassType, bool>> where = null);
 
-        [RedisCache(Expiration = 5)]
+        [RedisCache(Expiration = 5)]//使用Redis，缓存有效时间为5分钟
         IList<TutorClassType> GetByRedisCached(Expression<Func<TutorClassType, bool>> where = null);
     }
+
 
 **.net framework版本地址**
 
@@ -45,11 +51,11 @@
 
 **2018/1/14**
 
-1.add bulkinsert for mysql
+* 1.add bulkinsert for mysql
 
-2.modify and test bulkinsert for mssql
+* 2.modify and test bulkinsert for mssql
 
  
 **2017/12/26**
 
-1.测试Redis
+* 1.测试Redis
