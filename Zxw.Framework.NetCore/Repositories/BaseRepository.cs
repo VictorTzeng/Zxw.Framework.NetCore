@@ -4,9 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Z.EntityFramework.Plus;
 using Zxw.Framework.NetCore.EfDbContext;
-using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.NetCore.Repositories
@@ -15,18 +13,22 @@ namespace Zxw.Framework.NetCore.Repositories
     {
         private readonly IEfDbContext _dbContext;
         private readonly DbSet<T> _set;
-        public BaseRepository(IEfDbContext dbContext)
+
+        protected BaseRepository(IEfDbContext dbContext)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _dbContext.GetDatabase().EnsureCreated();
             _set = dbContext.GetDbSet<T>();
         }
+
+        protected DbSet<T> GetSet() => _set;
+
         public virtual void Add(T entity)
         {
             _set.Add(entity);
         }
 
-        public Task AddAsync(T entity)
+        public virtual Task AddAsync(T entity)
         {
             return _dbContext.AddAsync(entity);
         }
@@ -36,7 +38,7 @@ namespace Zxw.Framework.NetCore.Repositories
             _set.AddRange(entities);
         }
 
-        public Task AddRangeAsync(ICollection<T> entities)
+        public virtual Task AddRangeAsync(ICollection<T> entities)
         {
             return _dbContext.AddRangeAsync(entities);
         }
@@ -53,12 +55,12 @@ namespace Zxw.Framework.NetCore.Repositories
         /// <param name="where"></param>
         /// <param name="updateExp"></param>
         /// <returns></returns>
-        public int BatchUpdate(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
+        public virtual int BatchUpdate(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
         {
             return _dbContext.Update(where, updateExp);
         }
 
-        public Task<int> BatchUpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
+        public virtual Task<int> BatchUpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
         {
             return _dbContext.UpdateAsync(@where, updateExp);
         }
@@ -68,7 +70,7 @@ namespace Zxw.Framework.NetCore.Repositories
             return where == null ? _set.Count() : _set.Count(@where);
         }
 
-        public Task<int> CountAsync(Expression<Func<T, bool>> @where = null)
+        public virtual Task<int> CountAsync(Expression<Func<T, bool>> @where = null)
         {
             return where == null ? _set.CountAsync() : _set.CountAsync(@where);
         }
@@ -85,7 +87,7 @@ namespace Zxw.Framework.NetCore.Repositories
             _dbContext.Delete(where);
         }
 
-        public Task DeleteAsync(Expression<Func<T, bool>> @where)
+        public virtual Task DeleteAsync(Expression<Func<T, bool>> @where)
         {
             return _dbContext.DeleteAsync(where);
         }
@@ -105,7 +107,7 @@ namespace Zxw.Framework.NetCore.Repositories
             return Get(where).Any();
         }
 
-        public Task<bool> ExistAsync(Expression<Func<T, bool>> @where = null)
+        public virtual Task<bool> ExistAsync(Expression<Func<T, bool>> @where = null)
         {
             if (where == null) return _set.AnyAsync();
             return _set.Where(where).AnyAsync();
@@ -116,116 +118,67 @@ namespace Zxw.Framework.NetCore.Repositories
             return _dbContext.ExecuteSqlWithNonQuery(sql, parameters);
         }
 
-        public Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters)
+        public virtual Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters)
         {
             return _dbContext.ExecuteSqlWithNonQueryAsync(sql, parameters);
         }
 
+        /// <summary>
+        /// 根据主键获取实体。建议：如需使用Include和ThenInclude请重载此方法。
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public virtual T GetSingle(TKey key)
         {
             return _set.Find(key);
         }
-
-        public Task<T> GetSingleAsync(TKey key)
+        /// <summary>
+        /// 根据主键获取实体。建议：如需使用Include和ThenInclude请重载此方法。
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public virtual Task<T> GetSingleAsync(TKey key)
         {
             return _set.FindAsync(key);
         }
 
-        public virtual T GetSingle(TKey key, params Expression<Func<T, object>>[] includes)
-        {
-            if (includes == null) return GetSingle(key);
-            var query = _set.AsQueryable();
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-            Expression<Func<T, bool>> filter = m => m.Id.Equal(key);
-            return query.SingleOrDefault(filter.Compile());
-        }
-
-        public Task<T> GetSingleAsync(TKey key, params Expression<Func<T, object>>[] includes)
-        {
-            if (includes == null) return GetSingleAsync(key);
-            var query = _set.AsQueryable();
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-            Expression<Func<T, bool>> filter = m => m.Id.Equal(key);
-            return query.SingleOrDefaultAsync(filter);
-        }
-
-        public T GetSingle(Expression<Func<T, bool>> @where = null)
+        /// <summary>
+        /// 获取单个实体。建议：如需使用Include和ThenInclude请重载此方法。
+        /// </summary>
+        public virtual T GetSingleOrDefault(Expression<Func<T, bool>> @where = null)
         {
             if (where == null) return _set.SingleOrDefault();
             return _set.SingleOrDefault(@where);
         }
 
-        public Task<T> GetSingleAsync(Expression<Func<T, bool>> @where = null)
+        /// <summary>
+        /// 获取单个实体。建议：如需使用Include和ThenInclude请重载此方法。
+        /// </summary>
+        public virtual Task<T> GetSingleOrDefaultAsync(Expression<Func<T, bool>> @where = null)
         {
             if (where == null) return _set.SingleOrDefaultAsync();
             return _set.SingleOrDefaultAsync(where);
         }
 
-        public T GetSingle(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes)
-        {
-            if (includes == null) return GetSingle(where);
-            var query = _set.AsQueryable();
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-            if (where == null) return query.SingleOrDefault();
-            return query.SingleOrDefault(where);
-        }
-
-        public Task<T> GetSingleAsync(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes)
-        {
-            if (includes == null) return GetSingleAsync(where);
-            var query = _set.AsQueryable();
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-            if (where == null) return query.SingleOrDefaultAsync();
-            return query.SingleOrDefaultAsync(where);
-        }
-
+        /// <summary>
+        /// 获取实体列表。建议：如需使用Include和ThenInclude请重载此方法。
+        /// </summary>
         public virtual IQueryable<T> Get(Expression<Func<T, bool>> @where = null)
         {
             return (@where != null ? _set.AsNoTracking().Where(@where) : _set.AsNoTracking());
         }
 
-        public Task<List<T>> GetAsync(Expression<Func<T, bool>> @where = null)
+        /// <summary>
+        /// 获取实体列表。建议：如需使用Include和ThenInclude请重载此方法。
+        /// </summary>
+        public virtual Task<List<T>> GetAsync(Expression<Func<T, bool>> @where = null)
         {
             return _set.Where(where).ToListAsync();
         }
 
-        public virtual IQueryable<T> Get(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes)
-        {
-            if (includes == null)
-                return Get(where);
-            var query = _set.AsQueryable();
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-            return @where != null ? query.AsNoTracking().Where(@where) : query.AsNoTracking();
-        }
-
-        public Task<List<T>> GetAsync(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes)
-        {
-            if (includes == null)
-                return GetAsync(where);
-            var query = _set.AsQueryable();
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-            return @where != null ? query.AsNoTracking().Where(@where).ToListAsync() : query.AsNoTracking().ToListAsync();
-        }
-
-
+        /// <summary>
+        /// 分页获取实体列表。建议：如需使用Include和ThenInclude请重载此方法。
+        /// </summary>
         public virtual IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true, params Func<T, object>[] @orderby)
         {
             var filter = Get(where).AsEnumerable();
@@ -245,7 +198,7 @@ namespace Zxw.Framework.NetCore.Repositories
             return _dbContext.SqlQuery<T, TView>(sql, parameters);
         }
 
-        public Task<List<TView>> SqlQueryAsync<TView>(string sql, params object[] parameters) where TView : class, new()
+        public virtual Task<List<TView>> SqlQueryAsync<TView>(string sql, params object[] parameters) where TView : class, new()
         {
             return _dbContext.SqlQueryAsync<T,TView>(sql, parameters);
         }
@@ -255,12 +208,12 @@ namespace Zxw.Framework.NetCore.Repositories
             _dbContext.Update(model, updateColumns);
         }
 
-        public void Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
+        public virtual void Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
         {
             _dbContext.Update(where, updateFactory);
         }
 
-        public Task UpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
+        public virtual Task UpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
         {
             return _dbContext.UpdateAsync(where, updateFactory);
         }

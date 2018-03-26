@@ -29,16 +29,10 @@ namespace Zxw.Framework.NetCore.Repositories
         Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters);
         T GetSingle(TKey key);
         Task<T> GetSingleAsync(TKey key);
-        T GetSingle(TKey key, params Expression<Func<T, object>>[] includes);
-        Task<T> GetSingleAsync(TKey key, params Expression<Func<T, object>>[] includes);
-        T GetSingle(Expression<Func<T, bool>> @where = null);
-        Task<T> GetSingleAsync(Expression<Func<T, bool>> @where = null);
-        T GetSingle(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes);
-        Task<T> GetSingleAsync(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes);
+        T GetSingleOrDefault(Expression<Func<T, bool>> @where = null);
+        Task<T> GetSingleOrDefaultAsync(Expression<Func<T, bool>> @where = null);
         IQueryable<T> Get(Expression<Func<T, bool>> @where = null);
         Task<List<T>> GetAsync(Expression<Func<T, bool>> @where = null);
-        IQueryable<T> Get(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes);
-        Task<List<T>> GetAsync(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes);
         IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true,
             params Func<T, object>[] @orderby);
         IList<TView> SqlQuery<TView>(string sql, params object[] parameters) where TView : class, new();
