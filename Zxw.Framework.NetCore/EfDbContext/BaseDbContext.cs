@@ -29,7 +29,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// 构造函数
         /// </summary>
         /// <param name="option"></param>
-        public BaseDbContext(IOptions<DbContextOption> option)
+        protected BaseDbContext(IOptions<DbContextOption> option)
         {
             if(option==null)
                 throw new ArgumentNullException(nameof(option));
@@ -42,11 +42,11 @@ namespace Zxw.Framework.NetCore.EfDbContext
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            AddEntityTypes(modelBuilder);
+            MappingEntityTypes(modelBuilder);
             base.OnModelCreating(modelBuilder);
         }
 
-        private void AddEntityTypes(ModelBuilder modelBuilder)
+        private void MappingEntityTypes(ModelBuilder modelBuilder)
         {
             var assembly = Assembly.Load(_option.ModelAssemblyName);
             var types = assembly?.GetTypes();
@@ -63,14 +63,16 @@ namespace Zxw.Framework.NetCore.EfDbContext
             }
         }
 
-        public Task AddAsync<T>(T entity) where T : class
+        public Task<int> AddAsync<T>(T entity) where T : class
         {
-            return Set<T>().AddAsync(entity);
+            Set<T>().AddAsync(entity);
+            return SaveChangesAsync();
         }
 
-        public Task AddRangeAsync<T>(ICollection<T> entities) where T : class
+        public Task<int> AddRangeAsync<T>(ICollection<T> entities) where T : class
         {
-            return Set<T>().AddRangeAsync(entities);
+            Set<T>().AddRangeAsync(entities);
+            return SaveChangesAsync();
         }
 
         public DatabaseFacade GetDatabase()
@@ -109,9 +111,10 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <typeparam name="T"></typeparam>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public void Edit<T>(T entity) where T : class
+        public int Edit<T>(T entity) where T : class
         {
             Entry(entity).State = EntityState.Modified;
+            return SaveChanges();
         }
 
         /// <summary>
@@ -120,9 +123,10 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <typeparam name="T"></typeparam>
         /// <param name="entities"></param>
         /// <returns></returns>
-        public void EditRange<T>(ICollection<T> entities) where T : class
+        public int EditRange<T>(ICollection<T> entities) where T : class
         {
             Set<T>().AttachRange(entities.ToArray());
+            return SaveChanges();
         }
 
         /// <summary>
@@ -132,7 +136,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <param name="model"></param>
         /// <param name="updateColumns"></param>
         /// <returns></returns>
-        public void Update<T>(T model, params string[] updateColumns) where T : class
+        public int Update<T>(T model, params string[] updateColumns) where T : class
         {
             if (updateColumns != null && updateColumns.Length > 0)
             {
@@ -147,6 +151,8 @@ namespace Zxw.Framework.NetCore.EfDbContext
             {
                 Entry(model).State = EntityState.Modified;
             }
+
+            return SaveChanges();
         }
 
         public int Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
@@ -220,7 +226,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
                             bulk.WriteToServerAsync(dt);
                             tran.Commit();
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             tran.Rollback();
                             throw;

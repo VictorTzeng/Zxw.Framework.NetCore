@@ -23,22 +23,24 @@ namespace Zxw.Framework.NetCore.Repositories
 
         protected DbSet<T> GetSet() => _set;
 
-        public virtual void Add(T entity)
+        public virtual int Add(T entity)
         {
             _set.Add(entity);
+            return _dbContext.SaveChanges();
         }
 
-        public virtual Task AddAsync(T entity)
+        public virtual Task<int> AddAsync(T entity)
         {
             return _dbContext.AddAsync(entity);
         }
 
-        public virtual void AddRange(ICollection<T> entities)
+        public virtual int AddRange(ICollection<T> entities)
         {
             _set.AddRange(entities);
+            return _dbContext.SaveChanges();
         }
 
-        public virtual Task AddRangeAsync(ICollection<T> entities)
+        public virtual Task<int> AddRangeAsync(ICollection<T> entities)
         {
             return _dbContext.AddRangeAsync(entities);
         }
@@ -75,31 +77,32 @@ namespace Zxw.Framework.NetCore.Repositories
             return where == null ? _set.CountAsync() : _set.CountAsync(@where);
         }
 
-        public virtual void Delete(TKey key)
+        public virtual int Delete(TKey key)
         {
             var entity = _set.Find(key);
-            if (entity == null) return;
+            if (entity == null) return 0;
             _set.Remove(entity);
+            return _dbContext.SaveChanges();
         }
 
-        public virtual void Delete(Expression<Func<T, bool>> @where)
+        public virtual int Delete(Expression<Func<T, bool>> @where)
         {
-            _dbContext.Delete(where);
+            return _dbContext.Delete(where);
         }
 
-        public virtual Task DeleteAsync(Expression<Func<T, bool>> @where)
+        public virtual Task<int> DeleteAsync(Expression<Func<T, bool>> @where)
         {
             return _dbContext.DeleteAsync(where);
         }
 
-        public virtual void Edit(T entity)
+        public virtual int Edit(T entity)
         {
-            _dbContext.Edit(entity);
+            return _dbContext.Edit(entity);
         }
 
-        public virtual void EditRange(ICollection<T> entities)
+        public virtual int EditRange(ICollection<T> entities)
         {
-            _dbContext.EditRange(entities);
+            return _dbContext.EditRange(entities);
         }
 
         public virtual bool Exist(Expression<Func<T, bool>> @where = null)
@@ -203,17 +206,17 @@ namespace Zxw.Framework.NetCore.Repositories
             return _dbContext.SqlQueryAsync<T,TView>(sql, parameters);
         }
 
-        public virtual void Update(T model, params string[] updateColumns)
+        public virtual int Update(T model, params string[] updateColumns)
         {
-            _dbContext.Update(model, updateColumns);
+            return _dbContext.Update(model, updateColumns);
         }
 
-        public virtual void Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
+        public virtual int Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
         {
-            _dbContext.Update(where, updateFactory);
+            return _dbContext.Update(where, updateFactory);
         }
 
-        public virtual Task UpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
+        public virtual Task<int> UpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
         {
             return _dbContext.UpdateAsync(where, updateFactory);
         }

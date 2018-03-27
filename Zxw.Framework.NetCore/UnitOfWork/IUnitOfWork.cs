@@ -8,7 +8,5 @@ namespace Zxw.Framework.NetCore.UnitOfWork
     public interface IUnitOfWork:IDisposable
     {
         IRepo GetRepository<IRepo>();
-        int Commit();
-        Task<int> CommitAsync();
     }
 }

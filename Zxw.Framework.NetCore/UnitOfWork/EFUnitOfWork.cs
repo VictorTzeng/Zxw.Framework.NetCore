@@ -28,16 +28,6 @@ namespace Zxw.Framework.NetCore.UnitOfWork
             return AutofacContainer.Resolve<IRepo>(new TypedParameter(typeof(IEfDbContext), _context));
         }
 
-        public int Commit()
-        {
-            return _context.SaveChanges(true);
-        }
-
-        public Task<int> CommitAsync()
-        {
-            return _context.SaveAsync(true);
-        }
-
         protected virtual void Dispose(bool disposing)
         {
             if (!this.disposed)

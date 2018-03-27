@@ -53,7 +53,6 @@ namespace Zxw.Framework.Website.Controllers
                     TutorClassTypeName = "高中",
                     TutorClassCount = 25
                 });
-                _unitOfWork.Commit();
                 var list2 = repository.GetByRedisCached(t => true);
                 return View(list2);
             }
