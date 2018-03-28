@@ -13,11 +13,10 @@ namespace Zxw.Framework.Website.Controllers
     {
         private IUnitOfWork _unitOfWork;
         
-
         public HomeController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            //CodeGenerator.Generate();//生成所有实体类对应的Repository和Service层代码文件
+            CodeGenerator.Generate();//生成所有实体类对应的Repository和Service层代码文件
         }
         public IActionResult Index()
         {

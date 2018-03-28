@@ -35,7 +35,6 @@ namespace Zxw.Framework.Website.Models
 
         public bool Activable { get; set; } = true;
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SortIndex { get; set; }
     }
 }

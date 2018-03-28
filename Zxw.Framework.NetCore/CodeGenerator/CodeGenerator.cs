@@ -176,7 +176,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             var content = ReadTemplate("ControllerTemplate.txt");
             content = content.Replace("{ModelsNamespace}", Option.ModelsNamespace)
                 .Replace("{IRepositoriesNamespace}", Option.IRepositoriesNamespace)
-                .Replace("{ControllersNamespace}", Option.RepositoriesNamespace)
+                .Replace("{ControllersNamespace}", Option.ControllersNamespace)
                 .Replace("{ModelTypeName}", modelTypeName)
                 .Replace("{KeyTypeName}", keyTypeName);
             WriteAndSave(fullPath, content);
