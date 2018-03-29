@@ -11,7 +11,7 @@ namespace Zxw.Framework.NetCore.Repositories
 {
     public abstract class BaseRepository<T, TKey>:IRepository<T, TKey> where T : class, IBaseModel<TKey>
     {
-        private readonly IEfDbContext _dbContext;
+        protected readonly IEfDbContext _dbContext;
         private readonly DbSet<T> _set;
 
         protected BaseRepository(IEfDbContext dbContext)
@@ -21,8 +21,6 @@ namespace Zxw.Framework.NetCore.Repositories
             _set = dbContext.GetDbSet<T>();
         }
 
-        protected DbSet<T> GetSet() => _set;
-
         public virtual int Add(T entity)
         {
             _set.Add(entity);
@@ -31,7 +29,8 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public virtual Task<int> AddAsync(T entity)
         {
-            return _dbContext.AddAsync(entity);
+            _dbContext.AddAsync(entity);
+            return _dbContext.SaveChangesAsync();
         }
 
         public virtual int AddRange(ICollection<T> entities)
@@ -42,7 +41,8 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public virtual Task<int> AddRangeAsync(ICollection<T> entities)
         {
-            return _dbContext.AddRangeAsync(entities);
+            _dbContext.AddRangeAsync(entities);
+            return _dbContext.SaveChangesAsync();
         }
 
         public virtual void BulkInsert(IList<T> entities, string destinationTableName = null)
@@ -97,12 +97,14 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public virtual int Edit(T entity)
         {
-            return _dbContext.Edit(entity);
+            _dbContext.Edit(entity);
+            return _dbContext.SaveChanges();
         }
 
         public virtual int EditRange(ICollection<T> entities)
         {
-            return _dbContext.EditRange(entities);
+            _dbContext.EditRange(entities);
+            return _dbContext.SaveChanges();
         }
 
         public virtual bool Exist(Expression<Func<T, bool>> @where = null)
@@ -208,7 +210,8 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public virtual int Update(T model, params string[] updateColumns)
         {
-            return _dbContext.Update(model, updateColumns);
+            _dbContext.Update(model, updateColumns);
+            return _dbContext.SaveChanges();
         }
 
         public virtual int Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)

@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
@@ -24,7 +25,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
     public abstract class BaseDbContext : DbContext, IEfDbContext
     {
         protected readonly DbContextOption _option;
-
+        public ChangeTracker GetChangeTracker() => this.ChangeTracker;
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -63,24 +64,22 @@ namespace Zxw.Framework.NetCore.EfDbContext
             }
         }
 
-        public Task<int> AddAsync<T>(T entity) where T : class
+        public virtual Task AddAsync<T>(T entity) where T : class
         {
-            Set<T>().AddAsync(entity);
-            return SaveChangesAsync();
+            return Set<T>().AddAsync(entity);
         }
 
-        public Task<int> AddRangeAsync<T>(ICollection<T> entities) where T : class
+        public virtual Task AddRangeAsync<T>(ICollection<T> entities) where T : class
         {
-            Set<T>().AddRangeAsync(entities);
-            return SaveChangesAsync();
+            return Set<T>().AddRangeAsync(entities);
         }
 
-        public DatabaseFacade GetDatabase()
+        public virtual DatabaseFacade GetDatabase()
         {
             return Database;
         }
 
-        public DbSet<T> GetDbSet<T>() where T : class
+        public virtual DbSet<T> GetDbSet<T>() where T : class
         {
             return Set<T>();
         }
@@ -91,14 +90,14 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public int ExecuteSqlWithNonQuery(string sql, params object[] parameters)
+        public virtual int ExecuteSqlWithNonQuery(string sql, params object[] parameters)
         {
             return Database.ExecuteSqlCommand(sql,
                 CancellationToken.None,
                 parameters);
         }
 
-        public Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters)
+        public virtual Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters)
         {
             return Database.ExecuteSqlCommandAsync(sql,
                 CancellationToken.None,
@@ -111,10 +110,9 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <typeparam name="T"></typeparam>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public int Edit<T>(T entity) where T : class
+        public virtual void Edit<T>(T entity) where T : class
         {
             Entry(entity).State = EntityState.Modified;
-            return SaveChanges();
         }
 
         /// <summary>
@@ -123,10 +121,9 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <typeparam name="T"></typeparam>
         /// <param name="entities"></param>
         /// <returns></returns>
-        public int EditRange<T>(ICollection<T> entities) where T : class
+        public virtual void EditRange<T>(ICollection<T> entities) where T : class
         {
             Set<T>().AttachRange(entities.ToArray());
-            return SaveChanges();
         }
 
         /// <summary>
@@ -136,7 +133,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <param name="model"></param>
         /// <param name="updateColumns"></param>
         /// <returns></returns>
-        public int Update<T>(T model, params string[] updateColumns) where T : class
+        public virtual void Update<T>(T model, params string[] updateColumns) where T : class
         {
             if (updateColumns != null && updateColumns.Length > 0)
             {
@@ -151,16 +148,14 @@ namespace Zxw.Framework.NetCore.EfDbContext
             {
                 Entry(model).State = EntityState.Modified;
             }
-
-            return SaveChanges();
         }
 
-        public int Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
+        public virtual int Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
         {
             return Set<T>().Where(where).Update(updateFactory);
         }
 
-        public Task<int> UpdateAsync<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
+        public virtual Task<int> UpdateAsync<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
         {
             return Set<T>().Where(where).UpdateAsync(updateFactory);
         }
@@ -171,12 +166,12 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <typeparam name="T"></typeparam>
         /// <param name="where"></param>
         /// <returns></returns>
-        public int Delete<T>(Expression<Func<T, bool>> @where) where T : class
+        public virtual int Delete<T>(Expression<Func<T, bool>> @where) where T : class
         {
             return Set<T>().Where(@where).Delete();
         }
 
-        public Task<int> DeleteAsync<T>(Expression<Func<T, bool>> @where) where T : class
+        public virtual Task<int> DeleteAsync<T>(Expression<Func<T, bool>> @where) where T : class
         {
             return Set<T>().Where(@where).DeleteAsync();
         }
@@ -188,7 +183,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <typeparam name="TKey"></typeparam>
         /// <param name="entities"></param>
         /// <param name="destinationTableName"></param>
-        public void BulkInsert<T, TKey>(IList<T> entities, string destinationTableName = null) where T : class, IBaseModel<TKey>
+        public virtual void BulkInsert<T, TKey>(IList<T> entities, string destinationTableName = null) where T : class, IBaseModel<TKey>
         {
             if (entities == null || !entities.Any()) return;
             if (string.IsNullOrEmpty(destinationTableName))
@@ -282,28 +277,52 @@ namespace Zxw.Framework.NetCore.EfDbContext
             File.Delete(csvFileName);
         }
 
-        public List<TView> SqlQuery<T,TView>(string sql, params object[] parameters) 
+        public virtual List<TView> SqlQuery<T,TView>(string sql, params object[] parameters) 
             where T : class
             where TView : class
         {
             return Set<T>().FromSql(sql, parameters).Cast<TView>().ToList();
         }
 
-        public Task<List<TView>> SqlQueryAsync<T,TView>(string sql, params object[] parameters) 
+        public virtual Task<List<TView>> SqlQueryAsync<T,TView>(string sql, params object[] parameters) 
             where T : class
             where TView : class
         {
             return Set<T>().FromSql(sql, parameters).Cast<TView>().ToListAsync();
         }
 
-        public Task<int> SaveAsync()
+        public virtual int SaveChanges(Action beforeSavingAction)
         {
-            return this.SaveChangesAsync();
+            beforeSavingAction?.Invoke();
+            return base.SaveChanges();
         }
 
-        public Task<int> SaveAsync(bool acceptAllChangesOnSuccess)
+        public virtual int SaveChanges(bool acceptAllChangesOnSuccess, Action beforeSavingAction)
         {
-            return this.SaveChangesAsync(acceptAllChangesOnSuccess);
+            beforeSavingAction?.Invoke();
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        public Task<int> SaveChangesAsync()
+        {
+            return base.SaveChangesAsync();
+        }
+
+        public Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess)
+        {
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess);
+        }
+
+        public Task<int> SaveChangesAsync(Action beforeSavingAction)
+        {
+            beforeSavingAction?.Invoke();
+            return SaveChangesAsync();
+        }
+
+        public Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, Action beforeSavingAction)
+        {
+            beforeSavingAction?.Invoke();
+            return SaveChangesAsync(acceptAllChangesOnSuccess);
         }
     }
 }
