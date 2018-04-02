@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Zxw.Framework.Website.ViewModels
+﻿namespace Zxw.Framework.NetCore.Models
 {
     public class ExcutedResult
     {
@@ -18,7 +14,10 @@ namespace Zxw.Framework.Website.ViewModels
             this.msg = msg;
             this.rows = rows;
         }
-
+        public static ExcutedResult SuccessResult()
+        {
+            return new ExcutedResult(true, null, null);
+        }
         public static ExcutedResult SuccessResult(object rows)
         {
             return new ExcutedResult(true, null, rows);

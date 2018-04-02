@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using EntityFrameworkCore.Triggers;
+using Nelibur.ObjectMapper;
 using Zxw.Framework.NetCore.EfDbContext;
 using Zxw.Framework.NetCore.Repositories;
 using Zxw.Framework.Website.IRepositories;
 using Zxw.Framework.Website.Models;
+using Zxw.Framework.Website.ViewModels;
 
 namespace Zxw.Framework.Website.Repositories
 {
@@ -13,58 +15,64 @@ namespace Zxw.Framework.Website.Repositories
     {
         public SysMenuRepository(IEfDbContext dbContext) : base(dbContext)
         {
-        }
-
-        private Action OnBeforeSaving => () =>
-        {
-            var entries = _dbContext.GetChangeTracker().Entries();
-            foreach (var entry in entries)
+            //插入成功后触发
+            Triggers<SysMenu>.Inserted += entry =>
             {
-                if (entry.Entity is SysMenu menu)
-                {
-                    switch (entry.State)
-                    {
-                        case EntityState.Modified:
-                            menu.MenuPath = (this.GetSingle(menu.ParentId)?.MenuPath ?? "0") + "," + menu.Id;
-                            break;
-
-                        case EntityState.Added:
-                            menu.SortIndex = menu.Id;
-                            menu.MenuPath = (this.GetSingle(menu.ParentId)?.MenuPath ?? "0") + "," + menu.Id;
-                            break;
-                    }
-                }
-            }
-        };
+                var parentMenu = DbContext.Find<SysMenu, int>(entry.Entity.ParentId);
+                entry.Entity.SortIndex = entry.Entity.Id;
+                entry.Entity.MenuPath = (parentMenu?.MenuPath ?? "0") + "," + entry.Entity.Id;
+                Edit(entry.Entity);
+            };
+            //修改成功后触发
+            Triggers<SysMenu>.Updated += entry =>
+            {
+                var parentMenu = DbContext.Find<SysMenu, int>(entry.Entity.ParentId);
+                entry.Entity.SortIndex = entry.Entity.Id;
+                entry.Entity.MenuPath = (parentMenu?.MenuPath ?? "0") + "," + entry.Entity.Id;
+                Edit(entry.Entity);
+            };
+            TinyMapper.Bind<SysMenu, SysMenuViewModel>();
+        }
 
         public override int Add(SysMenu entity)
         {
-            _dbContext.GetDbSet<SysMenu>().Add(entity);
-            return _dbContext.SaveChanges(OnBeforeSaving);
+            DbContext.Add(entity);
+            return DbContext.SaveChangesWithTriggers();
         }
 
         public override Task<int> AddAsync(SysMenu entity)
         {
-            _dbContext.AddAsync(entity);
-            return _dbContext.SaveChangesAsync(OnBeforeSaving);
+            DbContext.AddAsync(entity);
+            return DbContext.SaveChangesWithTriggersAsync();
+        }
+
+        public override int AddRange(ICollection<SysMenu> entities)
+        {
+            DbContext.AddRange(entities);
+            return DbContext.SaveChangesWithTriggers();
+        }
+
+        public override Task<int> AddRangeAsync(ICollection<SysMenu> entities)
+        {
+            DbContext.AddRangeAsync(entities);
+            return DbContext.SaveChangesWithTriggersAsync();
         }
 
         public override int Edit(SysMenu entity)
         {
-            _dbContext.Edit(entity);
-            return _dbContext.SaveChanges(OnBeforeSaving);
+            DbContext.Edit(entity);
+            return DbContext.SaveChangesWithTriggers();
         }
 
         public override int EditRange(ICollection<SysMenu> entities)
         {
-            _dbContext.EditRange(entities);
-            return _dbContext.SaveChanges(OnBeforeSaving);
+            DbContext.EditRange(entities);
+            return DbContext.SaveChangesWithTriggers();
         }
 
-        public override int Update(SysMenu model, params string[] updateColumns)
+        public IList<SysMenuViewModel> GetMenusByTreeView()
         {
-            _dbContext.Update(model, updateColumns);
-            return _dbContext.SaveChanges(OnBeforeSaving);
+            throw new NotImplementedException();
         }
     }
 }

@@ -23,21 +23,12 @@ namespace Zxw.Framework.Website.Controllers
             return View();
         }
 
-        public IActionResult About()
+        public IActionResult Default()
         {
-            ViewData["Message"] = "Your application description page.";
+            ViewData["Title"] = "Readme";
+            ViewBag.PageHeader = "README.md";
+            ViewBag.PageDescription = "项目简介";
             return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-            return View();
-        }
-
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
         protected override void Dispose(bool disposing)

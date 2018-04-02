@@ -1,0 +1,6 @@
+.nav-tabs li .closeable {
+/*     top: 65px; */
+/*     position: fixed; */
+    padding-left: 3px;
+    cursor: pointer;
+}

@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Zxw.Framework.NetCore\Zxw.Framework.NetCore.csproj" />
     <ProjectReference Include="..\Zxw.Framework.Website.Models\Zxw.Framework.Website.Models.csproj" />
+    <ProjectReference Include="..\Zxw.Framework.Website.ViewModels\Zxw.Framework.Website.ViewModels.csproj" />
   </ItemGroup>
 
 </Project>

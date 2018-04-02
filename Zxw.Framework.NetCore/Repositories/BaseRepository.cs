@@ -11,43 +11,43 @@ namespace Zxw.Framework.NetCore.Repositories
 {
     public abstract class BaseRepository<T, TKey>:IRepository<T, TKey> where T : class, IBaseModel<TKey>
     {
-        protected readonly IEfDbContext _dbContext;
-        private readonly DbSet<T> _set;
+        protected readonly IEfDbContext DbContext;
+
+        protected DbSet<T> DbSet => DbContext.GetDbSet<T>();
 
         protected BaseRepository(IEfDbContext dbContext)
         {
-            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _dbContext.GetDatabase().EnsureCreated();
-            _set = dbContext.GetDbSet<T>();
+            DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            DbContext.EnsureCreated();
         }
 
         public virtual int Add(T entity)
         {
-            _set.Add(entity);
-            return _dbContext.SaveChanges();
+            DbContext.Add(entity);
+            return DbContext.SaveChanges();
         }
 
         public virtual Task<int> AddAsync(T entity)
         {
-            _dbContext.AddAsync(entity);
-            return _dbContext.SaveChangesAsync();
+            DbContext.AddAsync(entity);
+            return DbContext.SaveChangesAsync();
         }
 
         public virtual int AddRange(ICollection<T> entities)
         {
-            _set.AddRange(entities);
-            return _dbContext.SaveChanges();
+            DbContext.AddRange(entities);
+            return DbContext.SaveChanges();
         }
 
         public virtual Task<int> AddRangeAsync(ICollection<T> entities)
         {
-            _dbContext.AddRangeAsync(entities);
-            return _dbContext.SaveChangesAsync();
+            DbContext.AddRangeAsync(entities);
+            return DbContext.SaveChangesAsync();
         }
 
         public virtual void BulkInsert(IList<T> entities, string destinationTableName = null)
         {
-            _dbContext.BulkInsert<T, TKey>(entities, destinationTableName);
+            DbContext.BulkInsert<T, TKey>(entities, destinationTableName);
         }
 
         /// <summary>
@@ -59,73 +59,70 @@ namespace Zxw.Framework.NetCore.Repositories
         /// <returns></returns>
         public virtual int BatchUpdate(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
         {
-            return _dbContext.Update(where, updateExp);
+            return DbContext.Update(where, updateExp);
         }
 
         public virtual Task<int> BatchUpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
         {
-            return _dbContext.UpdateAsync(@where, updateExp);
+            return DbContext.UpdateAsync(@where, updateExp);
         }
 
         public virtual int Count(Expression<Func<T, bool>> @where = null)
         {
-            return where == null ? _set.Count() : _set.Count(@where);
+            return DbContext.Count(where);
         }
 
         public virtual Task<int> CountAsync(Expression<Func<T, bool>> @where = null)
         {
-            return where == null ? _set.CountAsync() : _set.CountAsync(@where);
+            return DbContext.CountAsync(where);
         }
 
         public virtual int Delete(TKey key)
         {
-            var entity = _set.Find(key);
-            if (entity == null) return 0;
-            _set.Remove(entity);
-            return _dbContext.SaveChanges();
+            DbContext.Delete<T,TKey>(key);
+            return DbContext.SaveChanges();
         }
 
         public virtual int Delete(Expression<Func<T, bool>> @where)
         {
-            return _dbContext.Delete(where);
+            return DbContext.Delete(where);
         }
 
         public virtual Task<int> DeleteAsync(Expression<Func<T, bool>> @where)
         {
-            return _dbContext.DeleteAsync(where);
+            return DbContext.DeleteAsync(where);
         }
 
         public virtual int Edit(T entity)
         {
-            _dbContext.Edit(entity);
-            return _dbContext.SaveChanges();
+            DbContext.Edit(entity);
+            return DbContext.SaveChanges();
         }
 
         public virtual int EditRange(ICollection<T> entities)
         {
-            _dbContext.EditRange(entities);
-            return _dbContext.SaveChanges();
+            DbContext.EditRange(entities);
+            return DbContext.SaveChanges();
         }
 
         public virtual bool Exist(Expression<Func<T, bool>> @where = null)
         {
-            return Get(where).Any();
+            return DbContext.Exist(where);
         }
 
         public virtual Task<bool> ExistAsync(Expression<Func<T, bool>> @where = null)
         {
-            if (where == null) return _set.AnyAsync();
-            return _set.Where(where).AnyAsync();
+            return DbContext.ExistAsync(where);
         }
 
         public virtual int ExecuteSqlWithNonQuery(string sql, params object[] parameters)
         {
-            return _dbContext.ExecuteSqlWithNonQuery(sql, parameters);
+            return DbContext.ExecuteSqlWithNonQuery(sql, parameters);
         }
 
         public virtual Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters)
         {
-            return _dbContext.ExecuteSqlWithNonQueryAsync(sql, parameters);
+            return DbContext.ExecuteSqlWithNonQueryAsync(sql, parameters);
         }
 
         /// <summary>
@@ -135,7 +132,7 @@ namespace Zxw.Framework.NetCore.Repositories
         /// <returns></returns>
         public virtual T GetSingle(TKey key)
         {
-            return _set.Find(key);
+            return DbSet.Find(key);
         }
         /// <summary>
         /// 根据主键获取实体。建议：如需使用Include和ThenInclude请重载此方法。
@@ -144,7 +141,7 @@ namespace Zxw.Framework.NetCore.Repositories
         /// <returns></returns>
         public virtual Task<T> GetSingleAsync(TKey key)
         {
-            return _set.FindAsync(key);
+            return DbContext.FindAsync<T,TKey>(key);
         }
 
         /// <summary>
@@ -152,8 +149,7 @@ namespace Zxw.Framework.NetCore.Repositories
         /// </summary>
         public virtual T GetSingleOrDefault(Expression<Func<T, bool>> @where = null)
         {
-            if (where == null) return _set.SingleOrDefault();
-            return _set.SingleOrDefault(@where);
+            return DbContext.GetSingleOrDefault(@where);
         }
 
         /// <summary>
@@ -161,8 +157,7 @@ namespace Zxw.Framework.NetCore.Repositories
         /// </summary>
         public virtual Task<T> GetSingleOrDefaultAsync(Expression<Func<T, bool>> @where = null)
         {
-            if (where == null) return _set.SingleOrDefaultAsync();
-            return _set.SingleOrDefaultAsync(where);
+            return DbContext.GetSingleOrDefaultAsync(where);
         }
 
         /// <summary>
@@ -170,7 +165,7 @@ namespace Zxw.Framework.NetCore.Repositories
         /// </summary>
         public virtual IQueryable<T> Get(Expression<Func<T, bool>> @where = null)
         {
-            return (@where != null ? _set.AsNoTracking().Where(@where) : _set.AsNoTracking());
+            return (@where != null ? DbSet.Where(@where).AsNoTracking() : DbSet.AsNoTracking());
         }
 
         /// <summary>
@@ -178,7 +173,7 @@ namespace Zxw.Framework.NetCore.Repositories
         /// </summary>
         public virtual Task<List<T>> GetAsync(Expression<Func<T, bool>> @where = null)
         {
-            return _set.Where(where).ToListAsync();
+            return DbSet.Where(where).ToListAsync();
         }
 
         /// <summary>
@@ -200,35 +195,35 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public virtual IList<TView> SqlQuery<TView>(string sql, params object[] parameters) where TView : class, new()
         {
-            return _dbContext.SqlQuery<T, TView>(sql, parameters);
+            return DbContext.SqlQuery<T, TView>(sql, parameters);
         }
 
         public virtual Task<List<TView>> SqlQueryAsync<TView>(string sql, params object[] parameters) where TView : class, new()
         {
-            return _dbContext.SqlQueryAsync<T,TView>(sql, parameters);
+            return DbContext.SqlQueryAsync<T,TView>(sql, parameters);
         }
 
         public virtual int Update(T model, params string[] updateColumns)
         {
-            _dbContext.Update(model, updateColumns);
-            return _dbContext.SaveChanges();
+            DbContext.Update(model, updateColumns);
+            return DbContext.SaveChanges();
         }
 
         public virtual int Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
         {
-            return _dbContext.Update(where, updateFactory);
+            return DbContext.Update(where, updateFactory);
         }
 
         public virtual Task<int> UpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
         {
-            return _dbContext.UpdateAsync(where, updateFactory);
+            return DbContext.UpdateAsync(where, updateFactory);
         }
 
         public virtual void Dispose()
         {
-            if (_dbContext != null)
+            if (DbContext != null)
             {
-                _dbContext.Dispose();
+                DbContext.Dispose();
             }
         }
     }

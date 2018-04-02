@@ -1,0 +1,21 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row" id="content" style="margin-left: 20px; font-size: 16px;">
+
+</div>
+@section scripts
+{
+    <script src="~/js/marked.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $.get('@Url.Content("~/doc/README.md?r="+DateTime.Now.ToString("yyyyMMddHHmmssfff"))',
+                function(data) {
+                    $("#content").html(marked(data));
+                });
+        });
+    </script>
+}
+
