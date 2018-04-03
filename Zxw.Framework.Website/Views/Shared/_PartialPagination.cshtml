@@ -34,7 +34,7 @@
     </div>
     <div class="col-md-6">
         <div class="page_add">
-            <span data-bind="text:'共'+pageCount()+'页，到第'"></span>
+            <span data-bind="text:'总计 '+total()+' 条数据，共 '+pageCount()+' 页，到第'"></span>
             <input type="number" class="form-control" min="1" data-bind="attr:{max:pageCount}, value:targetPageIndex"><span>页</span>
             <button type="button" class="btn btn-default" data-bind="click:function(){gotopage(targetPageIndex());}">确定</button>
         </div>

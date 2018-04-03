@@ -31,7 +31,7 @@ namespace Zxw.Framework.Website.Controllers
             {
                 using (var repository = _unitOfWork.GetRepository<ISysMenuRepository>())
                 {
-                    var rows = repository.Get(m => m.Activable && m.Visiable);
+                    var rows = repository.GetMenusByTreeView().Where(m=>m.Activable && m.Visiable).ToList();
                     return Json(ExcutedResult.SuccessResult(rows));
                 }
             });
@@ -44,8 +44,8 @@ namespace Zxw.Framework.Website.Controllers
             {
                 using (var repository = _unitOfWork.GetRepository<ISysMenuRepository>())
                 {
-                    var total = repository.Count(m => m.Activable && m.Visiable);
-                    var rows = repository.GetByPagination(m => m.Activable && m.Visiable, pageSize, pageIndex, true,
+                    var total = repository.Count(m => true);
+                    var rows = repository.GetByPagination(m => true, pageSize, pageIndex, true,
                         m => m.SortIndex).ToList();
                     return Json(PaginationResult.PagedResult(rows, total, pageSize, pageIndex));
                 }

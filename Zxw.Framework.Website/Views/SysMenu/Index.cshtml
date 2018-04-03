@@ -39,8 +39,8 @@
                             <input type="checkbox" class="icheck"/>
                         </td>
                         <td>
-                            <a href="javascript:;"><i class="fa fa-edit"></i></a>
-                            <a href="javascript:;"><i class="fa fa-remove"></i></a>
+                            <a href="javascript:;" title="编辑"><i class="fa fa-edit"></i></a>
+                            <a href="javascript:;" title="删除"><i class="fa fa-remove"></i></a>
                         </td>
                     </tr>
                 </tbody>
@@ -55,12 +55,10 @@
     <script src="~/lib/iCheck/icheck.min.js"></script>
     <script type="text/javascript">
         $(function () {
-
             viewmodel.pageSize(15);
             viewmodel.pageIndex(1);
             viewmodel.remoteUrl('@Url.Action("GetMenusByPaged")');
             viewmodel.loadData();
-
         });
         $('input[type="checkbox"].icheck').iCheck({
             handle: 'checkbox',

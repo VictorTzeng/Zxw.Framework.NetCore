@@ -18,7 +18,7 @@ namespace Zxw.Framework.Website.Repositories
             //插入成功后触发
             Triggers<SysMenu>.Inserted += entry =>
             {
-                var parentMenu = DbContext.Find<SysMenu, int>(entry.Entity.ParentId);
+                var parentMenu = GetSingle(entry.Entity.ParentId);
                 entry.Entity.SortIndex = entry.Entity.Id;
                 entry.Entity.MenuPath = (parentMenu?.MenuPath ?? "0") + "," + entry.Entity.Id;
                 Edit(entry.Entity);
@@ -26,7 +26,7 @@ namespace Zxw.Framework.Website.Repositories
             //修改成功后触发
             Triggers<SysMenu>.Updated += entry =>
             {
-                var parentMenu = DbContext.Find<SysMenu, int>(entry.Entity.ParentId);
+                var parentMenu = GetSingle(entry.Entity.ParentId);
                 entry.Entity.SortIndex = entry.Entity.Id;
                 entry.Entity.MenuPath = (parentMenu?.MenuPath ?? "0") + "," + entry.Entity.Id;
                 Edit(entry.Entity);
@@ -72,21 +72,23 @@ namespace Zxw.Framework.Website.Repositories
 
         public IList<SysMenuViewModel> GetMenusByTreeView(int menuId = 0)
         {
-            throw new NotImplementedException();
+            return GetTreeMenu(menuId);
         }
 
         private IList<SysMenuViewModel> GetTreeMenu(int menuId = 0)
         {
-            if (menuId == 0) return null;
             var reslut = new List<SysMenuViewModel>();
-            var root = GetSingle(menuId);
-            if (root == null) return null;
             var rootViewModel = new SysMenuViewModel();
-            rootViewModel = TinyMapper.Map(root, rootViewModel);
-            if (rootViewModel.ParentId == 0)
+            if (menuId != 0)
             {
-                reslut.Add(rootViewModel);
-                return reslut;
+                var root = GetSingle(menuId);
+                if (root == null) return null;
+                rootViewModel = TinyMapper.Map(root, rootViewModel);
+                if (rootViewModel.ParentId == 0)
+                {
+                    reslut.Add(rootViewModel);
+                    return reslut;
+                }
             }
             var children = Get(m => m.ParentId == menuId);
             foreach (var child in children)

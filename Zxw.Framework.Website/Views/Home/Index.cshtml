@@ -375,7 +375,7 @@ desired effect
     <script src="~/js/knockout-3.4.2.js"></script>
     <script src="~/js/knockout.mapping.min.js"></script>
     <script src="~/js/jquery.tmpl.js"></script>
-    @*<script src="~/js/site.js"></script>*@
+    <script src="~/js/site.js"></script>
     <!-- Optionally, you can add Slimscroll and FastClick plugins.
     Both of these plugins are recommended to enhance the
     user experience. -->
@@ -396,7 +396,7 @@ desired effect
     </script>
     <script type="text/javascript">
     $(function() {
-        @*viewmodel.loadMenus('@Url.Action("GetMenus","SysMenu")');*@
+        viewmodel.loadMenus('@Url.Action("GetMenus","SysMenu")');
         $("#tabContainer").tabs({
             data: [
                 {
@@ -423,9 +423,10 @@ desired effect
         });
 
     });
-        function tabClick() {
-            $("#tabContainer").data("tabs")
-                .addTab({ id: 'test', text: 'addTab', closeable: true, url: 'tab_content.html' });
-        }    </script>
+    function tabClick() {
+        $("#tabContainer").data("tabs")
+            .addTab({ id: 'test', text: 'addTab', closeable: true, url: 'tab_content.html' });
+    } 
+    </script>
 </body>
 </html>
