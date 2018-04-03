@@ -70,9 +70,34 @@ namespace Zxw.Framework.Website.Repositories
             return DbContext.SaveChangesWithTriggers();
         }
 
-        public IList<SysMenuViewModel> GetMenusByTreeView()
+        public IList<SysMenuViewModel> GetMenusByTreeView(int menuId = 0)
         {
             throw new NotImplementedException();
+        }
+
+        private IList<SysMenuViewModel> GetTreeMenu(int menuId = 0)
+        {
+            if (menuId == 0) return null;
+            var reslut = new List<SysMenuViewModel>();
+            var root = GetSingle(menuId);
+            if (root == null) return null;
+            var rootViewModel = new SysMenuViewModel();
+            rootViewModel = TinyMapper.Map(root, rootViewModel);
+            if (rootViewModel.ParentId == 0)
+            {
+                reslut.Add(rootViewModel);
+                return reslut;
+            }
+            var children = Get(m => m.ParentId == menuId);
+            foreach (var child in children)
+            {
+                var tmp = new SysMenuViewModel();
+                tmp = TinyMapper.Map(child, tmp);
+                tmp.Children = GetTreeMenu(tmp.Id);
+                rootViewModel.Children.Add(tmp);
+            }
+            reslut.Add(rootViewModel);
+            return reslut;
         }
     }
 }

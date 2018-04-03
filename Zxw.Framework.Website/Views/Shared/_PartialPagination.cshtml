@@ -1,0 +1,43 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+<style type="text/css">
+    .page_add{float:right; margin:25px 8px auto 8px;}
+    .page_add input{ float:left; width:80px;  margin:0 8px;margin-top:-8px;}
+    .page_add span{float:left;}
+    .page_add button{ float:right; margin:0 8px;margin-top:-8px;}
+    .pagination > li > a, .pagination > li > span{ color:#666;}
+</style>
+<!--分页开始-->
+<!-- ko if:checkShowPagination -->
+<div class="row">
+    <div class="col-md-6">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li>
+                    <a data-bind="click:previous" aria-label="Previous" title="上页">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <!-- ko foreach:pageNumbers -->
+                <li data-bind="css:{active:$data==$root.pageIndex()}">
+                    <a data-bind="text:$data,click:function(){$root.gotopage($data);}"></a>
+                </li>
+                <!-- /ko -->
+                <li>
+                    <a data-bind="click:next" aria-label="Next" title="下页">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div class="col-md-6">
+        <div class="page_add">
+            <span data-bind="text:'共'+pageCount()+'页，到第'"></span>
+            <input type="number" class="form-control" min="1" data-bind="attr:{max:pageCount}, value:targetPageIndex"><span>页</span>
+            <button type="button" class="btn btn-default" data-bind="click:function(){gotopage(targetPageIndex());}">确定</button>
+        </div>
+    </div>
+</div>
+<!-- /ko -->

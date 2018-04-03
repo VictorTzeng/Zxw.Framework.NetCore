@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Zxw.Framework.NetCore.Attributes;
@@ -23,14 +24,32 @@ namespace Zxw.Framework.Website.Controllers
             return View();
         }
 
-        [AjaxRequestOnly]
-        public ActionResult GetMenus()
+        [AjaxRequestOnly, HttpGet]
+        public Task<IActionResult> GetMenus()
         {
-            using (var repository = _unitOfWork.GetRepository<ISysMenuRepository>())
+            return Task.Factory.StartNew<IActionResult>(() =>
             {
-                var rows = repository.GetAsync(m => m.Activable && m.Visiable).Result;
-                return Json(ExcutedResult.SuccessResult(rows));
-            }
+                using (var repository = _unitOfWork.GetRepository<ISysMenuRepository>())
+                {
+                    var rows = repository.Get(m => m.Activable && m.Visiable);
+                    return Json(ExcutedResult.SuccessResult(rows));
+                }
+            });
+        }
+
+        [AjaxRequestOnly]
+        public Task<IActionResult> GetMenusByPaged(int pageSize, int pageIndex)
+        {
+            return Task.Factory.StartNew<IActionResult>(() =>
+            {
+                using (var repository = _unitOfWork.GetRepository<ISysMenuRepository>())
+                {
+                    var total = repository.Count(m => m.Activable && m.Visiable);
+                    var rows = repository.GetByPagination(m => m.Activable && m.Visiable, pageSize, pageIndex, true,
+                        m => m.SortIndex).ToList();
+                    return Json(PaginationResult.PagedResult(rows, total, pageSize, pageIndex));
+                }
+            });
         }
         /// <summary>
         /// ÐÂ½¨

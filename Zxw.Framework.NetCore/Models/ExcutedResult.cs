@@ -38,16 +38,16 @@
         /// <summary>
         /// 每页条数
         /// </summary>
-        public int size { get; set; }
+        public int pageSize { get; set; }
         /// <summary>
         /// 当前页码
         /// </summary>
-        public int index { get; set; }
+        public int pageIndex { get; set; }
 
         /// <summary>
         /// 总页数
         /// </summary>
-        public int pages => total % size == 0 ? total / size : total / size + 1;
+        public int pageCount => total % pageSize == 0 ? total / pageSize : total / pageSize + 1;
 
         public PaginationResult(bool success, string msg, object rows) : base(success, msg, rows)
         {
@@ -58,8 +58,8 @@
             return new PaginationResult(true, null, rows)
             {
                 total = total,
-                size = size,
-                index = index
+                pageSize = size,
+                pageIndex = index
             };
         }
     }

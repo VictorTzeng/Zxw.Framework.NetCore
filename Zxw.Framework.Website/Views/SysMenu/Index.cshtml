@@ -1,8 +1,71 @@
 ﻿
 @{
-    ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<link rel="stylesheet" href="~/lib/iCheck/all.css"/>
+<style type="text/css">
+    td {
+        text-align: center;
+    }
+</style>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <button class="btn btn-success"><i class="fa fa-plus"></i>&nbsp;新建</button>
+        </div>
+        <div class="col-md-12">
+            <table class="table table-bordered table-hover table-striped" style="margin-top: 10px;">
+                <thead>
+                    <tr>
+                        <td>ID</td>
+                        <td>名称</td>
+                        <td>标识</td>
+                        <td>路径</td>
+                        <td>是否启用</td>
+                        <td>是否显示</td>
+                        <td>操作</td>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach:rows">
+                    <tr>
+                        <td data-bind="text:($root.pageIndex()-1)*$root.pageSize()+$index()+1"></td>
+                        <td data-bind="text:menuName"></td>
+                        <td data-bind="text:identity"></td>
+                        <td data-bind="text:routeUrl"></td>
+                        <td>
+                            <input type="checkbox" class="icheck"/>
+                        </td>
+                        <td>
+                            <input type="checkbox" class="icheck"/>
+                        </td>
+                        <td>
+                            <a href="javascript:;"><i class="fa fa-edit"></i></a>
+                            <a href="javascript:;"><i class="fa fa-remove"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            @Html.Partial("_PartialPagination")
+        </div>
+    </div>
+</div>
 
-<h2>Index</h2>
+@section Scripts
+{
+    <script src="~/lib/iCheck/icheck.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
 
+            viewmodel.pageSize(15);
+            viewmodel.pageIndex(1);
+            viewmodel.remoteUrl('@Url.Action("GetMenusByPaged")');
+            viewmodel.loadData();
+
+        });
+        $('input[type="checkbox"].icheck').iCheck({
+            handle: 'checkbox',
+            checkboxClass: 'icheckbox_flat-green',
+            radioClass: 'iradio_flat-green'
+        });
+    </script>
+}

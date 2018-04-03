@@ -8,6 +8,6 @@ namespace Zxw.Framework.Website.IRepositories
 {
     public interface ISysMenuRepository:IRepository<SysMenu, Int32>
     {
-        IList<SysMenuViewModel> GetMenusByTreeView();
+        IList<SysMenuViewModel> GetMenusByTreeView(int menuId = 0);
     }
 }

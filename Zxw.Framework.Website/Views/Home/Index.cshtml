@@ -258,9 +258,9 @@ desired effect
                     <li class="header">系统菜单</li>
                     <!-- Optionally, you can add icons to the links -->
                     <li class="active"><a href="@Url.Action("Index","Home")"><i class="fa fa-link"></i><span>首页</span></a></li>
-                    <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
+                    <li><a href="#" onclick="tabClick();"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
                     <li class="treeview">
-                        <a href="#">
+                        <a href="javascript:;">
                             <i class="fa fa-link"></i> <span>Multilevel</span>
                             <span class="pull-right-container">
                                 <i class="fa fa-angle-left pull-right"></i>
@@ -279,8 +279,7 @@ desired effect
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Main content -->
-            <section id="tabContainer" class="content container-fluid">
-            </section>
+            <section id="tabContainer" class="content container-fluid" style="padding: 15px 0 0 0"></section>
             <!-- /.content -->
         </div>
         <!-- /.content-wrapper -->
@@ -376,7 +375,7 @@ desired effect
     <script src="~/js/knockout-3.4.2.js"></script>
     <script src="~/js/knockout.mapping.min.js"></script>
     <script src="~/js/jquery.tmpl.js"></script>
-    <script src="~/js/site.js"></script>
+    @*<script src="~/js/site.js"></script>*@
     <!-- Optionally, you can add Slimscroll and FastClick plugins.
     Both of these plugins are recommended to enhance the
     user experience. -->
@@ -397,7 +396,7 @@ desired effect
     </script>
     <script type="text/javascript">
     $(function() {
-        viewmodel.loadMenus('@Url.Action("GetMenus","SysMenu")');
+        @*viewmodel.loadMenus('@Url.Action("GetMenus","SysMenu")');*@
         $("#tabContainer").tabs({
             data: [
                 {
@@ -405,12 +404,28 @@ desired effect
                     text: '关于项目',
                     url: "@Url.Action("Default","Home")",
                     closeable: false
+                },
+                {
+                    id: 'SysMenu',
+                    text: '模块管理',
+                    url: "@Url.Action("Index","SysMenu")",
+                    closeable: true
+                },
+                {
+                    id: 'baidu',
+                    text: '百度一下',
+                    url: "https://www.baidu.com",
+                    closeable: true
                 }
             ],
             showIndex: 0,
             loadAll: false
         });
+
     });
-    </script>
+        function tabClick() {
+            $("#tabContainer").data("tabs")
+                .addTab({ id: 'test', text: 'addTab', closeable: true, url: 'tab_content.html' });
+        }    </script>
 </body>
 </html>
