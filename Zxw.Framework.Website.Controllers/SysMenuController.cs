@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,53 @@ namespace Zxw.Framework.Website.Controllers
             {
                 using (var repository = _unitOfWork.GetRepository<ISysMenuRepository>())
                 {
+                    #region Ìí¼ÓÄ£¿é£¬×¢ÊÍµôÁË
+
+                    //repository.AddRange(new List<SysMenu>
+                    //{
+                    //    new SysMenu
+                    //    {
+                    //        Identity = "SysMenu/Add",
+                    //        MenuName = "Ôö¼Ó",
+                    //        ParentId = 1,
+                    //        RouteUrl = "~/SysMenu/Add",
+                    //        Visiable = false
+                    //    },
+                    //    new SysMenu
+                    //    {
+                    //        Identity = "SysMenu/Edit",
+                    //        MenuName = "±à¼­",
+                    //        ParentId = 1,
+                    //        RouteUrl = "~/SysMenu/Edit",
+                    //        Visiable = false
+                    //    },
+                    //    new SysMenu
+                    //    {
+                    //        Identity = "SysMenu/Delete",
+                    //        MenuName = "É¾³ý",
+                    //        ParentId = 1,
+                    //        RouteUrl = "~/SysMenu/Delete",
+                    //        Visiable = false
+                    //    },
+                    //    new SysMenu
+                    //    {
+                    //        Identity = "SysMenu/Active",
+                    //        MenuName = "ÆôÍ£ÓÃ",
+                    //        ParentId = 1,
+                    //        RouteUrl = "~/SysMenu/Active",
+                    //        Visiable = false
+                    //    },
+                    //    new SysMenu
+                    //    {
+                    //        Identity = "SysMenu/Visualize",
+                    //        MenuName = "ÏÔÊ¾/Òþ²Ø",
+                    //        ParentId = 1,
+                    //        RouteUrl = "~/SysMenu/Visualize",
+                    //        Visiable = false
+                    //    }
+                    //});
+
+                    #endregion
                     var rows = repository.GetMenusByTreeView().Where(m=>m.Activable && m.Visiable).ToList();
                     return Json(ExcutedResult.SuccessResult(rows));
                 }
@@ -46,7 +94,7 @@ namespace Zxw.Framework.Website.Controllers
                 {
                     var total = repository.Count(m => true);
                     var rows = repository.GetByPagination(m => true, pageSize, pageIndex, true,
-                        m => m.SortIndex).ToList();
+                        m => m.Id).ToList();
                     return Json(PaginationResult.PagedResult(rows, total, pageSize, pageIndex));
                 }
             });

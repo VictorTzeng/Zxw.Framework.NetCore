@@ -19,9 +19,9 @@ namespace Zxw.Framework.Website.Repositories
             Triggers<SysMenu>.Inserted += entry =>
             {
                 var parentMenu = GetSingle(entry.Entity.ParentId);
-                entry.Entity.SortIndex = entry.Entity.Id;
                 entry.Entity.MenuPath = (parentMenu?.MenuPath ?? "0") + "," + entry.Entity.Id;
-                Edit(entry.Entity);
+                entry.Entity.SortIndex = entry.Entity.Id;
+                entry.Context.SaveChangesWithTriggers(entry.Context.SaveChanges);
             };
             //修改成功后触发
             Triggers<SysMenu>.Updated += entry =>
@@ -29,7 +29,7 @@ namespace Zxw.Framework.Website.Repositories
                 var parentMenu = GetSingle(entry.Entity.ParentId);
                 entry.Entity.SortIndex = entry.Entity.Id;
                 entry.Entity.MenuPath = (parentMenu?.MenuPath ?? "0") + "," + entry.Entity.Id;
-                Edit(entry.Entity);
+                entry.Context.SaveChangesWithTriggers(entry.Context.SaveChanges);
             };
             TinyMapper.Bind<SysMenu, SysMenuViewModel>();
         }
@@ -37,37 +37,37 @@ namespace Zxw.Framework.Website.Repositories
         public override int Add(SysMenu entity)
         {
             DbContext.Add(entity);
-            return DbContext.SaveChangesWithTriggers();
+            return DbContext.SaveChangesWithTriggers(true);
         }
 
         public override Task<int> AddAsync(SysMenu entity)
         {
             DbContext.AddAsync(entity);
-            return DbContext.SaveChangesWithTriggersAsync();
+            return DbContext.SaveChangesWithTriggersAsync(true);
         }
 
         public override int AddRange(ICollection<SysMenu> entities)
         {
             DbContext.AddRange(entities);
-            return DbContext.SaveChangesWithTriggers();
+            return DbContext.SaveChangesWithTriggers(true);
         }
 
         public override Task<int> AddRangeAsync(ICollection<SysMenu> entities)
         {
             DbContext.AddRangeAsync(entities);
-            return DbContext.SaveChangesWithTriggersAsync();
+            return DbContext.SaveChangesWithTriggersAsync(true);
         }
 
         public override int Edit(SysMenu entity)
         {
             DbContext.Edit(entity);
-            return DbContext.SaveChangesWithTriggers();
+            return DbContext.SaveChangesWithTriggers(true);
         }
 
         public override int EditRange(ICollection<SysMenu> entities)
         {
             DbContext.EditRange(entities);
-            return DbContext.SaveChangesWithTriggers();
+            return DbContext.SaveChangesWithTriggers(true);
         }
 
         public IList<SysMenuViewModel> GetMenusByTreeView(int menuId = 0)

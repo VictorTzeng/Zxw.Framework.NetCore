@@ -35,6 +35,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Google Font -->
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+    <style type="text/css">
+        .embed-responsive-item {
+            top: unset !important;
+            left: unset !important;
+        }
+    </style>
 </head>
 <!--
 BODY TAG OPTIONS:
@@ -277,9 +283,12 @@ desired effect
             <!-- /.sidebar -->
         </aside>
         <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper">
+        <div class="content-wrapper" id="content-wrapper">
             <!-- Main content -->
-            <section id="tabContainer" class="content container-fluid" style="padding: 15px 0 0 0"></section>
+            <section class="content container-fluid" style="padding: 15px 0 0 0;s">
+                <div id="tabContainer"></div>
+                <iframe id="tab-content" scrolling="auto" style="overflow-x:hidden; width: 100%; min-height: 100%;border: 0" src="@Url.Action("Default")" onload="initSize();"></iframe>
+            </section>
             <!-- /.content -->
         </div>
         <!-- /.content-wrapper -->
@@ -395,38 +404,39 @@ desired effect
         </li>
     </script>
     <script type="text/javascript">
-    $(function() {
-        viewmodel.loadMenus('@Url.Action("GetMenus","SysMenu")');
-        $("#tabContainer").tabs({
-            data: [
-                {
-                    id: 'readme',
-                    text: '关于项目',
-                    url: "@Url.Action("Default","Home")",
-                    closeable: false
-                },
-                {
-                    id: 'SysMenu',
-                    text: '模块管理',
-                    url: "@Url.Action("Index","SysMenu")",
-                    closeable: true
-                },
-                {
-                    id: 'baidu',
-                    text: '百度一下',
-                    url: "https://www.baidu.com",
-                    closeable: true
-                }
-            ],
-            showIndex: 0,
-            loadAll: false
-        });
+        function initSize() {
+            $("#tab-content").css({
+                "max-height": ($("#content-wrapper").height()-$("#tabContainer").height()- 20) + "px",
+            });
+        }
 
-    });
-    function tabClick() {
-        $("#tabContainer").data("tabs")
-            .addTab({ id: 'test', text: 'addTab', closeable: true, url: 'tab_content.html' });
-    } 
+        window.onresize = initSize;
+        $(function() {
+            viewmodel.loadMenus('@Url.Action("GetMenus","SysMenu")');
+            $("#tabContainer").tabs({
+                data: [
+                    {
+                        id: 'readme',
+                        text: '关于项目',
+                        url: "@Url.Action("Default","Home")",
+                        closeable: false
+                    },
+                    {
+                        id: 'SysMenu',
+                        text: '模块管理',
+                        url: "@Url.Action("Index","SysMenu")",
+                        closeable: true
+                    }
+                ],
+                showIndex: 0,
+                loadAll: false
+            });
+            initSize();
+        });
+        function tabClick() {
+            $("#tabContainer").data("tabs")
+                .addTab({ id: 'test', text: 'addTab', closeable: true, url: 'tab_content.html' });
+        } 
     </script>
 </body>
 </html>

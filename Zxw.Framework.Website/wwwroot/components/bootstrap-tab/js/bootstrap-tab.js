@@ -40,8 +40,7 @@
     BaseTab.prototype.template = {
         ul_nav: '<ul id="myTab"  class="nav nav-tabs" style="margin-left:15px;"></ul>',
         ul_li: '<li><a href="#{0}" data-id="{0}" data-url="{2}" data-toggle="tab"><span>{1}</span></a></li>',
-        ul_li_close: '<i class="fa fa-remove closeable" title="关闭"></i>',
-        div_content: '<iframe id="tab-content" class="embed-responsive-item" style="overflow-y:hidden;" src="{0}"></iframe>',
+        ul_li_close: '<i class="fa fa-remove closeable" title="关闭"></i>'
     }
 
     //初始化
@@ -63,7 +62,7 @@
         this.$element.find("#myTab li a").click(function() {
             var src = $(this).attr("data-url");
             if (!$(this).parent().hasClass("active")) {
-                self.$element.find("#tab-content").attr("src", src);
+                $("#tab-content").attr("src", src);
             }
         });
         this.$element.find("#myTab li").find("i").click(function(e) {
@@ -80,7 +79,6 @@
     //使用模板搭建页面结构
     BaseTab.prototype.builder = function (data) {
         var ul_nav = $(this.template.ul_nav);
-        var div_content = $('<div class="embed-responsive embed-responsive-16by9" style="padding-bottom:60%;">'+this.template.div_content.format(data[0].url)+'</div>');
 
         for (var i = 0; i < data.length; i++) {
             //nav-tab
@@ -97,8 +95,8 @@
         }
 
         this.$element.append(ul_nav);
-        this.$element.append(div_content);
         this.$element.find(".nav-tabs li").eq(0).find("a").tab("show");
+        $("#tab-content").attr("src", data[0].url);
     }
 
     //新增一个tab页
@@ -123,7 +121,7 @@
         this.$element.find(".nav-tabs li a[data-id='" + obj.id + "']").click(function() {
             var src = $(this).attr("data-url");
             if (!$(this).parent().hasClass("active")) {
-                self.$element.find("#tab-content").attr("src", src);
+                $("#tab-content").attr("src", src);
             }
         });
 
@@ -170,7 +168,7 @@
     //根据id设置活动tab页
     BaseTab.prototype.showTab=function (tabId) {
         var url = this.$element.find(".nav-tabs li a[data-id='" + tabId + "']").attr("data-url");
-        this.$element.find("#tab-content").attr("src", url);
+        $("#tab-content").attr("src", url);
     }
 
     //获取当前活动tab页的ID
