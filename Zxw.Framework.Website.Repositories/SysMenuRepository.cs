@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggers;
 using Nelibur.ObjectMapper;
@@ -78,27 +79,14 @@ namespace Zxw.Framework.Website.Repositories
         private IList<SysMenuViewModel> GetTreeMenu(int menuId = 0)
         {
             var reslut = new List<SysMenuViewModel>();
-            var rootViewModel = new SysMenuViewModel();
-            if (menuId != 0)
-            {
-                var root = GetSingle(menuId);
-                if (root == null) return null;
-                rootViewModel = TinyMapper.Map(root, rootViewModel);
-                if (rootViewModel.ParentId == 0)
-                {
-                    reslut.Add(rootViewModel);
-                    return reslut;
-                }
-            }
-            var children = Get(m => m.ParentId == menuId);
+            var children = Get(m => m.ParentId == menuId && m.Activable && m.Visiable).OrderBy(m => m.SortIndex);
             foreach (var child in children)
             {
                 var tmp = new SysMenuViewModel();
                 tmp = TinyMapper.Map(child, tmp);
                 tmp.Children = GetTreeMenu(tmp.Id);
-                rootViewModel.Children.Add(tmp);
+                reslut.Add(tmp);
             }
-            reslut.Add(rootViewModel);
             return reslut;
         }
     }

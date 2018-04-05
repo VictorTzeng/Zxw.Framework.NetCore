@@ -79,7 +79,7 @@ namespace Zxw.Framework.Website.Controllers
                     //});
 
                     #endregion
-                    var rows = repository.GetMenusByTreeView().Where(m=>m.Activable && m.Visiable).ToList();
+                    var rows = repository.GetMenusByTreeView().OrderBy(m=>m.SortIndex).ToList();
                     return Json(ExcutedResult.SuccessResult(rows));
                 }
             });

@@ -39,7 +39,7 @@
     //结构模板
     BaseTab.prototype.template = {
         ul_nav: '<ul id="myTab"  class="nav nav-tabs" style="margin-left:15px;"></ul>',
-        ul_li: '<li><a href="#{0}" data-id="{0}" data-url="{2}" data-toggle="tab"><span>{1}</span></a></li>',
+        ul_li: '<li><a data-id="{0}" data-url="{2}" data-toggle="tab"><span>{1}</span></a></li>',
         ul_li_close: '<i class="fa fa-remove closeable" title="关闭"></i>'
     }
 
@@ -123,7 +123,7 @@
             if (!$(this).parent().hasClass("active")) {
                 $("#tab-content").attr("src", src);
             }
-        });
+        }).click();
 
 
         if(obj.closeable) {

@@ -63,9 +63,9 @@ desired effect
 |---------------------------------------------------------|
 -->
 <body class="hold-transition skin-blue sidebar-mini">
-    <div class="wrapper">
+    <div class="wrapper" id="wrapper">
         <!-- Main Header -->
-        <header class="main-header">
+        <header class="main-header" id="header">
             <!-- Logo -->
             <a href="#" class="logo">
                 <!-- mini logo for sidebar mini 50x50 pixels -->
@@ -263,20 +263,9 @@ desired effect
                 <ul class="sidebar-menu" data-widget="tree">
                     <li class="header">系统菜单</li>
                     <!-- Optionally, you can add icons to the links -->
-                    <li class="active"><a href="@Url.Action("Index","Home")"><i class="fa fa-link"></i><span>首页</span></a></li>
-                    <li><a href="#" onclick="tabClick();"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
-                    <li class="treeview">
-                        <a href="javascript:;">
-                            <i class="fa fa-link"></i> <span>Multilevel</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="#">Link in level 2</a></li>
-                            <li><a href="#">Link in level 2</a></li>
-                        </ul>
-                    </li>
+
+                    <!-- ko template:{name:'tmpl_menu',foreach:menus} -->
+                    <!-- /ko -->
                 </ul>
                 <!-- /.sidebar-menu -->
             </section>
@@ -293,7 +282,7 @@ desired effect
         </div>
         <!-- /.content-wrapper -->
         <!-- Main Footer -->
-        <footer class="main-footer">
+        <footer class="main-footer" id="footer">
             <!-- To the right -->
             <div class="pull-right hidden-xs">
                 Anything you want
@@ -384,30 +373,39 @@ desired effect
     <script src="~/js/knockout-3.4.2.js"></script>
     <script src="~/js/knockout.mapping.min.js"></script>
     <script src="~/js/jquery.tmpl.js"></script>
+    <script src="~/js/demo.js"></script>
     <script src="~/js/site.js"></script>
     <!-- Optionally, you can add Slimscroll and FastClick plugins.
     Both of these plugins are recommended to enhance the
     user experience. -->
     <script type="text/html" id="tmpl_menu">
-        <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
-        <li class="treeview">
-            <a href="#">
-                <i class="fa fa-link"></i> <span>Multilevel</span>
-                <span class="pull-right-container">
-                    <i class="fa fa-angle-left pull-right"></i>
-                </span>
+        <!-- ko ifnot:children.length>0 -->
+        <li data-bind="attr:{id:'menu_'+id}">
+            <!-- ko if:parentId==0 -->
+            <a href="javascript:void(0);" data-bind="html:$root.getMenuIcon(menuIcon,menuName),click:function(){$root.menuClick(id,menuName,routeUrl);}"></a>
+            <!-- /ko -->
+            <!-- ko ifnot:parentId==0 -->
+            <a href="javascript:void(0);" data-bind="html:$root.getMenuIconNoSpan(menuIcon,menuName),click:function(){$root.menuClick(id,menuName,routeUrl);}"></a>
+            <!-- /ko -->
+        </li>
+        <!-- /ko -->
+        <!-- ko if:children.length>0 -->
+        <li class="treeview" data-bind="attr:{id:'menu_'+id}">
+            <a href="javascript:void(0);" data-bind="html:$root.getMenuIconExpand(menuIcon,menuName)">
             </a>
             <ul class="treeview-menu">
-                <li><a href="#">Link in level 2</a></li>
-                <li><a href="#">Link in level 2</a></li>
+                <!-- ko template:{name:'tmpl_menu',foreach:children} -->
+                <!-- /ko -->
             </ul>
         </li>
+        <!-- /ko -->
     </script>
     <script type="text/javascript">
         function initSize() {
-            $("#tab-content").css({
-                "max-height": ($("#content-wrapper").height()-$("#tabContainer").height()- 20) + "px",
-            });
+            var height = $(window).height();
+            $("body, #wrapper").height(height);
+            $("#content-wrapper").height(height-$("#header").height()-$("#footer").height()-35);
+            $("#tab-content").height($("#content-wrapper").height()-$("#tabContainer").height()-15);
         }
 
         window.onresize = initSize;
@@ -416,16 +414,10 @@ desired effect
             $("#tabContainer").tabs({
                 data: [
                     {
-                        id: 'readme',
+                        id: '8',
                         text: '关于项目',
                         url: "@Url.Action("Default","Home")",
                         closeable: false
-                    },
-                    {
-                        id: 'SysMenu',
-                        text: '模块管理',
-                        url: "@Url.Action("Index","SysMenu")",
-                        closeable: true
                     }
                 ],
                 showIndex: 0,
@@ -433,10 +425,6 @@ desired effect
             });
             initSize();
         });
-        function tabClick() {
-            $("#tabContainer").data("tabs")
-                .addTab({ id: 'test', text: 'addTab', closeable: true, url: 'tab_content.html' });
-        } 
     </script>
 </body>
 </html>
