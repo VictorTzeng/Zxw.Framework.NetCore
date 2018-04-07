@@ -2,7 +2,8 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<link rel="stylesheet" href="~/lib/iCheck/all.css"/>
+<link rel="stylesheet" href="~/components/Ionicons/css/ionicons.min.css">
+<link rel="stylesheet" href="~/components/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css" />
 <style type="text/css">
     td {
         text-align: center;
@@ -33,10 +34,10 @@
                         <td data-bind="text:identity"></td>
                         <td data-bind="text:routeUrl"></td>
                         <td>
-                            <input type="checkbox" class="icheck"/>
+                            <input type="checkbox" data-bind="bootstrapSwitch:activable"/>
                         </td>
                         <td>
-                            <input type="checkbox" class="icheck"/>
+                            <input type="checkbox" data-bind="bootstrapSwitch:visiable" data-on="<i class='fa fa-check'><i>" data-off="<i class='fa fa-times'></i>" />
                         </td>
                         <td>
                             <a href="javascript:;" title="编辑"><i class="fa fa-edit"></i></a>
@@ -52,18 +53,16 @@
 
 @section Scripts
 {
-    <script src="~/lib/iCheck/icheck.min.js"></script>
+    <script src="~/js/knockout.pagination.js"></script>
+    <script src="~/components/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+    <script src="~/components/bootstrap-switch/js/ko.bindingHandlers.bootstrapSwitch.js"></script>
     <script type="text/javascript">
-        $(function () {
+        $(function() {
+            ko.applyBindings(viewmodel);
             viewmodel.pageSize(15);
             viewmodel.pageIndex(1);
             viewmodel.remoteUrl('@Url.Action("GetMenusByPaged")');
             viewmodel.loadData();
-        });
-        $('input[type="checkbox"].icheck').iCheck({
-            handle: 'checkbox',
-            checkboxClass: 'icheckbox_flat-green',
-            radioClass: 'iradio_flat-green'
         });
     </script>
 }

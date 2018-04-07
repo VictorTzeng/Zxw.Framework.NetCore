@@ -263,7 +263,6 @@ desired effect
                 <ul class="sidebar-menu" data-widget="tree">
                     <li class="header">系统菜单</li>
                     <!-- Optionally, you can add icons to the links -->
-
                     <!-- ko template:{name:'tmpl_menu',foreach:menus} -->
                     <!-- /ko -->
                 </ul>
@@ -364,16 +363,20 @@ desired effect
     <!-- REQUIRED JS SCRIPTS -->
     <!-- jQuery 3 -->
     <script src="~/components/jquery/dist/jquery.min.js"></script>
+    <script src="~/components/jquery-ui/jquery-ui.min.js"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+        $.widget.bridge('uibutton', $.ui.button);
+    </script>
     <!-- Bootstrap 3.3.7 -->
     <script src="~/components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="~/components/bootstrap-tab/js/bootstrap-tab.js"></script>
-    <!-- AdminLTE App -->
-    <script src="~/js/adminlte.min.js"></script>
     <script src="~/lib/layer/layer.js"></script>
     <script src="~/js/knockout-3.4.2.js"></script>
     <script src="~/js/knockout.mapping.min.js"></script>
     <script src="~/js/jquery.tmpl.js"></script>
-    <script src="~/js/demo.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/js/adminlte.min.js"></script>
     <script src="~/js/site.js"></script>
     <!-- Optionally, you can add Slimscroll and FastClick plugins.
     Both of these plugins are recommended to enhance the
@@ -408,7 +411,6 @@ desired effect
             $("#tab-content").height($("#content-wrapper").height()-$("#tabContainer").height()-15);
         }
 
-        window.onresize = initSize;
         $(function() {
             viewmodel.loadMenus('@Url.Action("GetMenus","SysMenu")');
             $("#tabContainer").tabs({
@@ -425,6 +427,7 @@ desired effect
             });
             initSize();
         });
+        window.onresize = initSize;
     </script>
 </body>
 </html>

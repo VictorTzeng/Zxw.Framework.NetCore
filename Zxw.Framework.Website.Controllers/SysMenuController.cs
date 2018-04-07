@@ -166,7 +166,7 @@ namespace Zxw.Framework.Website.Controllers
                     var entity = repository.GetSingle(id);
                     entity.Activable = !entity.Activable;
                     repository.Update(entity, "Activable");
-                    return Json(ExcutedResult.SuccessResult());
+                    return Json(ExcutedResult.SuccessResult(entity.Activable?"OK，已启用。":"OK，已停用"));
                 }
             });
         }

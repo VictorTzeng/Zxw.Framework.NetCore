@@ -45,7 +45,7 @@
         return this.pageIndex()==this.pageCount();
     },
     loadData:function() {
-        $.get(
+        this.get(
             this.remoteUrl(),
             {
                 pageSize: this.pageSize(),
@@ -57,9 +57,41 @@
                 for (var i = 0; i < data.pageCount; i++) {
                     viewmodel.pageNumbers.push(i + 1);
                 }
-            },
-            "JSON"
+            }
         );
+    },
+    get: function(url, data, callback) {
+        $.ajax({
+            url: url,
+            data: data,
+            type: "GET",
+            dataType: "JSON",
+            success: callback,
+            error: function(req) {
+                layer.alert('网络错误，请稍后再试。');
+            }
+        });
+    },
+    post: function(url, data, callback) {
+        $.ajax({
+            url: url,
+            data: data,
+            type: "POST",
+            dataType: "JSON",
+            success: callback,
+            error: function(req) {
+                layer.alert('网络错误，请稍后再试。');
+            }
+        });
+    },
+    active: function(url, data) {
+        this.get(url, data, function(rep) {
+            layer.alert(rep.msg);
+        });
+    },
+    visualize: function(url, data) {
+        this.get(url, data, function(rep) {
+            layer.alert(rep.msg);
+        });
     }
 };
-ko.applyBindings(viewmodel);

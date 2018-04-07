@@ -14,9 +14,9 @@
             this.msg = msg;
             this.rows = rows;
         }
-        public static ExcutedResult SuccessResult()
+        public static ExcutedResult SuccessResult(string msg = null)
         {
-            return new ExcutedResult(true, null, null);
+            return new ExcutedResult(true, msg, null);
         }
         public static ExcutedResult SuccessResult(object rows)
         {
