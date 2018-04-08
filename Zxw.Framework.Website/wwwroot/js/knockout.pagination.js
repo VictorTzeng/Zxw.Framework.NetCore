@@ -85,13 +85,21 @@
         });
     },
     active: function(url, data) {
-        this.get(url, data, function(rep) {
-            layer.alert(rep.msg);
+        var self = this;
+        self.get(url, data, function(rep) {
+            layer.alert(rep.msg, function(index){
+                layer.close(index);
+                self.loadData();
+            });
         });
     },
     visualize: function(url, data) {
-        this.get(url, data, function(rep) {
-            layer.alert(rep.msg);
+        var self = this;
+        self.get(url, data, function(rep) {
+            layer.alert(rep.msg, function(index){
+                layer.close(index);
+                self.loadData();
+            });
         });
     }
 };

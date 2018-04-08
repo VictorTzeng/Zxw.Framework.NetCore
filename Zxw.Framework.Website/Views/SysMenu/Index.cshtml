@@ -2,8 +2,8 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<link rel="stylesheet" href="~/components/Ionicons/css/ionicons.min.css">
-<link rel="stylesheet" href="~/components/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css" />
+<link rel="stylesheet" href="~/components/Ionicons/css/ionicons.min.css"/>
+<link rel="stylesheet" href="~/css/bootstrap.switch.css"/>
 <style type="text/css">
     td {
         text-align: center;
@@ -34,10 +34,16 @@
                         <td data-bind="text:identity"></td>
                         <td data-bind="text:routeUrl"></td>
                         <td>
-                            <input type="checkbox" data-bind="bootstrapSwitch:activable"/>
+                            <label class="switch">
+                                <input type="checkbox" data-bind="checked:activable, click:function(){$root.active('@Url.Action("Active")/'+id(),{});}" >
+                                <span class="slider round"></span>
+                            </label>
                         </td>
                         <td>
-                            <input type="checkbox" data-bind="bootstrapSwitch:visiable" data-on="<i class='fa fa-check'><i>" data-off="<i class='fa fa-times'></i>" />
+                            <label class="switch">
+                                <input type="checkbox" data-bind="checked:visiable, click:function(){$root.visualize('@Url.Action("Visualize")/'+id(),{});}" >
+                                <span class="slider round"></span>
+                            </label>                            
                         </td>
                         <td>
                             <a href="javascript:;" title="编辑"><i class="fa fa-edit"></i></a>
@@ -54,8 +60,6 @@
 @section Scripts
 {
     <script src="~/js/knockout.pagination.js"></script>
-    <script src="~/components/bootstrap-switch/js/bootstrap-switch.min.js"></script>
-    <script src="~/components/bootstrap-switch/js/ko.bindingHandlers.bootstrapSwitch.js"></script>
     <script type="text/javascript">
         $(function() {
             ko.applyBindings(viewmodel);
