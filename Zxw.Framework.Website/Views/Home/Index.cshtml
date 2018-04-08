@@ -16,7 +16,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="~/components/bootstrap/dist/css/bootstrap.min.css">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="~/components/font-awesome/css/font-awesome.min.css">
+    <link href="~/components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
     <!-- Ionicons -->
     <link rel="stylesheet" href="~/components/Ionicons/css/ionicons.min.css">
     <link rel="stylesheet" href="~/components/bootstrap-tab/css/bootstrap-tab.css" />
@@ -273,7 +273,7 @@ desired effect
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper" id="content-wrapper">
             <!-- Main content -->
-            <section class="content container-fluid" style="padding: 15px 0 0 0;s">
+            <section class="content container-fluid" style="padding: 15px 0 0 0;">
                 <div id="tabContainer"></div>
                 <iframe id="tab-content" scrolling="auto" style="overflow-x:hidden; width: 100%; min-height: 100%;border: 0" src="@Url.Action("Default")" onload="initSize();"></iframe>
             </section>

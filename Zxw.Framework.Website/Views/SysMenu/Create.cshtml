@@ -1,0 +1,154 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="~/css/AdminLTE.min.css" />
+<link rel="stylesheet" href="~/components/fontawesome-iconpicker/css/fontawesome-iconpicker.min.css" />
+<style>
+/* The container */
+    .container {
+        display: block;
+        position: relative;
+        padding-left: 26px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        font-size: 14px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    /* Hide the browser's default radio button */
+    .container input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    /* Create a custom radio button */
+    .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 18px;
+        width: 18px;
+        background-color: #eee;
+        -ms-border-radius: 50%;
+        border-radius: 50%;
+    }
+
+    /* On mouse-over, add a grey background color */
+    .container:hover input ~ .checkmark {
+        background-color: #ccc;
+    }
+
+    /* When the radio button is checked, add a blue background */
+    .container input:checked ~ .checkmark {
+        background-color: #2196F3;
+    }
+
+    /* Create the indicator (the dot/circle - hidden when not checked) */
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+    }
+
+    /* Show the indicator (dot/circle) when checked */
+    .container input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    /* Style the indicator (dot/circle) */
+    .container .checkmark:after {
+        top: 6px;
+        left: 6px;
+        width: 6px;
+        height: 6px;
+        -ms-border-radius: 50%;
+        border-radius: 50%;
+        background: white;
+    }
+</style>
+<div class="col-md-12">
+    <div class="box box-primary">
+        @*<div class="box-header with-border">
+            <h3 class="box-title">新建模块</h3>
+        </div>*@
+        <form role="form" method="post" data-bind="submit:submit">
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="MenuName"><font color="red">*</font>名称：</label>
+                    <input type="text" class="form-control" id="MenuName" data-bind="inputText:MenuName" required maxlength="20" />
+                </div>
+                <div class="form-group">
+                    <label for="MenuIcon">图标：</label>
+                    <div class="input-group">
+                        <input data-placement="bottomRight" class="form-control" value="fas fa-archive"
+                               type="text" id="MenuIcon" data-bind="inputText:MenuIcon" />
+                        <span class="input-group-addon"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="ParentId">父级：</label>
+                    <input type="text" class="form-control" id="ParentId" data-bind="inputText:ParentId" />
+                </div>
+                <div class="form-group">
+                    <label for="Identity"><font color="red">*</font>标识：</label>
+                    <input type="text" class="form-control" id="Identity" data-bind="inputText:Identity" required="" maxlength="100" />
+                </div>
+                <div class="form-group">
+                    <label for="RouteUrl"><font color="red">*</font>URL：</label>
+                    <input type="text" class="form-control" id="RouteUrl" data-bind="inputText:RouteUrl" required maxlength="200" />
+                </div>
+                <div class="form-group">
+                    <label>启/停用：</label>
+                    <label class="container pull-right">启用
+                        <input type="radio" checked="checked" name="Activable">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="container pull-right">停用
+                        <input type="radio" name="Activable">
+                        <span class="checkmark"></span>
+                    </label>                
+                </div>
+                <div class="form-group">
+                    <label>显示/隐藏：</label>
+                    <label class="container pull-right">
+                        显示
+                        <input type="radio" checked="checked" name="Visiable">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="container pull-right">
+                        隐藏
+                        <input type="radio" name="Visiable">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts
+{
+    <script src="~/components/fontawesome-iconpicker/js/fontawesome-iconpicker.min.js"></script>
+    <script type="text/javascript">
+        var viewmodel = {
+            ParentId: ko.observable(0),
+            MenuPath: ko.observable(""),
+            MenuName: ko.observable(""),
+            MenuIcon: ko.observable(""),
+            Identity: ko.observable(""),
+            RouteUrl: ko.observable(""),
+            Visiable: ko.observable(true),
+            Activable: ko.observable(true),
+            submit: function(form) {
+
+            }
+        };
+        $(function() {
+            ko.applyBindings(viewmodel);
+            $("#MenuIcon").iconpicker();
+        });
+    </script>
+}

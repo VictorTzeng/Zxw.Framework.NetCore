@@ -12,7 +12,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
-            <button class="btn btn-success" data-toggle="modal" data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;新建</button>
+            <button class="btn btn-success" data-bind="click:function(){$root.add('@Url.Action("Create")','新建模块');}"><i class="fa fa-plus"></i>&nbsp;新建</button>
         </div>
         <div class="col-md-12">
             <table class="table table-bordered table-hover table-striped" style="margin-top: 10px;">
@@ -47,7 +47,7 @@
                     </td>
                     <td>
                         <a href="javascript:;" title="编辑"><i class="fa fa-edit"></i></a>
-                        <a href="javascript:;" title="删除" data-bind="click:function(){$root.remove('@Url.Action("Delete")/'+id(),{});}"><i class="fa fa-remove"></i></a>
+                        <a href="javascript:;" title="删除" data-bind="click:function(){$root.remove('@Url.Action("Delete")/'+id(),{});}"><i class="far fa-trash-alt"></i></a>
                     </td>
                 </tr>
                 </tbody>
@@ -56,28 +56,6 @@
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="modal-default">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Default Modal</h4>
-            </div>
-            <div class="modal-body">
-                <p>One fine body&hellip;</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
 
 @section Scripts
 {

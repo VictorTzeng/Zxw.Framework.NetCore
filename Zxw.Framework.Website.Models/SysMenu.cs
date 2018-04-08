@@ -24,7 +24,7 @@ namespace Zxw.Framework.Website.Models
         public string MenuName { get; set; }
 
         [MaxLength(50)]
-        public string MenuIcon { get; set; } = "fa fa-link";
+        public string MenuIcon { get; set; }
 
         [Required]
         [MaxLength(100)]

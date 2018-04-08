@@ -84,6 +84,20 @@
             }
         });
     },
+    add: function(url,title) {
+        var self = this;
+        layer.open({
+            type: 2,
+            title:title,
+            shadeClose: true,
+            shade: 0.6,
+            area: ['600px', '90%'],
+            content: url, //iframe的url
+            end: function() {
+                self.loadData();
+            }
+        });
+    },
     active: function(url, data) {
         var self = this;
         self.get(url, data, function (rep) {

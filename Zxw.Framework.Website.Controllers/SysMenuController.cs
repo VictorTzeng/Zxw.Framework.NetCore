@@ -20,10 +20,21 @@ namespace Zxw.Framework.Website.Controllers
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
+        #region Views
+
         public IActionResult Index()
         {
             return View();
         }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        #endregion
+
+        #region Methods
 
         [AjaxRequestOnly, HttpGet]
         public Task<IActionResult> GetMenus()
@@ -190,7 +201,7 @@ namespace Zxw.Framework.Website.Controllers
             });
         }
 
-		protected override void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
@@ -198,5 +209,7 @@ namespace Zxw.Framework.Website.Controllers
             }
             base.Dispose(disposing);
         }
+
+        #endregion
 	}
 }
