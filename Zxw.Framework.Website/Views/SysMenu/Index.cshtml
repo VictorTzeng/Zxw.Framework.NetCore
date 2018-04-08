@@ -47,7 +47,7 @@
                         </td>
                         <td>
                             <a href="javascript:;" title="编辑"><i class="fa fa-edit"></i></a>
-                            <a href="javascript:;" title="删除"><i class="fa fa-remove"></i></a>
+                            <a href="javascript:;" title="删除" data-bind="click:function(){$root.remove('@Url.Action("Delete")/'+id(),{});}"><i class="fa fa-remove"></i></a>
                         </td>
                     </tr>
                 </tbody>

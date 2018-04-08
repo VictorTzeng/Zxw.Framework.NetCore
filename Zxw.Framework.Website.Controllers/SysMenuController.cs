@@ -146,7 +146,7 @@ namespace Zxw.Framework.Website.Controllers
                 using (var repository = _unitOfWork.GetRepository<ISysMenuRepository>())
                 {
                     repository.Delete(id);
-                    return Json(ExcutedResult.SuccessResult());
+                    return Json(ExcutedResult.SuccessResult("成功删除一条数据。"));
                 }
             });
         }

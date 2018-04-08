@@ -86,8 +86,10 @@
     },
     active: function(url, data) {
         var self = this;
-        self.get(url, data, function(rep) {
-            layer.alert(rep.msg, function(index){
+        self.get(url, data, function (rep) {
+            var icon = rep.success == true ? 1 : 2;
+            layer.alert(rep.msg,
+                { icon: icon}, function(index){
                 layer.close(index);
                 self.loadData();
             });
@@ -96,10 +98,32 @@
     visualize: function(url, data) {
         var self = this;
         self.get(url, data, function(rep) {
-            layer.alert(rep.msg, function(index){
-                layer.close(index);
-                self.loadData();
-            });
+            var icon = rep.success == true ? 1 : 2;
+            layer.alert(rep.msg,
+                { icon: icon }, function (index) {
+                    layer.close(index);
+                    self.loadData();
+                });
         });
+    },
+    remove: function(url, data) {
+        var self = this;
+        layer.confirm("数据删除后将无法恢复，确定要删除该条数据吗？",
+            {
+                btn: ["知道了","再考虑"],
+                icon: 3,
+                title:'删除提示'
+            },
+            function () {
+                self.get(url, data, function (rep) {
+                    var icon = rep.success == true ? 1 : 2;
+                    layer.alert(rep.msg,
+                        { icon: icon }, function () {
+                            layer.closeAll();
+                            self.loadData();
+                        });
+                });
+            });
+
     }
 };
