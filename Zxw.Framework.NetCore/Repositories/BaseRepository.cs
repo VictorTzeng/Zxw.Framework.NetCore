@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Zxw.Framework.NetCore.EfDbContext;
+using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.NetCore.Repositories
@@ -134,6 +135,12 @@ namespace Zxw.Framework.NetCore.Repositories
         {
             return DbSet.Find(key);
         }
+
+        public T GetSingle(TKey key, Func<IQueryable<T>, IQueryable<T>> includeFunc)
+        {
+            return includeFunc(DbSet.AsQueryable()).AsNoTracking().FirstOrDefault(m => m.Id.Equal(key));
+        }
+
         /// <summary>
         /// 根据主键获取实体。建议：如需使用Include和ThenInclude请重载此方法。
         /// </summary>

@@ -71,10 +71,7 @@
     }
 </style>
 <div class="col-md-12">
-    <div class="box box-primary">
-        @*<div class="box-header with-border">
-            <h3 class="box-title">新建模块</h3>
-        </div>*@
+    <div class="box box-info">
         <form role="form" method="post" data-bind="submit:submit">
             <div class="box-body">
                 <div class="form-group">
@@ -84,8 +81,7 @@
                 <div class="form-group">
                     <label for="MenuIcon">图标：</label>
                     <div class="input-group">
-                        <input data-placement="bottomRight" class="form-control" value="fas fa-archive"
-                               type="text" id="MenuIcon" data-bind="inputText:MenuIcon" />
+                        <input data-placement="bottomRight" class="form-control" type="text" id="MenuIcon" data-bind="inputText:MenuIcon" value="far fa-list-alt"/>
                         <span class="input-group-addon"></span>
                     </div>
                 </div>
@@ -125,6 +121,9 @@
                         <span class="checkmark"></span>
                     </label>
                 </div>
+            </div>
+            <div class="box-footer">
+                <button type="submit" class="btn btn-info pull-right">保存</button>
             </div>
         </form>
     </div>

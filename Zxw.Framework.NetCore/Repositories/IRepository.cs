@@ -28,6 +28,7 @@ namespace Zxw.Framework.NetCore.Repositories
         int ExecuteSqlWithNonQuery(string sql, params object[] parameters);
         Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters);
         T GetSingle(TKey key);
+        T GetSingle(TKey key, Func<IQueryable<T>, IQueryable<T>> includeFunc);
         Task<T> GetSingleAsync(TKey key);
         T GetSingleOrDefault(Expression<Func<T, bool>> @where = null);
         Task<T> GetSingleOrDefaultAsync(Expression<Func<T, bool>> @where = null);

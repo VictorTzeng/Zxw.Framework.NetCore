@@ -261,7 +261,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
                 SqlBulkInsert<T,TKey>(entities, destinationTableName);
             else if (Database.IsMySql())
                 MySqlBulkInsert(entities, destinationTableName);
-            else throw new NotSupportedException("This method only support for SQL Server or MySql.");
+            else throw new NotSupportedException("This method only supports for SQL Server or MySql.");
 
         }
 
@@ -378,33 +378,6 @@ namespace Zxw.Framework.NetCore.EfDbContext
         {
             return this.SaveChangesWithTriggersAsync(base.SaveChangesAsync, acceptAllChangesOnSuccess,
                 cancellationToken: cancellationToken);
-        }
-
-        public Action<IInsertedEntry<T, DbContext>> AfterInserted<T>() where T : class
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> SaveChangesAsync()
-        {
-            return base.SaveChangesAsync();
-        }
-
-        public Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess)
-        {
-            return base.SaveChangesAsync(acceptAllChangesOnSuccess);
-        }
-
-        public Task<int> SaveChangesAsync(Action beforeSavingAction)
-        {
-            beforeSavingAction?.Invoke();
-            return SaveChangesAsync();
-        }
-
-        public Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, Action beforeSavingAction)
-        {
-            beforeSavingAction?.Invoke();
-            return SaveChangesAsync(acceptAllChangesOnSuccess);
         }
     }
 }

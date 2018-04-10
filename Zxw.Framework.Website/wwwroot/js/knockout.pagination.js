@@ -91,7 +91,7 @@
             title:title,
             shadeClose: true,
             shade: 0.6,
-            area: ['600px', '90%'],
+            area: ['600px', '80%'],
             content: url, //iframe的url
             end: function() {
                 self.loadData();
