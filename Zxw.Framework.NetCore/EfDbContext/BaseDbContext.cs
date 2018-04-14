@@ -155,6 +155,16 @@ namespace Zxw.Framework.NetCore.EfDbContext
             return @where == null ? Set<T>().Any() : Set<T>().Any(@where);
         }
 
+        public IQueryable<T> FilterWithInclude<T>(Func<IQueryable<T>, IQueryable<T>> include, Expression<Func<T, bool>> @where) where T : class
+        {
+            var result = GetDbSet<T>().AsQueryable();
+            if (where != null)
+                result = GetDbSet<T>().Where(where);
+            if (include != null)
+                result = include(result);
+            return result;
+        }
+
         public Task<bool> ExistAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
             return @where == null ? Set<T>().AnyAsync() : Set<T>().AnyAsync(@where);
@@ -251,96 +261,8 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <param name="destinationTableName"></param>
         public virtual void BulkInsert<T, TKey>(IList<T> entities, string destinationTableName = null) where T : class, IBaseModel<TKey>
         {
-            if (entities == null || !entities.Any()) return;
-            if (string.IsNullOrEmpty(destinationTableName))
-            {
-                var mappingTableName = typeof(T).GetCustomAttribute<TableAttribute>()?.Name;
-                destinationTableName = string.IsNullOrEmpty(mappingTableName) ? typeof(T).Name : mappingTableName;
-            }
-            if (Database.IsSqlServer())
-                SqlBulkInsert<T,TKey>(entities, destinationTableName);
-            else if (Database.IsMySql())
-                MySqlBulkInsert(entities, destinationTableName);
-            else throw new NotSupportedException("This method only supports for SQL Server or MySql.");
-
-        }
-
-        private void SqlBulkInsert<T,TKey>(IList<T> entities, string destinationTableName = null) where T : class,IBaseModel<TKey>
-        {
-            using (var dt = entities.ToDataTable())
-            {
-                dt.TableName = destinationTableName;
-                using (var conn = Database.GetDbConnection() as SqlConnection ?? new SqlConnection(_option.ConnectionString))
-                {
-                    if (conn.State != ConnectionState.Open)
-                        conn.Open();
-                    using (var tran = conn.BeginTransaction())
-                    {
-                        try
-                        {
-                            var bulk = new SqlBulkCopy(conn, SqlBulkCopyOptions.Default, tran)
-                            {
-                                BatchSize = entities.Count,
-                                DestinationTableName = dt.TableName,
-                            };
-                            GenerateColumnMappings<T, TKey>(bulk.ColumnMappings);
-                            bulk.WriteToServerAsync(dt);
-                            tran.Commit();
-                        }
-                        catch (Exception)
-                        {
-                            tran.Rollback();
-                            throw;
-                        }                        
-                    }
-                    conn.Close();
-                }
-            }
-        }
-
-        private void GenerateColumnMappings<T, TKey>(SqlBulkCopyColumnMappingCollection mappings)
-            where T : class, IBaseModel<TKey>
-        {
-            var properties = typeof(T).GetProperties();
-            foreach (var property in properties)
-            {
-                if (property.GetCustomAttributes<KeyAttribute>().Any())
-                {
-                    mappings.Add(new SqlBulkCopyColumnMapping(property.Name, typeof(T).Name + property.Name));
-                }
-                else
-                {
-                    mappings.Add(new SqlBulkCopyColumnMapping(property.Name, property.Name));                    
-                }
-            }
-        }
-
-        private void MySqlBulkInsert<T>(IList<T> entities, string destinationTableName) where T : class
-        {
-            var tmpDir = Path.Combine(AppContext.BaseDirectory, "Temp");
-            if (!Directory.Exists(tmpDir))
-                Directory.CreateDirectory(tmpDir);
-            var csvFileName = Path.Combine(tmpDir, $"{DateTime.Now:yyyyMMddHHmmssfff}.csv");
-            if (!File.Exists(csvFileName))
-                File.Create(csvFileName);
-            var separator = ",";
-            entities.SaveToCsv(csvFileName, separator);
-            using (var conn = Database.GetDbConnection() as MySqlConnection ?? new MySqlConnection(_option.ConnectionString))
-            {
-                conn.Open();
-                var bulk = new MySqlBulkLoader(conn)
-                {
-                    NumberOfLinesToSkip = 0,
-                    TableName = destinationTableName,
-                    FieldTerminator = separator,
-                    FieldQuotationCharacter = '"',
-                    EscapeCharacter = '"',
-                    LineTerminator = "\r\n"
-                };
-                bulk.LoadAsync();
-                conn.Close();
-            }
-            File.Delete(csvFileName);
+            if (!Database.IsSqlServer()&&!Database.IsMySql())
+             throw new NotSupportedException("This method only supports for SQL Server or MySql.");
         }
 
         public virtual List<TView> SqlQuery<T,TView>(string sql, params object[] parameters) 
