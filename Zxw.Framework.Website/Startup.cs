@@ -17,7 +17,6 @@ using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Filters;
 using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.Options;
-using Zxw.Framework.NetCore.UnitOfWork;
 
 namespace Zxw.Framework.Website
 {
@@ -91,9 +90,6 @@ namespace Zxw.Framework.Website
 
             //启用MemoryCache
             services.AddMemoryCache();
-            //全局设置MemoryCache缓存有效时间为5分钟。
-            //services.Configure<MemoryCacheEntryOptions>(
-            //    options => options.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5));
 
             #endregion
 
@@ -124,9 +120,8 @@ namespace Zxw.Framework.Website
             #region 各种注入
 
             services.AddSingleton(Configuration)//注入Configuration，ConfigHelper要用
-                .AddTransient<IEfDbContext, SqlServerDbContext>()//注入EF上下文
-                .RegisterAssembly("Zxw.Framework.Website.IRepositories", "Zxw.Framework.Website.Repositories")//注入仓储
-                .AddTransient<IUnitOfWork, EfUnitOfWork>();//注入工作单元
+                .AddSingleton<IEfDbContext, SqlServerDbContext>()//注入EF上下文
+                .RegisterAssembly("Zxw.Framework.Website.IRepositories", "Zxw.Framework.Website.Repositories");//注入仓储
             services.AddMvc(option =>
                 {
                     option.Filters.Add(new GlobalExceptionFilter());

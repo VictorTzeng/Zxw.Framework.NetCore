@@ -101,11 +101,11 @@
                 <div class="form-group">
                     <label>启/停用：</label>
                     <label class="container pull-right">启用
-                        <input type="radio" checked="checked" name="Activable"/>
+                        <input type="radio" checked="checked" name="Activable" value="True"/>
                         <span class="checkmark"></span>
                     </label>
                     <label class="container pull-right">停用
-                        <input type="radio" name="Activable">
+                        <input type="radio" name="Activable" value="Flase"/>
                         <span class="checkmark"></span>
                     </label>
                 </div>
@@ -113,12 +113,12 @@
                     <label>显示/隐藏：</label>
                     <label class="container pull-right">
                         显示
-                        <input type="radio" checked="checked" name="Visiable"/>
+                        <input type="radio" checked="checked" name="Visiable" value="True"/>
                         <span class="checkmark"></span>
                     </label>
                     <label class="container pull-right">
                         隐藏
-                        <input type="radio" name="Visiable"/>
+                        <input type="radio" name="Visiable" value="Flase"/>
                         <span class="checkmark"></span>
                     </label>
                 </div>
@@ -136,13 +136,13 @@
     <script type="text/javascript">
         var viewmodel = {
             ajaxSubmit: function() {
-                $("#create-form").ajaxForm({
+                $("#create-form").ajaxSubmit({
                     resetForm:true,
                     success: function(rep) {
                         if (rep.success == true) {
                             layer.msg("保存成功",
                                 function() {
-                                    layer.closeAll();
+                                    window.parent.layer.closeAll();
                                 });
                         } else {
                             layer.alert(rep.msg, { icon: 5 });

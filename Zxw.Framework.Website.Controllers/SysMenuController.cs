@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Zxw.Framework.NetCore.Attributes;
 using Zxw.Framework.NetCore.Models;
-using Zxw.Framework.NetCore.UnitOfWork;
 using Zxw.Framework.Website.IRepositories;
 using Zxw.Framework.Website.Models;
 
@@ -14,11 +13,11 @@ namespace Zxw.Framework.Website.Controllers
 {
     public class SysMenuController : Controller
     {
-        private IUnitOfWork _unitOfWork;
+        private ISysMenuRepository menuRepository;
         
-        public SysMenuController(IUnitOfWork unitOfWork)
+        public SysMenuController(ISysMenuRepository menuRepository)
         {
-            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.menuRepository = menuRepository ?? throw new ArgumentNullException(nameof(menuRepository));
         }
 
         #region Views
@@ -42,8 +41,6 @@ namespace Zxw.Framework.Website.Controllers
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
-                using (var repository = _unitOfWork.GetRepository<ISysMenuRepository>())
-                {
                     #region 添加模块，注释掉了
 
                     //repository.AddRange(new List<SysMenu>
@@ -91,9 +88,8 @@ namespace Zxw.Framework.Website.Controllers
                     //});
 
                     #endregion
-                    var rows = repository.GetMenusByTreeView().OrderBy(m=>m.SortIndex).ToList();
+                    var rows = menuRepository.GetMenusByTreeView().OrderBy(m=>m.SortIndex).ToList();
                     return Json(ExcutedResult.SuccessResult(rows));
-                }
             });
         }
 
@@ -102,13 +98,10 @@ namespace Zxw.Framework.Website.Controllers
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
-                using (var repository = _unitOfWork.GetRepository<ISysMenuRepository>())
-                {
-                    var total = repository.Count(m => true);
-                    var rows = repository.GetByPagination(m => true, pageSize, pageIndex, true,
-                        m => m.Id).ToList();
-                    return Json(PaginationResult.PagedResult(rows, total, pageSize, pageIndex));
-                }
+                var total = menuRepository.Count(m => true);
+                var rows = menuRepository.GetByPagination(m => true, pageSize, pageIndex, true,
+                    m => m.Id).ToList();
+                return Json(PaginationResult.PagedResult(rows, total, pageSize, pageIndex));
             });
         }
         /// <summary>
@@ -123,11 +116,8 @@ namespace Zxw.Framework.Website.Controllers
             {
                 if(!ModelState.IsValid)
                     return Json(ExcutedResult.FailedResult("数据验证失败"));
-                using (var repository = _unitOfWork.GetRepository<ISysMenuRepository>())
-                {
-                    repository.AddAsync(menu);
-                    return Json(ExcutedResult.SuccessResult());
-                }
+                menuRepository.AddAsync(menu);
+                return Json(ExcutedResult.SuccessResult());
             });
         }
         /// <summary>
@@ -140,11 +130,8 @@ namespace Zxw.Framework.Website.Controllers
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
-                using (var repository = _unitOfWork.GetRepository<ISysMenuRepository>())
-                {
-                    repository.Edit(menu);
-                    return Json(ExcutedResult.SuccessResult());
-                }
+                menuRepository.Edit(menu);
+                return Json(ExcutedResult.SuccessResult());
             });
         }
         /// <summary>
@@ -157,11 +144,8 @@ namespace Zxw.Framework.Website.Controllers
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
-                using (var repository = _unitOfWork.GetRepository<ISysMenuRepository>())
-                {
-                    repository.Delete(id);
-                    return Json(ExcutedResult.SuccessResult("成功删除一条数据。"));
-                }
+                menuRepository.Delete(id);
+                return Json(ExcutedResult.SuccessResult("成功删除一条数据。"));
             });
         }
 
@@ -175,13 +159,10 @@ namespace Zxw.Framework.Website.Controllers
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
-                using (var repository = _unitOfWork.GetRepository<ISysMenuRepository>())
-                {
-                    var entity = repository.GetSingle(id);
-                    entity.Activable = !entity.Activable;
-                    repository.Update(entity, "Activable");
-                    return Json(ExcutedResult.SuccessResult(entity.Activable?"OK，已成功启用。":"OK，已成功停用"));
-                }
+                var entity = menuRepository.GetSingle(id);
+                entity.Activable = !entity.Activable;
+                menuRepository.Update(entity, "Activable");
+                return Json(ExcutedResult.SuccessResult(entity.Activable?"OK，已成功启用。":"OK，已成功停用"));
             });
         }
         /// <summary>
@@ -194,23 +175,11 @@ namespace Zxw.Framework.Website.Controllers
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
-                using (var repository = _unitOfWork.GetRepository<ISysMenuRepository>())
-                {
-                    var entity = repository.GetSingle(id);
-                    entity.Visiable = !entity.Visiable;
-                    repository.Update(entity, "Visiable");
-                    return Json(ExcutedResult.SuccessResult("操作成功，请重新进入系统。"));
-                }
+                var entity = menuRepository.GetSingle(id);
+                entity.Visiable = !entity.Visiable;
+                menuRepository.Update(entity, "Visiable");
+                return Json(ExcutedResult.SuccessResult("操作成功，请重新进入系统。"));
             });
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _unitOfWork.Dispose();
-            }
-            base.Dispose(disposing);
         }
 
         #endregion

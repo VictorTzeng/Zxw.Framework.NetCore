@@ -1,29 +1,16 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Zxw.Framework.NetCore.UnitOfWork;
-using Zxw.Framework.Website.Models;
 using Zxw.Framework.Website.IRepositories;
 
-namespace Zxw.Framework.Website.Repositories
+namespace Zxw.Framework.Website.Controllers
 {
     public class SysUserController : Controller
     {
-        private IUnitOfWork _unitOfWork;
+        private ISysUserRepository userRepository;
         
-        public SysUserController(IUnitOfWork unitOfWork)
+        public SysUserController(ISysUserRepository user)
         {
-            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        }
-
-		protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _unitOfWork.Dispose();
-            }
-            base.Dispose(disposing);
+            userRepository = user ?? throw new ArgumentNullException(nameof(user));
         }
 	}
 }

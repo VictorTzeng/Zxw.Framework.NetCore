@@ -229,10 +229,7 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public virtual void Dispose()
         {
-            if (DbContext != null)
-            {
-                DbContext.Dispose();
-            }
+            
         }
     }
 }
