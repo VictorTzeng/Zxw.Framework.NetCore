@@ -34,6 +34,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
         IQueryable<T> Get<T>(Expression<Func<T, bool>> @where = null) where T : class;
         DbSet<T> GetDbSet<T>() where T : class;
         T GetSingleOrDefault<T>(Expression<Func<T, bool>> @where = null) where T : class;
+        T GetSingleOrDefault<T>(Func<IQueryable<T>, IQueryable<T>> includeFunc, Expression<Func<T, bool>> @where = null) where T : class;
         Task<T> GetSingleOrDefaultAsync<T>(Expression<Func<T, bool>> @where = null) where T : class;
         void Update<T>(T model, params string[] updateColumns) where T : class;
         int Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory) where T : class;

@@ -138,7 +138,8 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public T GetSingle(TKey key, Func<IQueryable<T>, IQueryable<T>> includeFunc)
         {
-            return includeFunc(DbSet.AsQueryable()).AsNoTracking().FirstOrDefault(m => m.Id.Equal(key));
+            if (includeFunc == null) return GetSingle(key);
+            return includeFunc(DbSet.Where(m => m.Id.Equal(key))).AsNoTracking().FirstOrDefault();
         }
 
         /// <summary>
