@@ -72,52 +72,53 @@
 </style>
 <div class="col-md-12">
     <div class="box box-info">
-        <form role="form" method="post" data-bind="submit:submit">
+        <form id="create-form" role="form" method="post" data-bind="submit:ajaxSubmit" action="@Url.Action("Add")">
+            @Html.AntiForgeryToken()
             <div class="box-body">
                 <div class="form-group">
                     <label for="MenuName"><font color="red">*</font>名称：</label>
-                    <input type="text" class="form-control" id="MenuName" data-bind="inputText:MenuName" required maxlength="20" />
+                    <input type="text" class="form-control" id="MenuName" name="MenuName" required maxlength="20"/>
                 </div>
                 <div class="form-group">
                     <label for="MenuIcon">图标：</label>
                     <div class="input-group">
-                        <input data-placement="bottomRight" class="form-control" type="text" id="MenuIcon" data-bind="inputText:MenuIcon" value="far fa-list-alt"/>
+                        <input data-placement="bottomRight" class="form-control" type="text" id="MenuIcon" name="MenuIcon" value="far fa-list-alt"/>
                         <span class="input-group-addon"></span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="ParentId">父级：</label>
-                    <input type="text" class="form-control" id="ParentId" data-bind="inputText:ParentId" />
+                    <input type="text" class="form-control" id="ParentId" name="ParentId"/>
                 </div>
                 <div class="form-group">
                     <label for="Identity"><font color="red">*</font>标识：</label>
-                    <input type="text" class="form-control" id="Identity" data-bind="inputText:Identity" required="" maxlength="100" />
+                    <input type="text" class="form-control" id="Identity" name="Identity" required maxlength="100"/>
                 </div>
                 <div class="form-group">
                     <label for="RouteUrl"><font color="red">*</font>URL：</label>
-                    <input type="text" class="form-control" id="RouteUrl" data-bind="inputText:RouteUrl" required maxlength="200" />
+                    <input type="text" class="form-control" id="RouteUrl" name="RouteUrl" required maxlength="200"/>
                 </div>
                 <div class="form-group">
                     <label>启/停用：</label>
                     <label class="container pull-right">启用
-                        <input type="radio" checked="checked" name="Activable" data-bind="value:Activable">
+                        <input type="radio" checked="checked" name="Activable"/>
                         <span class="checkmark"></span>
                     </label>
                     <label class="container pull-right">停用
                         <input type="radio" name="Activable">
                         <span class="checkmark"></span>
-                    </label>                
+                    </label>
                 </div>
                 <div class="form-group">
                     <label>显示/隐藏：</label>
                     <label class="container pull-right">
                         显示
-                        <input type="radio" checked="checked" name="Visiable">
+                        <input type="radio" checked="checked" name="Visiable"/>
                         <span class="checkmark"></span>
                     </label>
                     <label class="container pull-right">
                         隐藏
-                        <input type="radio" name="Visiable">
+                        <input type="radio" name="Visiable"/>
                         <span class="checkmark"></span>
                     </label>
                 </div>
@@ -130,19 +131,27 @@
 </div>
 @section Scripts
 {
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.2/jquery.form.min.js"></script>
     <script src="~/components/fontawesome-iconpicker/js/fontawesome-iconpicker.min.js"></script>
     <script type="text/javascript">
         var viewmodel = {
-            ParentId: ko.observable(0),
-            MenuPath: ko.observable(""),
-            MenuName: ko.observable(""),
-            MenuIcon: ko.observable(""),
-            Identity: ko.observable(""),
-            RouteUrl: ko.observable(""),
-            Visiable: ko.observable(true),
-            Activable: ko.observable(true),
-            submit: function(form) {
-
+            ajaxSubmit: function() {
+                $("#create-form").ajaxForm({
+                    resetForm:true,
+                    success: function(rep) {
+                        if (rep.success == true) {
+                            layer.msg("保存成功",
+                                function() {
+                                    layer.closeAll();
+                                });
+                        } else {
+                            layer.alert(rep.msg, { icon: 5 });
+                        }
+                    },
+                    error: function() {
+                        layer.alert("网络错误，请稍候再试。", { icon: 5 });
+                    }
+                });
             }
         };
         $(function() {

@@ -116,11 +116,13 @@ namespace Zxw.Framework.Website.Controllers
         /// </summary>
         /// <param name="menu"></param>
         /// <returns></returns>
-        [AjaxRequestOnly,HttpPost]
+        [AjaxRequestOnly,HttpPost,ValidateAntiForgeryToken]
         public Task<IActionResult> Add(SysMenu menu)
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
+                if(!ModelState.IsValid)
+                    return Json(ExcutedResult.FailedResult("数据验证失败"));
                 using (var repository = _unitOfWork.GetRepository<ISysMenuRepository>())
                 {
                     repository.AddAsync(menu);

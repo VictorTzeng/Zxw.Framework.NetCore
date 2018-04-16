@@ -28,6 +28,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
         void Edit<T>(T entity) where T : class;
         void EditRange<T>(ICollection<T> entities) where T : class;
         bool Exist<T>(Expression<Func<T, bool>> @where = null) where T : class;
+        IQueryable<T> FilterWithInclude<T>(Func<IQueryable<T>, IQueryable<T>> include, Expression<Func<T, bool>> where) where T : class;
         Task<bool> ExistAsync<T>(Expression<Func<T, bool>> @where = null) where T : class;
         T Find<T,TKey>(TKey key) where T : class;
         Task<T> FindAsync<T,TKey>(TKey key) where T : class;
