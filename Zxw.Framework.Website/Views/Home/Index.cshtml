@@ -260,7 +260,7 @@ desired effect
                 </form>-->
                 <!-- /.search form -->
                 <!-- Sidebar Menu -->
-                <ul class="sidebar-menu" data-widget="tree">
+                <ul class="sidebar-menu" data-widget="tree" id="sys-menu">
                     <li class="header">系统菜单</li>
                     <!-- Optionally, you can add icons to the links -->
                     <!-- ko template:{name:'tmpl_menu',foreach:menus} -->
@@ -377,7 +377,7 @@ desired effect
     <script src="~/js/jquery.tmpl.js"></script>
     <!-- AdminLTE App -->
     <script src="~/js/adminlte.min.js"></script>
-    <script src="~/js/site.js"></script>
+    <script src="~/js/sysmenu.viewmodel.js"></script>
     <!-- Optionally, you can add Slimscroll and FastClick plugins.
     Both of these plugins are recommended to enhance the
     user experience. -->
@@ -411,12 +411,13 @@ desired effect
             $("#tab-content").height($("#content-wrapper").height()-$("#tabContainer").height()-15);
         }
 
-        $(function() {
-            viewmodel.loadMenus('@Url.Action("GetMenus","SysMenu")');
+        $(function () {
+            ko.applyBindings(sysMenuModel, $("#sys-menu")[0]);
+            sysMenuModel.loadMenus('@Url.Action("GetMenus","SysMenu")');
             $("#tabContainer").tabs({
                 data: [
                     {
-                        id: '8',
+                        id: '0',
                         text: '关于项目',
                         url: "@Url.Action("Default","Home")",
                         closeable: false

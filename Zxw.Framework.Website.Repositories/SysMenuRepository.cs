@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggers;
+using Microsoft.EntityFrameworkCore;
 using Nelibur.ObjectMapper;
 using Zxw.Framework.NetCore.EfDbContext;
 using Zxw.Framework.NetCore.Repositories;
@@ -16,6 +17,7 @@ namespace Zxw.Framework.Website.Repositories
     {
         public SysMenuRepository(IEfDbContext dbContext) : base(dbContext)
         {
+            TinyMapper.Bind<SysMenu, SysMenuViewModel>();
             //插入成功后触发
             Triggers<SysMenu>.Inserted += entry =>
             {
@@ -28,11 +30,12 @@ namespace Zxw.Framework.Website.Repositories
             Triggers<SysMenu>.Updated += entry =>
             {
                 var parentMenu = GetSingle(entry.Entity.ParentId);
+                var origEntry = entry.Context.Entry(entry.Entity);
                 entry.Entity.SortIndex = entry.Entity.Id;
                 entry.Entity.MenuPath = (parentMenu?.MenuPath ?? "0") + "," + entry.Entity.Id;
-                entry.Context.SaveChangesWithTriggers(entry.Context.SaveChanges);
+                origEntry.CurrentValues.SetValues(entry.Entity);
+                entry.Context.SaveChanges(true);
             };
-            TinyMapper.Bind<SysMenu, SysMenuViewModel>();
         }
 
         public override int Add(SysMenu entity)

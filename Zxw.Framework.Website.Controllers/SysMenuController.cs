@@ -32,6 +32,11 @@ namespace Zxw.Framework.Website.Controllers
             return View();
         }
 
+        public IActionResult Edit(int id)
+        {
+            return View(menuRepository.GetSingle(id));
+        }
+
         #endregion
 
         #region Methods
@@ -130,6 +135,8 @@ namespace Zxw.Framework.Website.Controllers
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
+                if (!ModelState.IsValid)
+                    return Json(ExcutedResult.FailedResult("数据验证失败"));
                 menuRepository.Edit(menu);
                 return Json(ExcutedResult.SuccessResult());
             });
@@ -178,7 +185,7 @@ namespace Zxw.Framework.Website.Controllers
                 var entity = menuRepository.GetSingle(id);
                 entity.Visiable = !entity.Visiable;
                 menuRepository.Update(entity, "Visiable");
-                return Json(ExcutedResult.SuccessResult("操作成功，请重新进入系统。"));
+                return Json(ExcutedResult.SuccessResult("操作成功，请刷新当前网页或者重新进入系统。"));
             });
         }
 

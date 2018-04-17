@@ -46,7 +46,7 @@
                         </label>                            
                     </td>
                     <td>
-                        <a href="javascript:;" title="编辑"><i class="fa fa-edit"></i></a>
+                        <a href="javascript:;" title="编辑" data-bind="click:function(){$root.edit('@Url.Action("Edit")/'+id(),'编辑模块');}"><i class="fa fa-edit"></i></a>
                         <a href="javascript:;" title="删除" data-bind="click:function(){$root.remove('@Url.Action("Delete")/'+id(),{});}"><i class="far fa-trash-alt"></i></a>
                     </td>
                 </tr>

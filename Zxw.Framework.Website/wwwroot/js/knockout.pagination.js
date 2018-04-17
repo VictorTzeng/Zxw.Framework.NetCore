@@ -85,19 +85,25 @@
         });
     },
     add: function(url,title) {
+        this.open(url, title);
+    },
+    edit: function (url, title) {
+        this.open(url, title);
+    },
+    open: function (url, title) {
         var self = this;
         layer.open({
             type: 2,
-            title:title,
+            title: title,
             shadeClose: true,
             shade: 0.6,
             area: ['600px', '80%'],
             content: url, //iframe的url
-            end: function() {
+            end: function () {
                 self.loadData();
             }
         });
-    },
+    }, 
     active: function(url, data) {
         var self = this;
         self.get(url, data, function (rep) {

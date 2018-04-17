@@ -1,12 +1,12 @@
 ﻿// Write your JavaScript code.
-var viewmodel = {
+var sysMenuModel = {
     menus:ko.observableArray([]),
     loadMenus: function(url) {
         this.get(url, {}, function(data) {
             if (data.success == true) {
-                viewmodel.menus(data.rows);
+                sysMenuModel.menus(data.rows);
             } else {
-                layer.alert(data.msg);
+                layer.alert(data.msg, {icon:5});
             }
         });
     },
@@ -34,7 +34,23 @@ var viewmodel = {
         //$("#menu_" + id).addClass("active");
         $("#tabContainer").data("tabs")
             .addTab({ id: id, text: text, closeable: true, url: url });
+    },
+    ajaxSubmit: function(formId) {
+        $("#" + formId).ajaxSubmit({
+            resetForm: true,
+            success: function (rep) {
+                if (rep.success == true) {
+                    layer.msg("保存成功",
+                        function () {
+                            window.parent.layer.closeAll();
+                        });
+                } else {
+                    layer.alert(rep.msg, { icon: 5 });
+                }
+            },
+            error: function () {
+                layer.alert("网络错误，请稍候再试。", { icon: 5 });
+            }
+        });
     }
 };
-
-ko.applyBindings(viewmodel);
