@@ -15,5 +15,73 @@ namespace {ControllersNamespace}
         {
             {ModelTypeName}Repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
+
+        [AjaxRequestOnly, HttpGet]
+        public Task<IActionResult> GetEntities()
+        {
+            return Task.Factory.StartNew<IActionResult>(() =>
+            {
+                    var rows = {ModelTypeName}Repository.Get().ToList();
+                    return Json(ExcutedResult.SuccessResult(rows));
+            });
+        }
+
+        [AjaxRequestOnly]
+        public Task<IActionResult> GetEntitiesByPaged(int pageSize, int pageIndex)
+        {
+            return Task.Factory.StartNew<IActionResult>(() =>
+            {
+                var total = {ModelTypeName}Repository.Count(m => true);
+                var rows = {ModelTypeName}Repository.GetByPagination(m => true, pageSize, pageIndex, true,
+                    m => m.Id).ToList();
+                return Json(PaginationResult.PagedResult(rows, total, pageSize, pageIndex));
+            });
+        }
+        /// <summary>
+        /// 新建
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [AjaxRequestOnly,HttpPost,ValidateAntiForgeryToken]
+        public Task<IActionResult> Add({ModelTypeName} model)
+        {
+            return Task.Factory.StartNew<IActionResult>(() =>
+            {
+                if(!ModelState.IsValid)
+                    return Json(ExcutedResult.FailedResult("数据验证失败"));
+                {ModelTypeName}Repository.AddAsync(menu);
+                return Json(ExcutedResult.SuccessResult());
+            });
+        }
+        /// <summary>
+        /// 编辑
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [AjaxRequestOnly, HttpPost]
+        public Task<IActionResult> Edit({ModelTypeName} model)
+        {
+            return Task.Factory.StartNew<IActionResult>(() =>
+            {
+                if (!ModelState.IsValid)
+                    return Json(ExcutedResult.FailedResult("数据验证失败"));
+                {ModelTypeName}Repository.Edit(menu);
+                return Json(ExcutedResult.SuccessResult());
+            });
+        }
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [AjaxRequestOnly]
+        public Task<IActionResult> Delete(int id)
+        {
+            return Task.Factory.StartNew<IActionResult>(() =>
+            {
+                {ModelTypeName}Repository.Delete(id);
+                return Json(ExcutedResult.SuccessResult("成功删除一条数据。"));
+            });
+        }
 	}
 }

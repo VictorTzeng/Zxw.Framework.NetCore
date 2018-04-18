@@ -132,11 +132,13 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// edit an entity.
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public virtual void Edit<T>(T entity) where T : class
+        public virtual void Edit<T,TKey>(T entity) where T : class,IBaseModel<TKey>
         {
-            Entry(entity).State = EntityState.Modified;
+            var model = Find<T>(entity.Id);
+            Entry(model).CurrentValues.SetValues(entity);
         }
 
         /// <summary>
@@ -291,14 +293,14 @@ namespace Zxw.Framework.NetCore.EfDbContext
 
         public Task<int> SaveChangesWithTriggersAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.SaveChangesWithTriggersAsync(base.SaveChangesAsync, acceptAllChangesOnSuccess: true,
+            return this.SaveChangesWithTriggersAsync(SaveChangesAsync, acceptAllChangesOnSuccess: true,
                 cancellationToken: cancellationToken);
         }
 
         public Task<int> SaveChangesWithTriggersAsync(bool acceptAllChangesOnSuccess,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.SaveChangesWithTriggersAsync(base.SaveChangesAsync, acceptAllChangesOnSuccess,
+            return this.SaveChangesWithTriggersAsync(SaveChangesAsync, acceptAllChangesOnSuccess,
                 cancellationToken: cancellationToken);
         }
     }

@@ -96,7 +96,7 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public virtual int Edit(T entity)
         {
-            DbContext.Edit(entity);
+            DbContext.Edit<T,TKey>(entity);
             return DbContext.SaveChanges();
         }
 

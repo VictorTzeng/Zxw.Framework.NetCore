@@ -46,55 +46,21 @@ namespace Zxw.Framework.Website.Controllers
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
-                    #region Ìí¼ÓÄ£¿é£¬×¢ÊÍµôÁË
-
-                    //repository.AddRange(new List<SysMenu>
-                    //{
-                    //    new SysMenu
-                    //    {
-                    //        Identity = "SysMenu/Add",
-                    //        MenuName = "Ôö¼Ó",
-                    //        ParentId = 1,
-                    //        RouteUrl = "~/SysMenu/Add",
-                    //        Visiable = false
-                    //    },
-                    //    new SysMenu
-                    //    {
-                    //        Identity = "SysMenu/Edit",
-                    //        MenuName = "±à¼­",
-                    //        ParentId = 1,
-                    //        RouteUrl = "~/SysMenu/Edit",
-                    //        Visiable = false
-                    //    },
-                    //    new SysMenu
-                    //    {
-                    //        Identity = "SysMenu/Delete",
-                    //        MenuName = "É¾³ý",
-                    //        ParentId = 1,
-                    //        RouteUrl = "~/SysMenu/Delete",
-                    //        Visiable = false
-                    //    },
-                    //    new SysMenu
-                    //    {
-                    //        Identity = "SysMenu/Active",
-                    //        MenuName = "ÆôÍ£ÓÃ",
-                    //        ParentId = 1,
-                    //        RouteUrl = "~/SysMenu/Active",
-                    //        Visiable = false
-                    //    },
-                    //    new SysMenu
-                    //    {
-                    //        Identity = "SysMenu/Visualize",
-                    //        MenuName = "ÏÔÊ¾/Òþ²Ø",
-                    //        ParentId = 1,
-                    //        RouteUrl = "~/SysMenu/Visualize",
-                    //        Visiable = false
-                    //    }
-                    //});
-
-                    #endregion
                     var rows = menuRepository.GetMenusByTreeView().OrderBy(m=>m.SortIndex).ToList();
                     return Json(ExcutedResult.SuccessResult(rows));
+            });
+        }
+
+        [AjaxRequestOnly, HttpGet]
+        public Task<IActionResult> GetTreeMenus()
+        {
+            return Task.Factory.StartNew<IActionResult>(() =>
+            {
+                var rows = menuRepository.GetMenusByTreeView().OrderBy(m => m.SortIndex).Select(m=>new
+                {
+
+                }).ToList();
+                return Json(ExcutedResult.SuccessResult(rows));
             });
         }
 

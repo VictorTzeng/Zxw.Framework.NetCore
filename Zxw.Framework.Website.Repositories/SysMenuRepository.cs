@@ -27,14 +27,11 @@ namespace Zxw.Framework.Website.Repositories
                 entry.Context.SaveChangesWithTriggers(entry.Context.SaveChanges);
             };
             //修改成功后触发
-            Triggers<SysMenu>.Updated += entry =>
+            Triggers<SysMenu>.Updating += entry =>
             {
                 var parentMenu = GetSingle(entry.Entity.ParentId);
-                var origEntry = entry.Context.Entry(entry.Entity);
                 entry.Entity.SortIndex = entry.Entity.Id;
                 entry.Entity.MenuPath = (parentMenu?.MenuPath ?? "0") + "," + entry.Entity.Id;
-                origEntry.CurrentValues.SetValues(entry.Entity);
-                entry.Context.SaveChanges(true);
             };
         }
 
@@ -64,7 +61,7 @@ namespace Zxw.Framework.Website.Repositories
 
         public override int Edit(SysMenu entity)
         {
-            DbContext.Edit(entity);
+            DbContext.Edit<SysMenu, int>(entity);
             return DbContext.SaveChangesWithTriggers(true);
         }
 

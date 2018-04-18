@@ -4,10 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.NetCore.EfDbContext
@@ -25,7 +22,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
         Task<bool> EnsureCreatedAsync();
         int ExecuteSqlWithNonQuery(string sql, params object[] parameters);
         Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters);
-        void Edit<T>(T entity) where T : class;
+        void Edit<T, TKey>(T entity) where T : class, IBaseModel<TKey>;
         void EditRange<T>(ICollection<T> entities) where T : class;
         bool Exist<T>(Expression<Func<T, bool>> @where = null) where T : class;
         IQueryable<T> FilterWithInclude<T>(Func<IQueryable<T>, IQueryable<T>> include, Expression<Func<T, bool>> where) where T : class;
@@ -58,6 +55,5 @@ namespace Zxw.Framework.NetCore.EfDbContext
         int SaveChangesWithTriggers(bool acceptAllChangesOnSuccess);
         Task<int> SaveChangesWithTriggersAsync(CancellationToken cancellationToken = default(CancellationToken));
         Task<int> SaveChangesWithTriggersAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default(CancellationToken));
-        //Action<IInsertedEntry<T, DbContext>> AfterInsertedTrigger<T>() where T:class;
     }
 }
