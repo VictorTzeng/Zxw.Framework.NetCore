@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
@@ -71,20 +72,20 @@ namespace Zxw.Framework.Website.Repositories
             return DbContext.SaveChangesWithTriggers(true);
         }
 
-        public IList<SysMenuViewModel> GetMenusByTreeView(int menuId = 0)
+        public IList<SysMenuViewModel> GetMenusByTreeView(Expression<Func<SysMenu, bool>> where)
         {
-            return GetTreeMenu(menuId);
+            return GetTreeMenu(where);
         }
 
-        private IList<SysMenuViewModel> GetTreeMenu(int menuId = 0)
+        private IList<SysMenuViewModel> GetTreeMenu(Expression<Func<SysMenu, bool>> where)
         {
             var reslut = new List<SysMenuViewModel>();
-            var children = Get(m => m.ParentId == menuId && m.Activable && m.Visiable).OrderBy(m => m.SortIndex);
+            var children = Get(where).OrderBy(m => m.SortIndex);
             foreach (var child in children)
             {
                 var tmp = new SysMenuViewModel();
                 tmp = TinyMapper.Map(child, tmp);
-                tmp.Children = GetTreeMenu(tmp.Id);
+                tmp.Children = GetTreeMenu(m => m.ParentId == tmp.Id && m.Activable);
                 reslut.Add(tmp);
             }
             return reslut;

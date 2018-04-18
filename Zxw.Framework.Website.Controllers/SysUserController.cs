@@ -8,9 +8,9 @@ namespace Zxw.Framework.Website.Controllers
     {
         private ISysUserRepository userRepository;
         
-        public SysUserController(ISysUserRepository user)
+        public SysUserController(ISysUserRepository userRepository)
         {
-            userRepository = user ?? throw new ArgumentNullException(nameof(user));
+            this.userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         }
 	}
 }

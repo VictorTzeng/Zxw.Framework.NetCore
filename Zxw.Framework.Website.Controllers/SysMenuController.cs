@@ -8,6 +8,7 @@ using Zxw.Framework.NetCore.Attributes;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.Website.IRepositories;
 using Zxw.Framework.Website.Models;
+using Zxw.Framework.Website.ViewModels;
 
 namespace Zxw.Framework.Website.Controllers
 {
@@ -46,8 +47,8 @@ namespace Zxw.Framework.Website.Controllers
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
-                    var rows = menuRepository.GetMenusByTreeView().OrderBy(m=>m.SortIndex).ToList();
-                    return Json(ExcutedResult.SuccessResult(rows));
+                var rows = menuRepository.GetMenusByTreeView(m=>m.Activable && m.Visiable && m.ParentId == 0).OrderBy(m=>m.SortIndex).ToList();
+                return Json(ExcutedResult.SuccessResult(rows));
             });
         }
 
@@ -56,12 +57,40 @@ namespace Zxw.Framework.Website.Controllers
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
-                var rows = menuRepository.GetMenusByTreeView().OrderBy(m => m.SortIndex).Select(m=>new
+                var nodes = menuRepository.GetMenusByTreeView(m=>m.Activable && m.ParentId == 0).OrderBy(m => m.SortIndex).Select(GetTreeMenus).ToList();
+                var rows = new
                 {
-
-                }).ToList();
+                    text = " ¸ù½Úµã",
+                    icon = "fas fa-boxes",
+                    tags = new[] {"0"},
+                    nodes
+                };
                 return Json(ExcutedResult.SuccessResult(rows));
             });
+        }
+
+        private object GetTreeMenus(SysMenuViewModel viewModel)
+        {
+            if (viewModel.Children.Any())
+            {
+                return new
+                {
+                    text = " "+viewModel.MenuName,
+                    icon = viewModel.MenuIcon,
+                    tags = new[] {viewModel.Id.ToString()},
+                    nodes = viewModel.Children.Select(GetTreeMenus),
+                    state = new
+                    {
+                        expanded = false
+                    }
+                };
+            }
+            return new 
+            {
+                text = " "+viewModel.MenuName,
+                icon = viewModel.MenuIcon,
+                tags = new[] {viewModel.Id.ToString()}
+            };
         }
 
         [AjaxRequestOnly]
