@@ -30,8 +30,15 @@ var sysMenuModel = {
             '</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>';
     },
     menuClick: function(id, text, url) {
-        //$("ul.sidebar-menu").find("li.active").removeClass("active");
-        //$("#menu_" + id).addClass("active");
+        $("ul.sidebar-menu").find("li.active").removeClass("active").find("li.menu-open").removeClass("menu-open");
+        var current = $("#menu_" + id);
+        current.addClass("active");
+        var parents = current.parents("li");
+        if (parents.length > 0) {
+            parents.addClass("active").addClass("menu-open");
+        } else {
+            current.addClass("menu-open");
+        }
         $("#tabContainer").data("tabs")
             .addTab({ id: id, text: text, closeable: true, url: url });
     },
