@@ -22,28 +22,24 @@ namespace Zxw.Framework.NetCore.Repositories
             DbContext.EnsureCreated();
         }
 
-        public virtual int Add(T entity)
+        public virtual int Add(T entity, bool withTrigger = false)
         {
-            DbContext.Add(entity);
-            return DbContext.SaveChanges();
+            return DbContext.Add(entity, withTrigger);
         }
 
-        public virtual Task<int> AddAsync(T entity)
+        public virtual async Task<int> AddAsync(T entity, bool withTrigger = false)
         {
-            DbContext.AddAsync(entity);
-            return DbContext.SaveChangesAsync();
+            return await DbContext.AddAsync(entity, withTrigger);
         }
 
-        public virtual int AddRange(ICollection<T> entities)
+        public virtual int AddRange(ICollection<T> entities, bool withTrigger = false)
         {
-            DbContext.AddRange(entities);
-            return DbContext.SaveChanges();
+            return DbContext.AddRange(entities, withTrigger);
         }
 
-        public virtual Task<int> AddRangeAsync(ICollection<T> entities)
+        public virtual async Task<int> AddRangeAsync(ICollection<T> entities, bool withTrigger = false)
         {
-            DbContext.AddRangeAsync(entities);
-            return DbContext.SaveChangesAsync();
+            return await DbContext.AddRangeAsync(entities, withTrigger);
         }
 
         public virtual void BulkInsert(IList<T> entities, string destinationTableName = null)
@@ -63,9 +59,9 @@ namespace Zxw.Framework.NetCore.Repositories
             return DbContext.Update(where, updateExp);
         }
 
-        public virtual Task<int> BatchUpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
+        public virtual async Task<int> BatchUpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
         {
-            return DbContext.UpdateAsync(@where, updateExp);
+            return await DbContext.UpdateAsync(@where, updateExp);
         }
 
         public virtual int Count(Expression<Func<T, bool>> @where = null)
@@ -73,15 +69,14 @@ namespace Zxw.Framework.NetCore.Repositories
             return DbContext.Count(where);
         }
 
-        public virtual Task<int> CountAsync(Expression<Func<T, bool>> @where = null)
+        public virtual async Task<int> CountAsync(Expression<Func<T, bool>> @where = null)
         {
-            return DbContext.CountAsync(where);
+            return await DbContext.CountAsync(where);
         }
 
-        public virtual int Delete(TKey key)
+        public virtual int Delete(TKey key, bool withTrigger = false)
         {
-            DbContext.Delete<T,TKey>(key);
-            return DbContext.SaveChanges();
+            return DbContext.Delete<T,TKey>(key, withTrigger);
         }
 
         public virtual int Delete(Expression<Func<T, bool>> @where)
@@ -89,21 +84,19 @@ namespace Zxw.Framework.NetCore.Repositories
             return DbContext.Delete(where);
         }
 
-        public virtual Task<int> DeleteAsync(Expression<Func<T, bool>> @where)
+        public virtual async Task<int> DeleteAsync(Expression<Func<T, bool>> @where)
         {
-            return DbContext.DeleteAsync(where);
+            return await DbContext.DeleteAsync(where);
         }
 
-        public virtual int Edit(T entity)
+        public virtual int Edit(T entity, bool withTrigger = false)
         {
-            DbContext.Edit<T,TKey>(entity);
-            return DbContext.SaveChanges();
+            return DbContext.Edit<T,TKey>(entity, withTrigger);
         }
 
-        public virtual int EditRange(ICollection<T> entities)
+        public virtual int EditRange(ICollection<T> entities, bool withTrigger = false)
         {
-            DbContext.EditRange(entities);
-            return DbContext.SaveChanges();
+            return DbContext.EditRange(entities, withTrigger);
         }
 
         public virtual bool Exist(Expression<Func<T, bool>> @where = null)
@@ -111,9 +104,9 @@ namespace Zxw.Framework.NetCore.Repositories
             return DbContext.Exist(where);
         }
 
-        public virtual Task<bool> ExistAsync(Expression<Func<T, bool>> @where = null)
+        public virtual async Task<bool> ExistAsync(Expression<Func<T, bool>> @where = null)
         {
-            return DbContext.ExistAsync(where);
+            return await DbContext.ExistAsync(where);
         }
 
         public virtual int ExecuteSqlWithNonQuery(string sql, params object[] parameters)
@@ -121,9 +114,9 @@ namespace Zxw.Framework.NetCore.Repositories
             return DbContext.ExecuteSqlWithNonQuery(sql, parameters);
         }
 
-        public virtual Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters)
+        public virtual async Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters)
         {
-            return DbContext.ExecuteSqlWithNonQueryAsync(sql, parameters);
+            return await DbContext.ExecuteSqlWithNonQueryAsync(sql, parameters);
         }
 
         /// <summary>
@@ -147,9 +140,9 @@ namespace Zxw.Framework.NetCore.Repositories
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public virtual Task<T> GetSingleAsync(TKey key)
+        public virtual async Task<T> GetSingleAsync(TKey key)
         {
-            return DbContext.FindAsync<T,TKey>(key);
+            return await DbContext.FindAsync<T,TKey>(key);
         }
 
         /// <summary>
@@ -163,9 +156,9 @@ namespace Zxw.Framework.NetCore.Repositories
         /// <summary>
         /// 获取单个实体。建议：如需使用Include和ThenInclude请重载此方法。
         /// </summary>
-        public virtual Task<T> GetSingleOrDefaultAsync(Expression<Func<T, bool>> @where = null)
+        public virtual async Task<T> GetSingleOrDefaultAsync(Expression<Func<T, bool>> @where = null)
         {
-            return DbContext.GetSingleOrDefaultAsync(where);
+            return await DbContext.GetSingleOrDefaultAsync(where);
         }
 
         /// <summary>
@@ -179,9 +172,9 @@ namespace Zxw.Framework.NetCore.Repositories
         /// <summary>
         /// 获取实体列表。建议：如需使用Include和ThenInclude请重载此方法。
         /// </summary>
-        public virtual Task<List<T>> GetAsync(Expression<Func<T, bool>> @where = null)
+        public virtual async Task<List<T>> GetAsync(Expression<Func<T, bool>> @where = null)
         {
-            return DbSet.Where(where).ToListAsync();
+            return await DbSet.Where(where).ToListAsync();
         }
 
         /// <summary>
@@ -206,14 +199,14 @@ namespace Zxw.Framework.NetCore.Repositories
             return DbContext.SqlQuery<T, TView>(sql, parameters);
         }
 
-        public virtual Task<List<TView>> SqlQueryAsync<TView>(string sql, params object[] parameters) where TView : class, new()
+        public virtual async Task<List<TView>> SqlQueryAsync<TView>(string sql, params object[] parameters) where TView : class, new()
         {
-            return DbContext.SqlQueryAsync<T,TView>(sql, parameters);
+            return await DbContext.SqlQueryAsync<T,TView>(sql, parameters);
         }
 
-        public virtual int Update(T model, params string[] updateColumns)
+        public virtual int Update(T model, bool withTrigger = false, params string[] updateColumns)
         {
-            DbContext.Update(model, updateColumns);
+            DbContext.Update(model, withTrigger, updateColumns);
             return DbContext.SaveChanges();
         }
 
@@ -222,9 +215,9 @@ namespace Zxw.Framework.NetCore.Repositories
             return DbContext.Update(where, updateFactory);
         }
 
-        public virtual Task<int> UpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
+        public virtual async Task<int> UpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
         {
-            return DbContext.UpdateAsync(where, updateFactory);
+            return await DbContext.UpdateAsync(where, updateFactory);
         }
 
         public virtual void Dispose()

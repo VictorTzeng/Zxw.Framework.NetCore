@@ -11,19 +11,19 @@ namespace Zxw.Framework.NetCore.EfDbContext
 {
     public interface IEfDbContext:IDisposable
     {
-        void Add<T>(T entity) where T : class;
-        Task AddAsync<T>(T entity) where T : class;
-        void AddRange<T>(ICollection<T> entities) where T : class;
-        Task AddRangeAsync<T>(ICollection<T> entities) where T : class;
+        int Add<T>(T entity, bool withTrigger = false) where T : class;
+        Task<int> AddAsync<T>(T entity, bool withTrigger = false) where T : class;
+        int AddRange<T>(ICollection<T> entities, bool withTrigger = false) where T : class;
+        Task<int> AddRangeAsync<T>(ICollection<T> entities, bool withTrigger = false) where T : class;
         int Count<T>(Expression<Func<T, bool>> @where = null) where T : class;
         Task<int> CountAsync<T>(Expression<Func<T, bool>> @where = null) where T : class;
-        void Delete<T,TKey>(TKey key) where T : class;
+        int Delete<T,TKey>(TKey key, bool withTrigger = false) where T : class;
         bool EnsureCreated();
         Task<bool> EnsureCreatedAsync();
         int ExecuteSqlWithNonQuery(string sql, params object[] parameters);
         Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters);
-        void Edit<T, TKey>(T entity) where T : class, IBaseModel<TKey>;
-        void EditRange<T>(ICollection<T> entities) where T : class;
+        int Edit<T, TKey>(T entity, bool withTrigger = false) where T : class, IBaseModel<TKey>;
+        int EditRange<T>(ICollection<T> entities, bool withTrigger = false) where T : class;
         bool Exist<T>(Expression<Func<T, bool>> @where = null) where T : class;
         IQueryable<T> FilterWithInclude<T>(Func<IQueryable<T>, IQueryable<T>> include, Expression<Func<T, bool>> where) where T : class;
         Task<bool> ExistAsync<T>(Expression<Func<T, bool>> @where = null) where T : class;
@@ -33,7 +33,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
         DbSet<T> GetDbSet<T>() where T : class;
         T GetSingleOrDefault<T>(Expression<Func<T, bool>> @where = null) where T : class;
         Task<T> GetSingleOrDefaultAsync<T>(Expression<Func<T, bool>> @where = null) where T : class;
-        void Update<T>(T model, params string[] updateColumns) where T : class;
+        int Update<T>(T model, bool withTrigger = false, params string[] updateColumns) where T : class;
         int Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory) where T : class;
         Task<int> UpdateAsync<T>(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
             where T : class;

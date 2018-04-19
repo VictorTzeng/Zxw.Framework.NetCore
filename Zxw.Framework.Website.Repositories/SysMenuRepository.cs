@@ -37,42 +37,6 @@ namespace Zxw.Framework.Website.Repositories
             };
         }
 
-        public override int Add(SysMenu entity)
-        {
-            DbContext.Add(entity);
-            return DbContext.SaveChangesWithTriggers(true);
-        }
-
-        public override Task<int> AddAsync(SysMenu entity)
-        {
-            DbContext.AddAsync(entity);
-            return DbContext.SaveChangesWithTriggersAsync(true);
-        }
-
-        public override int AddRange(ICollection<SysMenu> entities)
-        {
-            DbContext.AddRange(entities);
-            return DbContext.SaveChangesWithTriggers(true);
-        }
-
-        public override Task<int> AddRangeAsync(ICollection<SysMenu> entities)
-        {
-            DbContext.AddRangeAsync(entities);
-            return DbContext.SaveChangesWithTriggersAsync(true);
-        }
-
-        public override int Edit(SysMenu entity)
-        {
-            DbContext.Edit<SysMenu, int>(entity);
-            return DbContext.SaveChangesWithTriggers(true);
-        }
-
-        public override int EditRange(ICollection<SysMenu> entities)
-        {
-            DbContext.EditRange(entities);
-            return DbContext.SaveChangesWithTriggers(true);
-        }
-
         public IList<SysMenuViewModel> GetHomeMenusByTreeView(Expression<Func<SysMenu, bool>> where)
         {
             return GetHomeTreeMenu(where);

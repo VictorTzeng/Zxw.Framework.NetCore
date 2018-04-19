@@ -24,9 +24,10 @@ namespace Zxw.Framework.NetCore.EfDbContext
     public abstract class BaseDbContext : DbContext, IEfDbContext
     {
         protected readonly DbContextOption _option;
-        public new virtual void Add<T>(T entity) where T : class
+        public virtual int Add<T>(T entity, bool withTrigger = false) where T : class
         {
             base.Add(entity);
+            return withTrigger ? SaveChangesWithTriggers() : SaveChanges();
         }
 
         /// <summary>
@@ -67,19 +68,22 @@ namespace Zxw.Framework.NetCore.EfDbContext
             }
         }
 
-        public virtual Task AddAsync<T>(T entity) where T : class
+        public virtual async Task<int> AddAsync<T>(T entity, bool withTrigger = false) where T : class
         {
-            return base.AddAsync(entity);
+            await base.AddAsync(entity);
+            return await (withTrigger ? SaveChangesWithTriggersAsync() : SaveChangesAsync());
         }
 
-        public virtual void AddRange<T>(ICollection<T> entities) where T : class
+        public virtual int AddRange<T>(ICollection<T> entities, bool withTrigger = false) where T : class
         {
             base.AddRange(entities);
+            return withTrigger ? SaveChangesWithTriggers() : SaveChanges();
         }
 
-        public virtual Task AddRangeAsync<T>(ICollection<T> entities) where T : class
+        public virtual async Task<int> AddRangeAsync<T>(ICollection<T> entities, bool withTrigger = false) where T : class
         {
-            return base.AddRangeAsync(entities);
+            await base.AddRangeAsync(entities);
+            return await (withTrigger ? SaveChangesWithTriggersAsync() : SaveChangesAsync());
         }
 
         public virtual int Count<T>(Expression<Func<T, bool>> @where = null) where T : class
@@ -92,10 +96,11 @@ namespace Zxw.Framework.NetCore.EfDbContext
             return where == null ? Set<T>().CountAsync() : Set<T>().CountAsync(@where);
         }
 
-        public void Delete<T, TKey>(TKey key) where T : class
+        public int Delete<T, TKey>(TKey key, bool withTrigger = false) where T : class
         {
             var entity = Find<T>(key);
             Remove(entity);
+            return withTrigger ? SaveChangesWithTriggers() : SaveChanges();
         }
 
         public virtual bool EnsureCreated()
@@ -135,10 +140,11 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <typeparam name="TKey"></typeparam>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public virtual void Edit<T,TKey>(T entity) where T : class,IBaseModel<TKey>
+        public virtual int Edit<T,TKey>(T entity, bool withTrigger = false) where T : class,IBaseModel<TKey>
         {
             var model = Find<T>(entity.Id);
             Entry(model).CurrentValues.SetValues(entity);
+            return withTrigger ? SaveChangesWithTriggers() : SaveChanges();
         }
 
         /// <summary>
@@ -147,9 +153,10 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <typeparam name="T"></typeparam>
         /// <param name="entities"></param>
         /// <returns></returns>
-        public virtual void EditRange<T>(ICollection<T> entities) where T : class
+        public virtual int EditRange<T>(ICollection<T> entities, bool withTrigger = false) where T : class
         {
             Set<T>().AttachRange(entities.ToArray());
+            return withTrigger ? SaveChangesWithTriggers() : SaveChanges();
         }
 
         public bool Exist<T>(Expression<Func<T, bool>> @where = null) where T : class
@@ -209,9 +216,10 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="model"></param>
+        /// <param name="withTrigger"></param>
         /// <param name="updateColumns"></param>
         /// <returns></returns>
-        public virtual void Update<T>(T model, params string[] updateColumns) where T : class
+        public virtual int Update<T>(T model, bool withTrigger = false, params string[] updateColumns) where T : class
         {
             if (updateColumns != null && updateColumns.Length > 0)
             {
@@ -226,6 +234,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
             {
                 Entry(model).State = EntityState.Modified;
             }
+            return withTrigger ? SaveChangesWithTriggers() : SaveChanges();
         }
 
         public virtual int Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
