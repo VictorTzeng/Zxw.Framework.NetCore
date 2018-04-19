@@ -9,6 +9,7 @@ namespace Zxw.Framework.Website.IRepositories
 {
     public interface ISysMenuRepository:IRepository<SysMenu, Int32>
     {
+        IList<SysMenuViewModel> GetHomeMenusByTreeView(Expression<Func<SysMenu, bool>> where);
         IList<SysMenuViewModel> GetMenusByTreeView(Expression<Func<SysMenu, bool>> where);
     }
 }

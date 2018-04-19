@@ -89,7 +89,7 @@
                 </div>
                 <div class="form-group">
                     <label for="ParentId">父级：</label>
-                    <input type="hidden" id="ParentId" name="ParentId" />
+                    <input type="hidden" id="ParentId" name="ParentId" value="0"/>
                     <div id="treeview"></div>
                 </div>
                 <div class="form-group">
@@ -145,7 +145,12 @@
             $("#MenuIcon").iconpicker();
             sysMenuModel.get('@Url.Action("GetTreeMenus")', {}, function(rep) {
                 if (rep.success == true) {
-                    $("#treeview").treeview({ data: rep.rows });
+                    $("#treeview").treeview({
+                        data: rep.rows,
+                        onNodeSelected: function(event, data) {
+                            $("#ParentId").val(data.tags);
+                        }
+                    });
                 } else {
                     layer.alert("树形列表初始化失败，请重试。", { icon: 5 });
                 }

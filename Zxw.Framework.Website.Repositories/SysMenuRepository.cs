@@ -72,7 +72,24 @@ namespace Zxw.Framework.Website.Repositories
             return DbContext.SaveChangesWithTriggers(true);
         }
 
-        public IList<SysMenuViewModel> GetMenusByTreeView(Expression<Func<SysMenu, bool>> where)
+        public IList<SysMenuViewModel> GetHomeMenusByTreeView(Expression<Func<SysMenu, bool>> where)
+        {
+            return GetHomeTreeMenu(where);
+        }
+        private IList<SysMenuViewModel> GetHomeTreeMenu(Expression<Func<SysMenu, bool>> where)
+        {
+            var reslut = new List<SysMenuViewModel>();
+            var children = Get(where).OrderBy(m => m.SortIndex);
+            foreach (var child in children)
+            {
+                var tmp = new SysMenuViewModel();
+                tmp = TinyMapper.Map(child, tmp);
+                tmp.Children = GetHomeTreeMenu(m => m.ParentId == tmp.Id && m.Activable && m.Visiable);
+                reslut.Add(tmp);
+            }
+            return reslut;
+        }
+        public IList<SysMenuViewModel> GetMenusByTreeView(Expression<Func<SysMenu, bool>> @where)
         {
             return GetTreeMenu(where);
         }

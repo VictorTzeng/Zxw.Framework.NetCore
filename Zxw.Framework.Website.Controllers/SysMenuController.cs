@@ -47,29 +47,36 @@ namespace Zxw.Framework.Website.Controllers
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
-                var rows = menuRepository.GetMenusByTreeView(m=>m.Activable && m.Visiable && m.ParentId == 0).OrderBy(m=>m.SortIndex).ToList();
+                var rows = menuRepository.GetHomeMenusByTreeView(m=>m.Activable && m.Visiable && m.ParentId == 0).OrderBy(m=>m.SortIndex).ToList();
                 return Json(ExcutedResult.SuccessResult(rows));
             });
         }
 
         [AjaxRequestOnly, HttpGet]
-        public Task<IActionResult> GetTreeMenus()
+        public Task<IActionResult> GetTreeMenus(int parentId = 0)
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
-                var nodes = menuRepository.GetMenusByTreeView(m=>m.Activable && m.ParentId == 0).OrderBy(m => m.SortIndex).Select(GetTreeMenus).ToList();
-                var rows = new
+                var nodes = menuRepository.GetMenusByTreeView(m=>m.Activable && m.ParentId == 0).OrderBy(m => m.SortIndex).Select(m=>GetTreeMenus(m,parentId)).ToList();
+                var rows = new[]
                 {
-                    text = " 根节点",
-                    icon = "fas fa-boxes",
-                    tags = new[] {"0"},
-                    nodes
+                    new
+                    {
+                        text = " 根节点",
+                        icon = "fas fa-boxes",
+                        tags = "0",
+                        nodes,
+                        state = new
+                        {
+                            selected = 0 == parentId
+                        }
+                    }
                 };
                 return Json(ExcutedResult.SuccessResult(rows));
             });
         }
 
-        private object GetTreeMenus(SysMenuViewModel viewModel)
+        private object GetTreeMenus(SysMenuViewModel viewModel, int parentId = 0)
         {
             if (viewModel.Children.Any())
             {
@@ -77,11 +84,12 @@ namespace Zxw.Framework.Website.Controllers
                 {
                     text = " "+viewModel.MenuName,
                     icon = viewModel.MenuIcon,
-                    tags = new[] {viewModel.Id.ToString()},
+                    tags = viewModel.Id.ToString(),
                     nodes = viewModel.Children.Select(GetTreeMenus),
                     state = new
                     {
-                        expanded = false
+                        expanded = false,
+                        selected = viewModel.Id == parentId
                     }
                 };
             }
@@ -89,11 +97,15 @@ namespace Zxw.Framework.Website.Controllers
             {
                 text = " "+viewModel.MenuName,
                 icon = viewModel.MenuIcon,
-                tags = new[] {viewModel.Id.ToString()}
+                tags = viewModel.Id.ToString(),
+                state = new
+                {
+                    selected = viewModel.Id == parentId
+                }
             };
         }
 
-        [AjaxRequestOnly]
+        [AjaxRequestOnly, HttpGet]
         public Task<IActionResult> GetMenusByPaged(int pageSize, int pageIndex)
         {
             return Task.Factory.StartNew<IActionResult>(() =>

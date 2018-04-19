@@ -4,8 +4,9 @@
 }
 <link rel="stylesheet" href="~/css/AdminLTE.min.css" />
 <link rel="stylesheet" href="~/components/fontawesome-iconpicker/css/fontawesome-iconpicker.min.css" />
+<link href="https://cdn.bootcss.com/bootstrap-treeview/1.2.0/bootstrap-treeview.min.css" rel="stylesheet">
 <style>
-/* The container */
+    /* The container */
     .container {
         display: block;
         position: relative;
@@ -19,12 +20,12 @@
         user-select: none;
     }
 
-    /* Hide the browser's default radio button */
-    .container input {
-        position: absolute;
-        opacity: 0;
-        cursor: pointer;
-    }
+        /* Hide the browser's default radio button */
+        .container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
 
     /* Create a custom radio button */
     .checkmark {
@@ -75,39 +76,42 @@
     <div class="box box-info">
         <form id="create-form" role="form" method="post" data-bind="submit:function(){ajaxSubmit('create-form');}" action="@Url.Action("Edit")">
             @Html.AntiForgeryToken()
-            <input type="hidden" name="Id" value="@Model.Id"/>
+            <input type="hidden" name="Id" value="@Model.Id" />
             <div class="box-body">
                 <div class="form-group">
                     <label for="MenuName"><font color="red">*</font>名称：</label>
-                    <input type="text" class="form-control" id="MenuName" name="MenuName" required maxlength="20" value="@Model.MenuName"/>
+                    <input type="text" class="form-control" id="MenuName" name="MenuName" required maxlength="20" value="@Model.MenuName" />
                 </div>
                 <div class="form-group">
                     <label for="MenuIcon">图标：</label>
                     <div class="input-group">
-                        <input data-placement="bottomRight" class="form-control" type="text" id="MenuIcon" name="MenuIcon" value="@Model.MenuIcon"/>
+                        <input data-placement="bottomRight" class="form-control" type="text" id="MenuIcon" name="MenuIcon" value="@Model.MenuIcon" />
                         <span class="input-group-addon"></span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="ParentId">父级：</label>
-                    <input type="text" class="form-control" id="ParentId" name="ParentId" value="@Model.ParentId"/>
+                    <input type="hidden" id="ParentId" name="ParentId" value="@Model.ParentId" />
+                    <div id="treeview"></div>
                 </div>
                 <div class="form-group">
                     <label for="Identity"><font color="red">*</font>标识：</label>
-                    <input type="text" class="form-control" id="Identity" name="Identity" required maxlength="100" value="@Model.Identity"/>
+                    <input type="text" class="form-control" id="Identity" name="Identity" required maxlength="100" value="@Model.Identity" />
                 </div>
                 <div class="form-group">
                     <label for="RouteUrl"><font color="red">*</font>URL：</label>
-                    <input type="text" class="form-control" id="RouteUrl" name="RouteUrl" required maxlength="200" value="@Model.RouteUrl"/>
+                    <input type="text" class="form-control" id="RouteUrl" name="RouteUrl" required maxlength="200" value="@Model.RouteUrl" />
                 </div>
                 <div class="form-group">
                     <label>启/停用：</label>
-                    <label class="container pull-right">启用
-                        <input type="radio" @(Model.Activable?"checked":"") name="Activable" value="True"/>
+                    <label class="container pull-right">
+                        启用
+                        <input type="radio" @(Model.Activable ? "checked" : "") name="Activable" value="True" />
                         <span class="checkmark"></span>
                     </label>
-                    <label class="container pull-right">停用
-                        <input type="radio" name="Activable" value="Flase" @(Model.Activable?"":"checked")/>
+                    <label class="container pull-right">
+                        停用
+                        <input type="radio" name="Activable" value="Flase" @(Model.Activable ? "" : "checked") />
                         <span class="checkmark"></span>
                     </label>
                 </div>
@@ -115,12 +119,12 @@
                     <label>显示/隐藏：</label>
                     <label class="container pull-right">
                         显示
-                        <input type="radio" @(Model.Visiable?"checked":"") name="Visiable" value="True"/>
+                        <input type="radio" @(Model.Visiable ? "checked" : "") name="Visiable" value="True" />
                         <span class="checkmark"></span>
                     </label>
                     <label class="container pull-right">
                         隐藏
-                        <input type="radio" name="Visiable" value="False" @(Model.Visiable?"":"checked")/>
+                        <input type="radio" name="Visiable" value="False" @(Model.Visiable ? "" : "checked") />
                         <span class="checkmark"></span>
                     </label>
                 </div>
@@ -132,14 +136,27 @@
     </div>
 </div>
 @section Scripts
-{
+    {
     <script src="https://cdn.bootcss.com/jquery.form/4.2.2/jquery.form.min.js"></script>
     <script src="~/components/fontawesome-iconpicker/js/fontawesome-iconpicker.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-treeview/1.2.0/bootstrap-treeview.min.js"></script>
     <script src="~/js/sysmenu.viewmodel.js"></script>
     <script type="text/javascript">
         $(function() {
             ko.applyBindings(sysMenuModel);
             $("#MenuIcon").iconpicker();
+            sysMenuModel.get('@Url.Action("GetTreeMenus")', {parentId:@Model.ParentId}, function(rep) {
+                if (rep.success == true) {
+                    $("#treeview").treeview({
+                        data: rep.rows,
+                        onNodeSelected: function(event, data) {
+                            $("#ParentId").val(data.tags);
+                        }
+                    });
+                } else {
+                    layer.alert("树形列表初始化失败，请重试。", { icon: 5 });
+                }
+            });
         });
     </script>
 }
