@@ -10,7 +10,7 @@ using Zxw.Framework.Website.ViewModels;
 
 namespace Zxw.Framework.Website.Controllers
 {
-    public class SysMenuController : Controller
+    public class SysMenuController : BaseController
     {
         private ISysMenuRepository menuRepository;
         

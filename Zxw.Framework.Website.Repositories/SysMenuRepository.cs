@@ -26,7 +26,7 @@ namespace Zxw.Framework.Website.Repositories
                 entry.Entity.MenuPath = (parentMenu?.MenuPath ?? "0") + "," + entry.Entity.Id;
                 entry.Entity.SortIndex = entry.Entity.Id;
                 entry.Context.SaveChangesWithTriggers(entry.Context.SaveChanges);
-                DistributedCacheHelper.GetInstance().Remove("Redis_Cache_SysMenu");
+                DistributedCacheHelper.GetInstance().Remove("Redis_Cache_SysMenu");//插入成功后清除缓存以更新
             };
             //修改时触发
             Triggers<SysMenu>.Updating += entry =>
@@ -36,23 +36,9 @@ namespace Zxw.Framework.Website.Repositories
                 entry.Entity.MenuPath = (parentMenu?.MenuPath ?? "0") + "," + entry.Entity.Id;
             };
         }
-
         public IList<SysMenuViewModel> GetHomeMenusByTreeView(Expression<Func<SysMenu, bool>> where)
         {
             return GetHomeTreeMenu(where);
-        }
-        private IList<SysMenuViewModel> GetHomeTreeMenu(Expression<Func<SysMenu, bool>> where)
-        {
-            var reslut = new List<SysMenuViewModel>();
-            var children = Get(where).OrderBy(m => m.SortIndex);
-            foreach (var child in children)
-            {
-                var tmp = new SysMenuViewModel();
-                tmp = TinyMapper.Map(child, tmp);
-                tmp.Children = GetHomeTreeMenu(m => m.ParentId == tmp.Id && m.Activable && m.Visiable);
-                reslut.Add(tmp);
-            }
-            return reslut;
         }
         public IList<SysMenuViewModel> GetMenusByTreeView(Expression<Func<SysMenu, bool>> @where)
         {
@@ -63,7 +49,20 @@ namespace Zxw.Framework.Website.Repositories
         {
             return DbContext.Get(where).ToList();
         }
-
+        private IList<SysMenuViewModel> GetHomeTreeMenu(Expression<Func<SysMenu, bool>> where)
+        {
+            var reslut = new List<SysMenuViewModel>();
+            var children = Get(where).OrderBy(m => m.SortIndex);
+            foreach (var child in children)
+            {
+                var tmp = new SysMenuViewModel();
+                tmp = TinyMapper.Map(child, tmp);
+                tmp.RouteUrl = ConfigHelper.GetConfigurationValue("appSettings:AdminDomain") + tmp.RouteUrl;
+                tmp.Children = GetHomeTreeMenu(m => m.ParentId == tmp.Id && m.Activable && m.Visiable);
+                reslut.Add(tmp);
+            }
+            return reslut;
+        }
         private IList<SysMenuViewModel> GetTreeMenu(Expression<Func<SysMenu, bool>> where)
         {
             var reslut = new List<SysMenuViewModel>();

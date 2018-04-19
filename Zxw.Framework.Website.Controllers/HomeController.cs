@@ -3,7 +3,7 @@ using Zxw.Framework.NetCore.CodeGenerator;
 
 namespace Zxw.Framework.Website.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         public HomeController()
         {
@@ -14,7 +14,7 @@ namespace Zxw.Framework.Website.Controllers
             return View();
         }
 
-        public IActionResult Default()
+        public IActionResult About()
         {
             ViewData["Title"] = "Readme";
             ViewBag.PageHeader = "README.md";
