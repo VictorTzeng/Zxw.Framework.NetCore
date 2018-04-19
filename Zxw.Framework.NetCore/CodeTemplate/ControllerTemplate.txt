@@ -49,7 +49,7 @@ namespace {ControllersNamespace}
             {
                 if(!ModelState.IsValid)
                     return Json(ExcutedResult.FailedResult("数据验证失败"));
-                {ModelTypeName}Repository.AddAsync(menu);
+                {ModelTypeName}Repository.AddAsync(menu, false);
                 return Json(ExcutedResult.SuccessResult());
             });
         }
@@ -65,7 +65,7 @@ namespace {ControllersNamespace}
             {
                 if (!ModelState.IsValid)
                     return Json(ExcutedResult.FailedResult("数据验证失败"));
-                {ModelTypeName}Repository.Edit(menu);
+                {ModelTypeName}Repository.Edit(menu, false);
                 return Json(ExcutedResult.SuccessResult());
             });
         }
@@ -79,7 +79,7 @@ namespace {ControllersNamespace}
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
-                {ModelTypeName}Repository.Delete(id);
+                {ModelTypeName}Repository.Delete(id, false);
                 return Json(ExcutedResult.SuccessResult("成功删除一条数据。"));
             });
         }
