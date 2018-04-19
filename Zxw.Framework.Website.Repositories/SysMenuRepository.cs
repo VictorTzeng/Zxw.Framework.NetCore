@@ -4,9 +4,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggers;
-using Microsoft.EntityFrameworkCore;
 using Nelibur.ObjectMapper;
 using Zxw.Framework.NetCore.EfDbContext;
+using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.Repositories;
 using Zxw.Framework.Website.IRepositories;
 using Zxw.Framework.Website.Models;
@@ -26,8 +26,9 @@ namespace Zxw.Framework.Website.Repositories
                 entry.Entity.MenuPath = (parentMenu?.MenuPath ?? "0") + "," + entry.Entity.Id;
                 entry.Entity.SortIndex = entry.Entity.Id;
                 entry.Context.SaveChangesWithTriggers(entry.Context.SaveChanges);
+                DistributedCacheHelper.GetInstance().Remove("Redis_Cache_SysMenu");
             };
-            //修改成功后触发
+            //修改时触发
             Triggers<SysMenu>.Updating += entry =>
             {
                 var parentMenu = GetSingle(entry.Entity.ParentId);
@@ -92,6 +93,11 @@ namespace Zxw.Framework.Website.Repositories
         public IList<SysMenuViewModel> GetMenusByTreeView(Expression<Func<SysMenu, bool>> @where)
         {
             return GetTreeMenu(where);
+        }
+
+        public IList<SysMenu> GetMenusByCache(Expression<Func<SysMenu, bool>> @where)
+        {
+            return DbContext.Get(where).ToList();
         }
 
         private IList<SysMenuViewModel> GetTreeMenu(Expression<Func<SysMenu, bool>> where)

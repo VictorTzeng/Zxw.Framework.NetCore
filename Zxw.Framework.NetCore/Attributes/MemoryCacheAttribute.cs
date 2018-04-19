@@ -21,8 +21,9 @@ namespace Zxw.Framework.NetCore.Attributes
         /// 缓存有限期，单位：分钟。默认值：10。
         /// </summary>
         public int Expiration { get; set; } = 10;
+        public string CacheKey { get; set; } = null;
 
-        private readonly IMemoryCache _cache = AutofacContainer.Resolve<IMemoryCache>();
+        private readonly IMemoryCache _cache = MemoryCacheHelper.GetInstance();
 
         public override async Task Invoke(AspectContext context, AspectDelegate next)
         {
@@ -34,7 +35,9 @@ namespace Zxw.Framework.NetCore.Attributes
             }
             else
             {
-                var key = new CacheKey(context.ServiceMethod, parameters).GetHashCode().ToString();
+                var key = string.IsNullOrEmpty(CacheKey)
+                    ? new CacheKey(context.ServiceMethod, parameters).GetHashCode().ToString()
+                    : CacheKey;
                 if (_cache.TryGetValue(key, out object value))
                 {
                     context.ReturnValue = value;

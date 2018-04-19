@@ -23,7 +23,9 @@ namespace Zxw.Framework.NetCore.Attributes
         /// </summary>
         public int Expiration { get; set; } = 10;
 
-        private readonly IDistributedCache _cache = AutofacContainer.Resolve<IDistributedCache>();
+        public string CacheKey { get; set; } = null;
+
+        private readonly IDistributedCache _cache = DistributedCacheHelper.GetInstance();
 
         public override async Task Invoke(AspectContext context, AspectDelegate next)
         {
@@ -35,7 +37,9 @@ namespace Zxw.Framework.NetCore.Attributes
             }
             else
             {
-                var key = new CacheKey(context.ServiceMethod, parameters).GetHashCode().ToString();
+                var key = string.IsNullOrEmpty(CacheKey)
+                    ? new CacheKey(context.ServiceMethod, parameters).GetHashCode().ToString()
+                    : CacheKey;
                 var value = _cache.Get(key);
                 if (value != null)
                 {
