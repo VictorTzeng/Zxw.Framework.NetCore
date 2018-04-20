@@ -8,11 +8,11 @@ using Zxw.Framework.NetCore.Models;
 namespace Zxw.Framework.Website.Models
 {
     [Table("SysUser")]
-    public class SysUser:IBaseModel<int>
+    public class SysUser:BaseModel<int>
     {
         [Key]
         [Column("SysUserId")]
-        public int Id { get; set; }
+        public override int Id { get; set; }
 
         [Required]
         [MaxLength(20)]

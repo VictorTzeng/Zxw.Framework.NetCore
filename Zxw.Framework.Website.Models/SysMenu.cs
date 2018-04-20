@@ -8,11 +8,11 @@ using Zxw.Framework.NetCore.Models;
 namespace Zxw.Framework.Website.Models
 {
     [Table("SysMenu")]
-    public class SysMenu:IBaseModel<int>
+    public class SysMenu:BaseModel<int>
     {
         [Key]
         [Column("SysMenuId")]
-        public int Id { get; set; }
+        public override int Id { get; set; }
 
         public int ParentId { get; set; } = 0;
 

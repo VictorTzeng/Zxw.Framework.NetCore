@@ -2,11 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggers;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Nelibur.ObjectMapper;
+using Zxw.Framework.NetCore.Attributes;
 using Zxw.Framework.NetCore.EfDbContext;
 using Zxw.Framework.NetCore.Helpers;
+using Zxw.Framework.NetCore.IoC;
+using Zxw.Framework.NetCore.Options;
 using Zxw.Framework.NetCore.Repositories;
 using Zxw.Framework.Website.IRepositories;
 using Zxw.Framework.Website.Models;
@@ -49,6 +55,53 @@ namespace Zxw.Framework.Website.Repositories
         {
             return DbContext.Get(where).ToList();
         }
+        /// <summary>
+        /// 初始化系统模块
+        /// </summary>
+        public void InitSysMenus()
+        {
+            var option = AutofacContainer.Resolve<IOptions<CodeGenerateOption>>()?.Value;
+            if (option == null)
+            {
+                throw new ArgumentNullException(nameof(option));
+            }
+            var assembly = Assembly.Load(option.ControllersNamespace);
+            var types = assembly?.GetTypes();
+            var list = types?.Where(t =>t.Name.Contains("Controller") && !t.IsAbstract).ToList();
+            var menus = new List<SysMenu>();
+            if (list != null)
+            {
+                foreach (var type in list)
+                {
+                    var controllerName = type.Name.Replace("Controller", "");
+                    var methods = type.GetMethods().Where(m =>
+                        m.IsPublic && (m.ReturnType == typeof(IActionResult) ||
+                                       m.ReturnType == typeof(Task<IActionResult>)));
+                    foreach (var method in methods)
+                    {
+                        var identity = $"{controllerName}/{method.Name}";
+                        if (Count(m => m.Identity.Equals(identity, StringComparison.OrdinalIgnoreCase)) == 0)
+                        {
+                            menus.Add(new SysMenu()
+                            {
+                                MenuName = method.Name,
+                                Activable = true,
+                                Visiable = method.GetCustomAttribute<AjaxRequestOnlyAttribute>()==null,
+                                Identity = identity,
+                                RouteUrl = identity,
+                                ParentId = 0
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (menus.Any())
+            {
+                AddRange(menus, true);
+            }
+        }
+
         private IList<SysMenuViewModel> GetHomeTreeMenu(Expression<Func<SysMenu, bool>> where)
         {
             var reslut = new List<SysMenuViewModel>();

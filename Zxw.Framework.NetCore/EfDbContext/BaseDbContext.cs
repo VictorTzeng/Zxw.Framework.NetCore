@@ -57,7 +57,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
             var types = assembly?.GetTypes();
             var list = types?.Where(t =>
                 t.IsClass && !t.IsGenericType && !t.IsAbstract &&
-                t.GetInterfaces().Any(m => m.GetGenericTypeDefinition() == typeof(IBaseModel<>))).ToList();
+                t.GetInterfaces().Any(m => m.IsAssignableFrom(typeof(BaseModel<>)))).ToList();
             if (list != null && list.Any())
             {
                 list.ForEach(t =>
@@ -91,9 +91,9 @@ namespace Zxw.Framework.NetCore.EfDbContext
             return where == null ? Set<T>().Count() : Set<T>().Count(@where);
         }
 
-        public virtual Task<int> CountAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
+        public virtual async Task<int> CountAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return where == null ? Set<T>().CountAsync() : Set<T>().CountAsync(@where);
+            return await (where == null ? Set<T>().CountAsync() : Set<T>().CountAsync(@where));
         }
 
         public int Delete<T, TKey>(TKey key, bool withTrigger = false) where T : class
@@ -108,9 +108,9 @@ namespace Zxw.Framework.NetCore.EfDbContext
             return Database.EnsureCreated();
         }
 
-        public virtual Task<bool> EnsureCreatedAsync()
+        public virtual async Task<bool> EnsureCreatedAsync()
         {
-            return Database.EnsureCreatedAsync();
+            return await Database.EnsureCreatedAsync();
         }
 
         /// <summary>
@@ -126,9 +126,9 @@ namespace Zxw.Framework.NetCore.EfDbContext
                 parameters);
         }
 
-        public virtual Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters)
+        public virtual async Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters)
         {
-            return Database.ExecuteSqlCommandAsync(sql,
+            return await Database.ExecuteSqlCommandAsync(sql,
                 CancellationToken.None,
                 parameters);
         }
@@ -140,7 +140,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <typeparam name="TKey"></typeparam>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public virtual int Edit<T,TKey>(T entity, bool withTrigger = false) where T : class,IBaseModel<TKey>
+        public virtual int Edit<T,TKey>(T entity, bool withTrigger = false) where T : BaseModel<TKey>
         {
             var model = Find<T>(entity.Id);
             Entry(model).CurrentValues.SetValues(entity);
@@ -159,12 +159,12 @@ namespace Zxw.Framework.NetCore.EfDbContext
             return withTrigger ? SaveChangesWithTriggers() : SaveChanges();
         }
 
-        public bool Exist<T>(Expression<Func<T, bool>> @where = null) where T : class
+        public virtual bool Exist<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
             return @where == null ? Set<T>().Any() : Set<T>().Any(@where);
         }
 
-        public IQueryable<T> FilterWithInclude<T>(Func<IQueryable<T>, IQueryable<T>> include, Expression<Func<T, bool>> @where) where T : class
+        public virtual IQueryable<T> FilterWithInclude<T>(Func<IQueryable<T>, IQueryable<T>> include, Expression<Func<T, bool>> @where) where T : class
         {
             var result = GetDbSet<T>().AsQueryable();
             if (where != null)
@@ -174,41 +174,41 @@ namespace Zxw.Framework.NetCore.EfDbContext
             return result;
         }
 
-        public Task<bool> ExistAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
+        public virtual async Task<bool> ExistAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return @where == null ? Set<T>().AnyAsync() : Set<T>().AnyAsync(@where);
+            return await (@where == null ? Set<T>().AnyAsync() : Set<T>().AnyAsync(@where));
         }
 
-        public T Find<T, TKey>(TKey key) where T : class
+        public virtual T Find<T, TKey>(TKey key) where T : class
         {
             return base.Find<T>(key);
         }
 
-        public Task<T> FindAsync<T, TKey>(TKey key) where T : class
+        public virtual async Task<T> FindAsync<T, TKey>(TKey key) where T : class
         {
-            return base.FindAsync<T>(key);
+            return await base.FindAsync<T>(key);
         }
 
-        public IQueryable<T> Get<T>(Expression<Func<T, bool>> @where = null) where T : class
+        public virtual IQueryable<T> Get<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
             if (where == null)
                 return Set<T>().AsNoTracking();
             return Set<T>().Where(where).AsNoTracking();
         }
 
-        public DbSet<T> GetDbSet<T>() where T : class
+        public virtual DbSet<T> GetDbSet<T>() where T : class
         {
             return Set<T>();
         }
 
-        public T GetSingleOrDefault<T>(Expression<Func<T, bool>> @where = null) where T : class
+        public virtual T GetSingleOrDefault<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
             return where == null ? Set<T>().SingleOrDefault() : Set<T>().SingleOrDefault(where);
         }
 
-        public Task<T> GetSingleOrDefaultAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
+        public virtual async Task<T> GetSingleOrDefaultAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return where == null ? Set<T>().SingleOrDefaultAsync() : Set<T>().SingleOrDefaultAsync(where);
+            return await (where == null ? Set<T>().SingleOrDefaultAsync() : Set<T>().SingleOrDefaultAsync(where));
         }
 
         /// <summary>
@@ -242,9 +242,9 @@ namespace Zxw.Framework.NetCore.EfDbContext
             return Set<T>().Where(where).Update(updateFactory);
         }
 
-        public virtual Task<int> UpdateAsync<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
+        public virtual async Task<int> UpdateAsync<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
         {
-            return Set<T>().Where(where).UpdateAsync(updateFactory);
+            return await Set<T>().Where(where).UpdateAsync(updateFactory);
         }
 
         /// <summary>
@@ -258,9 +258,9 @@ namespace Zxw.Framework.NetCore.EfDbContext
             return Set<T>().Where(@where).Delete();
         }
 
-        public virtual Task<int> DeleteAsync<T>(Expression<Func<T, bool>> @where) where T : class
+        public virtual async Task<int> DeleteAsync<T>(Expression<Func<T, bool>> @where) where T : class
         {
-            return Set<T>().Where(@where).DeleteAsync();
+            return await Set<T>().Where(@where).DeleteAsync();
         }
 
         /// <summary>
@@ -270,7 +270,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
         /// <typeparam name="TKey"></typeparam>
         /// <param name="entities"></param>
         /// <param name="destinationTableName"></param>
-        public virtual void BulkInsert<T, TKey>(IList<T> entities, string destinationTableName = null) where T : class, IBaseModel<TKey>
+        public virtual void BulkInsert<T, TKey>(IList<T> entities, string destinationTableName = null) where T : BaseModel<TKey>
         {
             if (!Database.IsSqlServer()&&!Database.IsMySql())
              throw new NotSupportedException("This method only supports for SQL Server or MySql.");
@@ -283,11 +283,11 @@ namespace Zxw.Framework.NetCore.EfDbContext
             return Set<T>().FromSql(sql, parameters).Cast<TView>().ToList();
         }
 
-        public virtual Task<List<TView>> SqlQueryAsync<T,TView>(string sql, params object[] parameters) 
+        public virtual async Task<List<TView>> SqlQueryAsync<T,TView>(string sql, params object[] parameters) 
             where T : class
             where TView : class
         {
-            return Set<T>().FromSql(sql, parameters).Cast<TView>().ToListAsync();
+            return await Set<T>().FromSql(sql, parameters).Cast<TView>().ToListAsync();
         }
 
         public int SaveChangesWithTriggers()
@@ -300,16 +300,16 @@ namespace Zxw.Framework.NetCore.EfDbContext
             return this.SaveChangesWithTriggers(SaveChanges, acceptAllChangesOnSuccess);
         }
 
-        public Task<int> SaveChangesWithTriggersAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<int> SaveChangesWithTriggersAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.SaveChangesWithTriggersAsync(SaveChangesAsync, acceptAllChangesOnSuccess: true,
+            return await this.SaveChangesWithTriggersAsync(SaveChangesAsync, acceptAllChangesOnSuccess: true,
                 cancellationToken: cancellationToken);
         }
 
-        public Task<int> SaveChangesWithTriggersAsync(bool acceptAllChangesOnSuccess,
+        public async Task<int> SaveChangesWithTriggersAsync(bool acceptAllChangesOnSuccess,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.SaveChangesWithTriggersAsync(SaveChangesAsync, acceptAllChangesOnSuccess,
+            return await this.SaveChangesWithTriggersAsync(SaveChangesAsync, acceptAllChangesOnSuccess,
                 cancellationToken: cancellationToken);
         }
     }

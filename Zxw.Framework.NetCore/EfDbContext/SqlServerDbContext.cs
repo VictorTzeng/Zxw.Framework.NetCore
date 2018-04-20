@@ -40,7 +40,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
             SqlBulkInsert<T, TKey>(entities, destinationTableName);
         }
 
-        private void SqlBulkInsert<T,TKey>(IList<T> entities, string destinationTableName = null) where T : class,IBaseModel<TKey>
+        private void SqlBulkInsert<T,TKey>(IList<T> entities, string destinationTableName = null) where T : BaseModel<TKey>
         {
             using (var dt = entities.ToDataTable())
             {
@@ -74,7 +74,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
         }
 
         private void GenerateColumnMappings<T, TKey>(SqlBulkCopyColumnMappingCollection mappings)
-            where T : class, IBaseModel<TKey>
+            where T : BaseModel<TKey>
         {
             var properties = typeof(T).GetProperties();
             foreach (var property in properties)

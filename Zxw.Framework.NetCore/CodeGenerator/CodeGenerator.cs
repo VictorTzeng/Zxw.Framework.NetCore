@@ -49,7 +49,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             var types = assembly?.GetTypes();
             var list = types?.Where(t =>
                 t.IsClass && !t.IsGenericType && !t.IsAbstract && !t.IsNested && t.GetInterfaces()
-                    .Any(m => m.GetGenericTypeDefinition() == typeof(IBaseModel<>)));
+                    .Any(m => m.GetGenericTypeDefinition() == typeof(BaseModel<>)));
             if (list != null)
             {
                 foreach (var type in list)
@@ -65,7 +65,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         /// <typeparam name="T">实体类型（必须实现IBaseModel接口）</typeparam>
         /// <typeparam name="TKey">实体主键类型</typeparam>
         /// <param name="ifExsitedCovered">如果目标文件存在，是否覆盖。默认为false</param>
-        public static void GenerateSingle<T, TKey>(bool ifExsitedCovered = false) where T : class, IBaseModel<TKey>
+        public static void GenerateSingle<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>
         {
             GenerateSingle(typeof(T), ifExsitedCovered);
         }

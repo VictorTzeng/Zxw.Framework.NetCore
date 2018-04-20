@@ -7,7 +7,7 @@ using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.NetCore.Repositories
 {
-    public interface IRepository<T, TKey>:IDisposable where T : class, IBaseModel<TKey>
+    public interface IRepository<T, TKey>:IDisposable where T : BaseModel<TKey>
     {
         int Add(T entity, bool withTrigger = false);
         Task<int> AddAsync(T entity, bool withTrigger = false);

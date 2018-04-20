@@ -22,7 +22,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
         Task<bool> EnsureCreatedAsync();
         int ExecuteSqlWithNonQuery(string sql, params object[] parameters);
         Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters);
-        int Edit<T, TKey>(T entity, bool withTrigger = false) where T : class, IBaseModel<TKey>;
+        int Edit<T, TKey>(T entity, bool withTrigger = false) where T : BaseModel<TKey>;
         int EditRange<T>(ICollection<T> entities, bool withTrigger = false) where T : class;
         bool Exist<T>(Expression<Func<T, bool>> @where = null) where T : class;
         IQueryable<T> FilterWithInclude<T>(Func<IQueryable<T>, IQueryable<T>> include, Expression<Func<T, bool>> where) where T : class;
@@ -40,7 +40,7 @@ namespace Zxw.Framework.NetCore.EfDbContext
         int Delete<T>(Expression<Func<T, bool>> @where) where T : class;
         Task<int> DeleteAsync<T>(Expression<Func<T, bool>> @where) where T : class;
         void BulkInsert<T, TKey>(IList<T> entities, string destinationTableName = null)
-            where T : class, IBaseModel<TKey>;
+            where T : BaseModel<TKey>;
         List<TView> SqlQuery<T, TView>(string sql, params object[] parameters) 
             where T : class
             where TView : class;
