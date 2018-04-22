@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Zxw.Framework.Website.Models;
 
 namespace Zxw.Framework.Website.ViewModels

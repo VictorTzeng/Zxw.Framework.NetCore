@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Zxw.Framework.NetCore.Helpers;
 using AspectCore.Configuration;
+using AspectCore.Injector;
 using Zxw.Framework.NetCore.IoC;
 
 namespace Zxw.Framework.NetCore.Extensions
@@ -132,8 +133,18 @@ namespace Zxw.Framework.NetCore.Extensions
         public static IServiceProvider BuildAspectCoreWithAutofacServiceProvider(this IServiceCollection services, Action<IAspectConfiguration> configure = null)
         {
             if(services==null)throw new ArgumentNullException(nameof(services));
+            services.AddDynamicProxy();
             services.AddAspectCoreContainer();
             return AutofacContainer.Build(services, configure);
+        }
+
+        public static IServiceProvider BuildAspectCoreServiceProvider(this IServiceCollection services,
+            Action<IAspectConfiguration> configure = null)
+        {
+            if(services==null)throw new ArgumentNullException(nameof(services));
+            services.AddDynamicProxy(configure);
+            services.AddAspectCoreContainer();
+            return services.ToServiceContainer().Build();
         }
     }
 }

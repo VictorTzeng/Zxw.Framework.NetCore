@@ -4,7 +4,6 @@ using AspectCore.DynamicProxy;
 using Microsoft.Extensions.Caching.Memory;
 using Zxw.Framework.NetCore.Helpers;
 using System.Linq;
-using Zxw.Framework.NetCore.IoC;
 
 namespace Zxw.Framework.NetCore.Attributes
 {

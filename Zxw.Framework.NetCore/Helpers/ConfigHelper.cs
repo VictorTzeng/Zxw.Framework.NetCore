@@ -5,11 +5,7 @@ namespace Zxw.Framework.NetCore.Helpers
 {
     public class ConfigHelper
     {
-        private static readonly IConfiguration configuration;
-        static ConfigHelper()
-        {
-            configuration = AutofacContainer.Resolve<IConfiguration>();
-        }
+        private static IConfiguration configuration = AspectCoreContainer.Resolve<IConfiguration>();
 
         public static IConfigurationSection GetSection(string key)
         {

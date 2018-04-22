@@ -1,5 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Mvc;
 using Zxw.Framework.Website.IRepositories;
 
 namespace Zxw.Framework.Website.Controllers

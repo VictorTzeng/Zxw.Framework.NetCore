@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Zxw.Framework.NetCore.Options
+﻿namespace Zxw.Framework.NetCore.Options
 {
     public class DbContextOption
     {

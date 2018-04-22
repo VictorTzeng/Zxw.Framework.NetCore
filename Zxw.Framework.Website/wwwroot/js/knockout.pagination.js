@@ -52,10 +52,15 @@
                 pageIndex: this.pageIndex()
             },
             function (data) {
-                viewmodel.pageNumbers.removeAll();
-                ko.mapping.fromJS(data, {}, viewmodel);
-                for (var i = 0; i < data.pageCount; i++) {
-                    viewmodel.pageNumbers.push(i + 1);
+                if (data.success == true) {
+                    viewmodel.pageNumbers.removeAll();
+                    ko.mapping.fromJS(data, {}, viewmodel);
+                    for (var i = 0; i < data.pageCount; i++) {
+                        viewmodel.pageNumbers.push(i + 1);
+                    }
+                } else {
+                    layer.alert(data.msg, { icon: 5 });
+                    return;
                 }
             }
         );
@@ -68,7 +73,7 @@
             dataType: "JSON",
             success: callback,
             error: function(req) {
-                layer.alert('网络错误，请稍后再试。');
+                layer.alert('网络错误，请稍后再试。', {icon:5});
             }
         });
     },
@@ -80,7 +85,7 @@
             dataType: "JSON",
             success: callback,
             error: function(req) {
-                layer.alert('网络错误，请稍后再试。');
+                layer.alert('网络错误，请稍后再试。', {icon:5});
             }
         });
     },

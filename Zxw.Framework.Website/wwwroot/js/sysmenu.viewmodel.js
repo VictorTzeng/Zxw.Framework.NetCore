@@ -11,21 +11,33 @@ var sysMenuModel = {
         });
     },
     get: function(url, data, callback) {
-        $.get(url, data, callback, "JSON");
+        this.ajax(url, data, "GET", callback);
     },
     post: function(url, data, callback) {
-        $.post(url, data, callback, "JSON");
+        this.ajax(url, data, "POST", callback);
+    },
+    ajax: function(url, data, type, callback) {
+        $.ajax({
+            url: url,
+            data: data,
+            dataType: "JSON",
+            type: type,
+            success: callback,
+            error: function() {
+                layer.alert("网络错误，请稍候再试。", { icon: 5 });
+            }
+        });
     },
     getMenuIconNoSpan: function(icon, name) {
         return '<i class="' + icon + '"></i> ' + name;
     },
     getMenuIcon: function(icon, name) {
-        return '<i class="' + icon + '"></i> <span>' + name + '</span>';
+        return '<i class="' + icon + '"></i> <span> ' + name + '</span>';
     },
     getMenuIconExpand: function(icon, name) {
         return '<i class="' +
             icon +
-            '"></i> <span>' +
+            '"></i> <span> ' +
             name +
             '</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>';
     },

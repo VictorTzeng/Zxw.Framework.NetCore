@@ -19,7 +19,7 @@ namespace Zxw.Framework.NetCore.Repositories
         protected BaseRepository(IEfDbContext dbContext)
         {
             DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            DbContext.EnsureCreated();
+            DbContext.EnsureCreatedAsync();
         }
 
         public virtual int Add(T entity, bool withTrigger = false)

@@ -15,4 +15,10 @@
     <ProjectReference Include="..\Zxw.Framework.Website.IRepositories\Zxw.Framework.Website.IRepositories.csproj" />
     <ProjectReference Include="..\Zxw.Framework.Website.ViewModels\Zxw.Framework.Website.ViewModels.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Butterfly.Client">
+      <HintPath>C:\Users\victo\.nuget\packages\butterfly.client\0.0.8\lib\netstandard1.6\Butterfly.Client.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

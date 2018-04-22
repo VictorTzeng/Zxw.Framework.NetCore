@@ -108,7 +108,7 @@ namespace Zxw.Framework.Website.Controllers
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
-                var total = menuRepository.Count(m => true);
+                var total = menuRepository.CountAsync(m => true).Result;
                 var rows = menuRepository.GetByPagination(m => true, pageSize, pageIndex, true,
                     m => m.Id).ToList();
                 return Json(PaginationResult.PagedResult(rows, total, pageSize, pageIndex));

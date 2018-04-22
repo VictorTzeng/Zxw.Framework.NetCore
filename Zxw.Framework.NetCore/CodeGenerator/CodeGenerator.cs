@@ -20,16 +20,16 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         private static readonly string Delimiter = "\\";//分隔符，默认为windows下的\\分隔符
         private static readonly string ParentPath;//
 
-        private static readonly CodeGenerateOption Option;
+        private static IOptions<CodeGenerateOption> options =
+            AspectCoreContainer.Resolve<IOptions<CodeGenerateOption>>();
         /// <summary>
         /// 静态构造函数：从IoC容器读取配置参数，如果读取失败则会抛出ArgumentNullException异常
         /// </summary>
         static CodeGenerator()
         {
-            Option = AutofacContainer.Resolve<IOptions<CodeGenerateOption>>()?.Value;
-            if (Option == null)
+            if (options == null)
             {
-                throw new ArgumentNullException(nameof(Option));
+                throw new ArgumentNullException(nameof(options));
             }
             var path = AppDomain.CurrentDomain.BaseDirectory;
             var flag = path.IndexOf("/bin");
@@ -45,7 +45,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         /// <param name="ifExsitedCovered">如果目标文件存在，是否覆盖。默认为false</param>
         public static void Generate(bool ifExsitedCovered = false)
         {
-            var assembly = Assembly.Load(Option.ModelsNamespace);
+            var assembly = Assembly.Load(options.Value.ModelsNamespace);
             var types = assembly?.GetTypes();
             var list = types?.Where(t =>
                 t.IsClass && !t.IsGenericType && !t.IsAbstract && !t.IsNested && t.GetInterfaces()
@@ -114,7 +114,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         /// <param name="ifExsitedCovered"></param>
         private static void GenerateIRepository(string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
         {
-            var iRepositoryPath = ParentPath + Delimiter + Option.IRepositoriesNamespace;
+            var iRepositoryPath = ParentPath + Delimiter + options.Value.IRepositoriesNamespace;
             if (!Directory.Exists(iRepositoryPath))
             {
                 iRepositoryPath = ParentPath + Delimiter + "IRepositories";
@@ -124,8 +124,8 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             if (File.Exists(fullPath) && !ifExsitedCovered)
                 return;
             var content = ReadTemplate("IRepositoryTemplate.txt");
-            content = content.Replace("{ModelsNamespace}", Option.ModelsNamespace)
-                .Replace("{IRepositoriesNamespace}", Option.IRepositoriesNamespace)
+            content = content.Replace("{ModelsNamespace}", options.Value.ModelsNamespace)
+                .Replace("{IRepositoriesNamespace}", options.Value.IRepositoriesNamespace)
                 .Replace("{ModelTypeName}", modelTypeName)
                 .Replace("{KeyTypeName}", keyTypeName);
             WriteAndSave(fullPath, content);
@@ -138,7 +138,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         /// <param name="ifExsitedCovered"></param>
         private static void GenerateRepository(string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
         {
-            var repositoryPath = ParentPath + Delimiter + Option.RepositoriesNamespace;
+            var repositoryPath = ParentPath + Delimiter + options.Value.RepositoriesNamespace;
             if (!Directory.Exists(repositoryPath))
             {
                 repositoryPath = ParentPath + Delimiter + "Repositories";
@@ -148,9 +148,9 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             if (File.Exists(fullPath) && !ifExsitedCovered)
                 return;
             var content = ReadTemplate("RepositoryTemplate.txt");
-            content = content.Replace("{ModelsNamespace}", Option.ModelsNamespace)
-                .Replace("{IRepositoriesNamespace}", Option.IRepositoriesNamespace)
-                .Replace("{RepositoriesNamespace}", Option.RepositoriesNamespace)
+            content = content.Replace("{ModelsNamespace}", options.Value.ModelsNamespace)
+                .Replace("{IRepositoriesNamespace}", options.Value.IRepositoriesNamespace)
+                .Replace("{RepositoriesNamespace}", options.Value.RepositoriesNamespace)
                 .Replace("{ModelTypeName}", modelTypeName)
                 .Replace("{KeyTypeName}", keyTypeName);
             WriteAndSave(fullPath, content);
@@ -164,7 +164,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         /// <param name="ifExsitedCovered"></param>
         private static void GenerateController(string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
         {
-            var controllerPath = ParentPath + Delimiter + Option.ControllersNamespace;
+            var controllerPath = ParentPath + Delimiter + options.Value.ControllersNamespace;
             if (!Directory.Exists(controllerPath))
             {
                 controllerPath = ParentPath + Delimiter + "Controllers";
@@ -174,9 +174,9 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             if (File.Exists(fullPath) && !ifExsitedCovered)
                 return;
             var content = ReadTemplate("ControllerTemplate.txt");
-            content = content.Replace("{ModelsNamespace}", Option.ModelsNamespace)
-                .Replace("{IRepositoriesNamespace}", Option.IRepositoriesNamespace)
-                .Replace("{ControllersNamespace}", Option.ControllersNamespace)
+            content = content.Replace("{ModelsNamespace}", options.Value.ModelsNamespace)
+                .Replace("{IRepositoriesNamespace}", options.Value.IRepositoriesNamespace)
+                .Replace("{ControllersNamespace}", options.Value.ControllersNamespace)
                 .Replace("{ModelTypeName}", modelTypeName)
                 .Replace("{KeyTypeName}", keyTypeName);
             WriteAndSave(fullPath, content);

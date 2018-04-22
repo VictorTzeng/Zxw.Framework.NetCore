@@ -6,13 +6,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Nelibur.ObjectMapper;
 using Zxw.Framework.NetCore.Attributes;
 using Zxw.Framework.NetCore.EfDbContext;
 using Zxw.Framework.NetCore.Helpers;
-using Zxw.Framework.NetCore.IoC;
-using Zxw.Framework.NetCore.Options;
 using Zxw.Framework.NetCore.Repositories;
 using Zxw.Framework.Website.IRepositories;
 using Zxw.Framework.Website.Models;
@@ -58,14 +55,9 @@ namespace Zxw.Framework.Website.Repositories
         /// <summary>
         /// 初始化系统模块
         /// </summary>
-        public void InitSysMenus()
+        public void InitSysMenus(string controllerAssemblyName)
         {
-            var option = AutofacContainer.Resolve<IOptions<CodeGenerateOption>>()?.Value;
-            if (option == null)
-            {
-                throw new ArgumentNullException(nameof(option));
-            }
-            var assembly = Assembly.Load(option.ControllersNamespace);
+            var assembly = Assembly.Load(controllerAssemblyName);
             var types = assembly?.GetTypes();
             var list = types?.Where(t =>t.Name.Contains("Controller") && !t.IsAbstract).ToList();
             var menus = new List<SysMenu>();
@@ -80,13 +72,14 @@ namespace Zxw.Framework.Website.Repositories
                     foreach (var method in methods)
                     {
                         var identity = $"{controllerName}/{method.Name}";
-                        if (Count(m => m.Identity.Equals(identity, StringComparison.OrdinalIgnoreCase)) == 0)
+                        if (Count(m => m.Identity.Equals(identity, StringComparison.OrdinalIgnoreCase)) == 0 &&
+                            !menus.Any(m => m.Identity.Equals(identity, StringComparison.OrdinalIgnoreCase)))
                         {
                             menus.Add(new SysMenu()
                             {
                                 MenuName = method.Name,
                                 Activable = true,
-                                Visiable = method.GetCustomAttribute<AjaxRequestOnlyAttribute>()==null,
+                                Visiable = method.GetCustomAttribute<AjaxRequestOnlyAttribute>() == null,
                                 Identity = identity,
                                 RouteUrl = identity,
                                 ParentId = 0

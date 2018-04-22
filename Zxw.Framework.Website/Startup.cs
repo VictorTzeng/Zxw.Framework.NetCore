@@ -1,21 +1,20 @@
-﻿using AspectCore.APM.ApplicationProfiler;
-using AspectCore.APM.AspNetCore;
-using AspectCore.APM.HttpProfiler;
-using AspectCore.APM.LineProtocolCollector;
+﻿using AspectCore.APM.AspNetCore;
+using Butterfly.Client.AspNetCore;
 using log4net;
 using log4net.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Net.Http;
 using System.Text;
-using Microsoft.Extensions.Caching.Distributed;
+using Butterfly.Client.Tracing;
 using Zxw.Framework.NetCore.EfDbContext;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Filters;
 using Zxw.Framework.NetCore.Helpers;
+using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.Website
@@ -130,7 +129,7 @@ namespace Zxw.Framework.Website
             
             #endregion
 
-            #region APM
+            #region APM，注释掉了
 
             // services.AddAspectCoreAPM(component =>
             // {
@@ -143,10 +142,17 @@ namespace Zxw.Framework.Website
             //     });
             // });
 
+            //services.AddButterfly(option =>
+            //{
+            //    option.CollectorUrl = "http://localhost:9618";
+            //    option.Service = "demo";
+            //});
+            //services.AddSingleton<HttpClient>(p => new HttpClient(p.GetService<HttpTracingHandler>()));
             #endregion
 
             services.AddOptions();
-            return services.BuildAspectCoreWithAutofacServiceProvider();//接入Autofac和AspectCore
+
+            return AspectCoreContainer.BuildServiceProvider(services);//接入AspectCore.Injector
         }
     }
 }

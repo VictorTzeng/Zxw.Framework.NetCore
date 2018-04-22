@@ -19,24 +19,10 @@ namespace Zxw.Framework.Pay
                 throw new ArgumentNullException(nameof(merchant));
             services.AddICanPay(m =>
             {
-                var gateways = AutofacContainer.Resolve<IGateways>() ?? new Gateways();
+                var gateways = AspectCoreContainer.Resolve<IGateways>() ?? new Gateways();
                 var gateway = (TGateway) Activator.CreateInstance(typeof(TGateway), (object) merchant);
                 gateways.Add(gateway);
-                //switch (merchant.GetType().FullName)
-                //{
-                //    case "ICanPay.Alipay.Merchant":
-                //        gateways.Add(new ICanPay.Alipay.AliPayGateway((ICanPay.Alipay.Merchant) merchant));
-                //        break;
-                //    case "ICanPay.Wechatpay.Merchant":
-                //        gateways.Add(new ICanPay.Wechatpay.WechatpayGateway((ICanPay.Wechatpay.Merchant) merchant));
-                //        break;
-                //    case "ICanPay.Unionpay.Merchant":
-                //        gateways.Add(new ICanPay.Unionpay.UnionpayGateway((ICanPay.Unionpay.Merchant) merchant));
-                //        break;
-                //    default:
-                //        throw new Exception("");
-                //}
-
+                
                 return gateways;
             });
             return services;

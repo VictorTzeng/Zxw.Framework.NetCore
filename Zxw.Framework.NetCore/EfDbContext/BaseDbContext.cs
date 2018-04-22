@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
-using System.Data.SqlClient;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -13,9 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.Triggers;
 using Microsoft.Extensions.Options;
-using MySql.Data.MySqlClient;
 using Z.EntityFramework.Plus;
-using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
 
