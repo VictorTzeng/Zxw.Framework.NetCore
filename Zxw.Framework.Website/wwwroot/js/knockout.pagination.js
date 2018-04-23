@@ -11,7 +11,7 @@
     next: function () {
         if (this.pageIndex() < this.pageCount()) {
             this.pageIndex(this.pageIndex() + 1);
-            loadData();            
+            this.loadData();            
         } else {
             layer.msg("已经是最后一页了");
         }
@@ -19,7 +19,7 @@
     previous: function () {
         if (this.pageIndex() > 1) {
             this.pageIndex(this.pageIndex() - 1);
-            loadData();            
+            this.loadData();            
         } else {
             layer.msg("已经是第一页了");
         }
@@ -29,7 +29,7 @@
             layer.msg("您输入的页码超出范围了，无法为您完成跳转。");
         } else {
             this.pageIndex(data);
-            loadData();            
+            this.loadData();            
         }
     },
     checkExistedData: function() {

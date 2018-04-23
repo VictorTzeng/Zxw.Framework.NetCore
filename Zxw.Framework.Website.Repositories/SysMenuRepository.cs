@@ -8,7 +8,8 @@ using EntityFrameworkCore.Triggers;
 using Microsoft.AspNetCore.Mvc;
 using Nelibur.ObjectMapper;
 using Zxw.Framework.NetCore.Attributes;
-using Zxw.Framework.NetCore.EfDbContext;
+using Zxw.Framework.NetCore.Cache;
+using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.Repositories;
 using Zxw.Framework.Website.IRepositories;
@@ -19,17 +20,17 @@ namespace Zxw.Framework.Website.Repositories
 {
     public class SysMenuRepository : BaseRepository<SysMenu, Int32>, ISysMenuRepository
     {
-        public SysMenuRepository(IEfDbContext dbContext) : base(dbContext)
+        public SysMenuRepository(IDbContextCore dbContext) : base(dbContext)
         {
             TinyMapper.Bind<SysMenu, SysMenuViewModel>();
             //插入成功后触发
-            Triggers<SysMenu>.Inserted += entry =>
+            Triggers<SysMenu>.Inserted += async entry =>
             {
-                var parentMenu = GetSingle(entry.Entity.ParentId);
+                var parentMenu = await GetSingleAsync(entry.Entity.ParentId);
                 entry.Entity.MenuPath = (parentMenu?.MenuPath ?? "0") + "," + entry.Entity.Id;
                 entry.Entity.SortIndex = entry.Entity.Id;
-                entry.Context.SaveChangesWithTriggers(entry.Context.SaveChanges);
-                DistributedCacheHelper.GetInstance().Remove("Redis_Cache_SysMenu");//插入成功后清除缓存以更新
+                await entry.Context.SaveChangesWithTriggersAsync(entry.Context.SaveChangesAsync);
+                await DistributedCacheManager.RemoveAsync("Redis_Cache_SysMenu");//插入成功后清除缓存以更新
             };
             //修改时触发
             Triggers<SysMenu>.Updating += entry =>
@@ -50,7 +51,7 @@ namespace Zxw.Framework.Website.Repositories
 
         public IList<SysMenu> GetMenusByCache(Expression<Func<SysMenu, bool>> @where)
         {
-            return DbContext.Get(where).ToList();
+            return DbContext.Get(where, true).ToList();
         }
         /// <summary>
         /// 初始化系统模块

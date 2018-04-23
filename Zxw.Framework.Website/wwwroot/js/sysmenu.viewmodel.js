@@ -46,10 +46,13 @@ var sysMenuModel = {
         var current = $("#menu_" + id);
         current.addClass("active");
         var parents = current.parents("li");
+        var children = current.find("ul");
         if (parents.length > 0) {
             parents.addClass("active").addClass("menu-open");
         } else {
-            current.addClass("menu-open");
+            if (children.length > 0) {
+                current.addClass("menu-open");
+            }
         }
         $("#tabContainer").data("tabs")
             .addTab({ id: id, text: text, closeable: true, url: url });

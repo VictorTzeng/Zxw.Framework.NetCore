@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AspectCore.DynamicProxy;
 using Microsoft.Extensions.Caching.Distributed;
+using Zxw.Framework.NetCore.Cache;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Helpers;
 
@@ -24,8 +25,6 @@ namespace Zxw.Framework.NetCore.Attributes
 
         public string CacheKey { get; set; } = null;
 
-        private readonly IDistributedCache _cache = DistributedCacheHelper.GetInstance();
-
         public override async Task Invoke(AspectContext context, AspectDelegate next)
         {
             var parameters = context.ServiceMethod.GetParameters();
@@ -39,19 +38,15 @@ namespace Zxw.Framework.NetCore.Attributes
                 var key = string.IsNullOrEmpty(CacheKey)
                     ? new CacheKey(context.ServiceMethod, parameters).GetHashCode().ToString()
                     : CacheKey;
-                var value = _cache.Get(key);
+                var value =  await DistributedCacheManager.GetAsync(key);
                 if (value != null)
                 {
-                    context.ReturnValue = value.ToObject();
+                    context.ReturnValue = value;
                 }
                 else
                 {
                     await context.Invoke(next);
-                    _cache.Set(key, context.ReturnValue.ToBytes(),
-                        new DistributedCacheEntryOptions()
-                        {
-                            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(Expiration)
-                        });
+                    await DistributedCacheManager.SetAsync(key, context.ReturnValue, Expiration);
                     await next(context);
                 }
             }

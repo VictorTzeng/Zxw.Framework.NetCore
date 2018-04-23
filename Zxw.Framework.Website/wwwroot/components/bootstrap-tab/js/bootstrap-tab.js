@@ -59,13 +59,13 @@
         this.$element.html("");
         this.builder(this.options.data);
         var self = this;
-        this.$element.find("#myTab li a").click(function() {
+        self.$element.find("#myTab li a").click(function() {
             var src = $(this).attr("data-url");
             if (!$(this).parent().hasClass("active")) {
                 $("#tab-content").attr("src", src);
             }
         });
-        this.$element.find("#myTab li").find("i").click(function(e) {
+        self.$element.find("#myTab li").find("i").click(function(e) {
             var prev = $(this).parent().parent().prev();
             if ($(this).parent().parent().hasClass("active")) {
                 $(prev).find("a").click();
@@ -101,24 +101,24 @@
 
     //新增一个tab页
     BaseTab.prototype.addTab=function (obj) {
-        if (this.$element.find(".nav-tabs li a[data-id='" + obj.id + "']").length > 0) {
-            this.$element.find(".nav-tabs li a[data-id='" + obj.id + "']").click();
+        var self = this;
+        if (self.$element.find(".nav-tabs li a[data-id='" + obj.id + "']").length > 0) {
+            self.$element.find(".nav-tabs li a[data-id='" + obj.id + "']").click();
             return;
         }
-        var self=this;
         //nav-tab
-        var ul_li = $(this.template.ul_li.format(obj.id, obj.text, obj.url));
+        var ul_li = $(self.template.ul_li.format(obj.id, obj.text, obj.url));
         //如果可关闭,插入关闭图标，并绑定关闭事件
         if (obj.closeable) {
-            var ul_li_close = $(this.template.ul_li_close);
+            var ul_li_close = $(self.template.ul_li_close);
 
             ul_li.find("a").append(ul_li_close);
             ul_li.find("a").append("&nbsp;");
         }
         
-        this.$element.find(".nav-tabs:eq(0)").append(ul_li);
+        self.$element.find(".nav-tabs:eq(0)").append(ul_li);
 
-        this.$element.find(".nav-tabs li a[data-id='" + obj.id + "']").click(function() {
+        self.$element.find(".nav-tabs li a[data-id='" + obj.id + "']").click(function() {
             var src = $(this).attr("data-url");
             if (!$(this).parent().hasClass("active")) {
                 $("#tab-content").attr("src", src);
@@ -127,10 +127,16 @@
 
 
         if(obj.closeable) {
-            this.$element.find(".nav-tabs li a[data-id='" + obj.id + "'] i.closeable").click(function(e) {
+            self.$element.find(".nav-tabs li a[data-id='" + obj.id + "'] i.closeable").click(function(e) {
                 var prev = $(this).parent().parent().prev();
                 if ($(this).parent().parent().hasClass("active")) {
-                    $(prev).find("a").click();
+                    var leftMenu = $("#menu_" + $(prev).find("a").attr("data-id"));
+                    if (leftMenu.length > 0) {
+                        leftMenu.find("a").click();
+                    } else {
+                        $("#sys-menu").find("li.active").removeClass("active");
+                        $(prev).find("a").click();
+                    }
                 }
                 $(this).parent().parent().remove();
                 //取消冒泡
@@ -138,7 +144,7 @@
             });
         }
 
-        this.$element.find(".nav-tabs li a[data-id='" + obj.id + "']").click();
+        self.$element.find(".nav-tabs li a[data-id='" + obj.id + "']").click();
     }
 
     //根据id获取活动也标签名

@@ -10,7 +10,7 @@ using System;
 using System.Net.Http;
 using System.Text;
 using Butterfly.Client.Tracing;
-using Zxw.Framework.NetCore.EfDbContext;
+using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Filters;
 using Zxw.Framework.NetCore.Helpers;
@@ -119,7 +119,7 @@ namespace Zxw.Framework.Website
             #region 各种注入
 
             services.AddSingleton(Configuration)//注入Configuration，ConfigHelper要用
-                .AddSingleton<IEfDbContext, SqlServerDbContext>()//注入EF上下文
+                .AddSingleton<IDbContextCore, SqlServerDbContext>()//注入EF上下文
                 .RegisterAssembly("Zxw.Framework.Website.IRepositories", "Zxw.Framework.Website.Repositories");//注入仓储
             services.AddMvc(option =>
                 {

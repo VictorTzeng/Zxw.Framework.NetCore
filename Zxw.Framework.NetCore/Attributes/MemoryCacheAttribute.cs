@@ -4,6 +4,7 @@ using AspectCore.DynamicProxy;
 using Microsoft.Extensions.Caching.Memory;
 using Zxw.Framework.NetCore.Helpers;
 using System.Linq;
+using Zxw.Framework.NetCore.Cache;
 
 namespace Zxw.Framework.NetCore.Attributes
 {
@@ -22,7 +23,7 @@ namespace Zxw.Framework.NetCore.Attributes
         public int Expiration { get; set; } = 10;
         public string CacheKey { get; set; } = null;
 
-        private readonly IMemoryCache _cache = MemoryCacheHelper.GetInstance();
+        private readonly IMemoryCache _cache = MemoryCacheManager.GetInstance();
 
         public override async Task Invoke(AspectContext context, AspectDelegate next)
         {

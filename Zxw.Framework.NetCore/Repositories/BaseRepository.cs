@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Zxw.Framework.NetCore.EfDbContext;
+using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Models;
 
@@ -12,11 +12,11 @@ namespace Zxw.Framework.NetCore.Repositories
 {
     public abstract class BaseRepository<T, TKey>:IRepository<T, TKey> where T : BaseModel<TKey>
     {
-        protected readonly IEfDbContext DbContext;
+        protected readonly IDbContextCore DbContext;
 
         protected DbSet<T> DbSet => DbContext.GetDbSet<T>();
 
-        protected BaseRepository(IEfDbContext dbContext)
+        protected BaseRepository(IDbContextCore dbContext)
         {
             DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             DbContext.EnsureCreatedAsync();
