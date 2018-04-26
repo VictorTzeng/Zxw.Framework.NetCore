@@ -91,7 +91,7 @@ namespace Zxw.Framework.NetCore.Extensions
                                          t.GetInterfaces().Any(b => b.Name == type.Name));
                 if (implementType != null)
                 {
-                    service.AddTransient(type, implementType.AsType());
+                    service.AddScoped(type, implementType.AsType());
                 }
             }
 

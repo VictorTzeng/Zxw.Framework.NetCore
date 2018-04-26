@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -21,6 +22,8 @@ namespace Zxw.Framework.NetCore.Repositories
             DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             DbContext.EnsureCreatedAsync();
         }
+
+        #region Insert
 
         public virtual int Add(T entity, bool withTrigger = false)
         {
@@ -47,6 +50,19 @@ namespace Zxw.Framework.NetCore.Repositories
             DbContext.BulkInsert<T, TKey>(entities, destinationTableName);
         }
 
+        #endregion
+
+        #region Update
+
+        public virtual int Edit(T entity, bool withTrigger = false)
+        {
+            return DbContext.Edit<T,TKey>(entity, withTrigger);
+        }
+
+        public virtual int EditRange(ICollection<T> entities, bool withTrigger = false)
+        {
+            return DbContext.EditRange(entities, withTrigger);
+        }
         /// <summary>
         /// update query datas by columns.
         /// </summary>
@@ -63,16 +79,25 @@ namespace Zxw.Framework.NetCore.Repositories
         {
             return await DbContext.UpdateAsync(@where, updateExp);
         }
-
-        public virtual int Count(Expression<Func<T, bool>> @where = null)
+        public virtual int Update(T model, bool withTrigger = false, params string[] updateColumns)
         {
-            return DbContext.Count(where);
+            DbContext.Update(model, withTrigger, updateColumns);
+            return DbContext.SaveChanges();
         }
 
-        public virtual async Task<int> CountAsync(Expression<Func<T, bool>> @where = null)
+        public virtual int Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
         {
-            return await DbContext.CountAsync(where);
+            return DbContext.Update(where, updateFactory);
         }
+
+        public virtual async Task<int> UpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
+        {
+            return await DbContext.UpdateAsync(where, updateFactory);
+        }
+
+        #endregion
+
+        #region Delete
 
         public virtual int Delete(TKey key, bool withTrigger = false)
         {
@@ -88,16 +113,22 @@ namespace Zxw.Framework.NetCore.Repositories
         {
             return await DbContext.DeleteAsync(where);
         }
+        
 
-        public virtual int Edit(T entity, bool withTrigger = false)
+        #endregion
+
+        #region Query
+
+        public virtual int Count(Expression<Func<T, bool>> @where = null)
         {
-            return DbContext.Edit<T,TKey>(entity, withTrigger);
+            return DbContext.Count(where);
         }
 
-        public virtual int EditRange(ICollection<T> entities, bool withTrigger = false)
+        public virtual async Task<int> CountAsync(Expression<Func<T, bool>> @where = null)
         {
-            return DbContext.EditRange(entities, withTrigger);
+            return await DbContext.CountAsync(where);
         }
+
 
         public virtual bool Exist(Expression<Func<T, bool>> @where = null)
         {
@@ -107,16 +138,6 @@ namespace Zxw.Framework.NetCore.Repositories
         public virtual async Task<bool> ExistAsync(Expression<Func<T, bool>> @where = null)
         {
             return await DbContext.ExistAsync(where);
-        }
-
-        public virtual int ExecuteSqlWithNonQuery(string sql, params object[] parameters)
-        {
-            return DbContext.ExecuteSqlWithNonQuery(sql, parameters);
-        }
-
-        public virtual async Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters)
-        {
-            return await DbContext.ExecuteSqlWithNonQueryAsync(sql, parameters);
         }
 
         /// <summary>
@@ -193,37 +214,21 @@ namespace Zxw.Framework.NetCore.Repositories
             return filter.Skip(pageSize * (pageIndex - 1)).Take(pageSize);
         }
 
+        #endregion
 
-        public virtual IList<TView> SqlQuery<TView>(string sql, params object[] parameters) where TView : class, new()
+        public IEnumerator<T> GetEnumerator()
         {
-            return DbContext.SqlQuery<T, TView>(sql, parameters);
+            return DbSet.AsQueryable().GetEnumerator();
         }
 
-        public virtual async Task<List<TView>> SqlQueryAsync<TView>(string sql, params object[] parameters) where TView : class, new()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return await DbContext.SqlQueryAsync<T,TView>(sql, parameters);
+            return GetEnumerator();
         }
 
-        public virtual int Update(T model, bool withTrigger = false, params string[] updateColumns)
-        {
-            DbContext.Update(model, withTrigger, updateColumns);
-            return DbContext.SaveChanges();
-        }
-
-        public virtual int Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
-        {
-            return DbContext.Update(where, updateFactory);
-        }
-
-        public virtual async Task<int> UpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
-        {
-            return await DbContext.UpdateAsync(where, updateFactory);
-        }
-
-        public virtual void Dispose()
-        {
-            
-        }
+        public Type ElementType => DbSet.AsQueryable().ElementType;
+        public Expression Expression => DbSet.AsQueryable().Expression;
+        public IQueryProvider Provider => DbSet.AsQueryable().Provider;
     }
 }
 
