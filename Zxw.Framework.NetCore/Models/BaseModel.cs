@@ -1,6 +1,4 @@
-﻿using Zxw.Framework.NetCore.Cqrs;
-
-namespace Zxw.Framework.NetCore.Models
+﻿namespace Zxw.Framework.NetCore.Models
 {
     public interface IAggregateRoot
     {
