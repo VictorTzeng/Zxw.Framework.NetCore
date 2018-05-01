@@ -4,6 +4,10 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using {ModelsNamespace};
 using {IRepositoriesNamespace};
+using Zxw.Framework.NetCore.Attributes;
+using System.Threading.Tasks;
+using Zxw.Framework.NetCore.Models;
+using System.Linq;
 
 namespace {ControllersNamespace}
 {
@@ -49,7 +53,7 @@ namespace {ControllersNamespace}
             {
                 if(!ModelState.IsValid)
                     return Json(ExcutedResult.FailedResult("数据验证失败"));
-                {ModelTypeName}Repository.AddAsync(menu, false);
+                {ModelTypeName}Repository.AddAsync(model, false);
                 return Json(ExcutedResult.SuccessResult());
             });
         }
@@ -65,7 +69,7 @@ namespace {ControllersNamespace}
             {
                 if (!ModelState.IsValid)
                     return Json(ExcutedResult.FailedResult("数据验证失败"));
-                {ModelTypeName}Repository.Edit(menu, false);
+                {ModelTypeName}Repository.Edit(model, false);
                 return Json(ExcutedResult.SuccessResult());
             });
         }

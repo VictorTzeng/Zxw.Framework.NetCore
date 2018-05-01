@@ -48,13 +48,16 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             var assembly = Assembly.Load(options.Value.ModelsNamespace);
             var types = assembly?.GetTypes();
             var list = types?.Where(t =>
-                t.IsClass && !t.IsGenericType && !t.IsAbstract && !t.IsNested && t.GetInterfaces()
-                    .Any(m => m.GetGenericTypeDefinition() == typeof(BaseModel<>)));
+                t.IsClass && !t.IsGenericType && !t.IsAbstract && !t.IsNested);
             if (list != null)
             {
                 foreach (var type in list)
                 {
-                    GenerateSingle(type, ifExsitedCovered);
+                    var baseType = typeof(BaseModel<>).MakeGenericType(new[]{ type.BaseType.GenericTypeArguments[0] });
+                    if (type.IsSubclassOf(baseType))
+                    {
+                        GenerateSingle(type, ifExsitedCovered);
+                    }
                 }
             }
         }
