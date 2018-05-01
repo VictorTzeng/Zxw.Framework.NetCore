@@ -8,7 +8,7 @@ using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.NetCore.Repositories
 {
-    public interface IRepository<T, in TKey>:IQueryable<T> where T : BaseModel<TKey>
+    public interface IRepository<T, in TKey>:IQueryable<T>, IDisposable where T : BaseModel<TKey>
     {
         #region Insert
 

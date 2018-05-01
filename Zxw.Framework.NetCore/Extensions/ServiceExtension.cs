@@ -120,7 +120,7 @@ namespace Zxw.Framework.NetCore.Extensions
 
             foreach (var type in types)
             {
-                service.AddTransient(type);
+                service.AddScoped(type);
             }
 
             return service;
