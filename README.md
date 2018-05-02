@@ -1,4 +1,8 @@
-# 最新功能请参考[dev](https://github.com/VictorTzeng/Zxw.Framework.NetCore/tree/dev)分支
+# * 最新功能请参考[dev](https://github.com/VictorTzeng/Zxw.Framework.NetCore/tree/dev)分支
+
+
+# * Demo地址：[Zxw.Framework.NetCore.Demo](https://github.com/VictorTzeng/Zxw.Framework.NetCore.Demo)
+
 
 # Zxw.Framework.NetCore
 基于EF Core的Code First模式的DotNetCore快速开发框架
