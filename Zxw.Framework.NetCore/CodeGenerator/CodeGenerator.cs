@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using AspectCore.Extensions.Reflection;
 using Microsoft.Extensions.Options;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Models;
@@ -53,7 +54,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             {
                 foreach (var type in list)
                 {
-                    var baseType = typeof(BaseModel<>).MakeGenericType(new[]{ type.BaseType.GenericTypeArguments[0] });
+                    var baseType = typeof(BaseModel<>).MakeGenericType(new[]{ type.BaseType?.GenericTypeArguments[0] });
                     if (type.IsSubclassOf(baseType))
                     {
                         GenerateSingle(type, ifExsitedCovered);
