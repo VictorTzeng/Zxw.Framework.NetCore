@@ -20,6 +20,17 @@ namespace {ControllersNamespace}
             {ModelTypeName}Repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
+        #region Views
+
+		public IActionResult Index()
+        {
+            return View();
+        }
+
+        #endregion
+
+        #region Methods
+
         [AjaxRequestOnly, HttpGet]
         public Task<IActionResult> GetEntities()
         {
@@ -87,5 +98,7 @@ namespace {ControllersNamespace}
                 return Json(ExcutedResult.SuccessResult("成功删除一条数据。"));
             });
         }
+
+        #endregion
 	}
 }

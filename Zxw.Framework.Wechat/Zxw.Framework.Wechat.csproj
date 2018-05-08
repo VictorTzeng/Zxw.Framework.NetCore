@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Senparc.Weixin" Version="4.20.3" />
+    <PackageReference Include="Senparc.Weixin.MP" Version="14.12.3" />
+  </ItemGroup>
+
+</Project>
