@@ -61,7 +61,7 @@ namespace Zxw.Framework.Wechat
             var response = context.Response;
             var openId = string.Empty;
 #if DEBUG
-            openId = "oRWWtjvgxjY0SeLW5hbx9N5aWKUI";
+            openId = "";
 #endif
             if (!string.IsNullOrEmpty(openId))
             {
