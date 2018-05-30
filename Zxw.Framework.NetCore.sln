@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zxw.Framework.Pay", "Zxw.Fr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zxw.Framework.Wechat", "Zxw.Framework.WeChat\Zxw.Framework.Wechat.csproj", "{4037646A-DC7A-4D03-9C91-98FB2CBC2686}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zxw.Framework.UnitTest", "Zxw.Framework.UnitTest\Zxw.Framework.UnitTest.csproj", "{A145B828-7D27-4E05-81D8-23085796D083}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4037646A-DC7A-4D03-9C91-98FB2CBC2686}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4037646A-DC7A-4D03-9C91-98FB2CBC2686}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4037646A-DC7A-4D03-9C91-98FB2CBC2686}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A145B828-7D27-4E05-81D8-23085796D083}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A145B828-7D27-4E05-81D8-23085796D083}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A145B828-7D27-4E05-81D8-23085796D083}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A145B828-7D27-4E05-81D8-23085796D083}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -93,5 +93,55 @@ namespace Zxw.Framework.NetCore.Helpers
             }
             return result;
         }
+
+        /// <summary>
+        /// 获得类型
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static Type GetTypeByString(string type)
+        {
+            switch (type.ToLower())
+            {
+                case "system.boolean":
+                    return Type.GetType("System.Boolean", true, true);
+                case "system.byte":
+                    return Type.GetType("System.Byte", true, true);
+                case "system.sbyte":
+                    return Type.GetType("System.SByte", true, true);
+                case "system.char":
+                    return Type.GetType("System.Char", true, true);
+                case "system.decimal":
+                    return Type.GetType("System.Decimal", true, true);
+                case "system.double":
+                    return Type.GetType("System.Double", true, true);
+                case "system.single":
+                    return Type.GetType("System.Single", true, true);
+                case "system.int32":
+                    return Type.GetType("System.Int32", true, true);
+                case "system.uint32":
+                    return Type.GetType("System.UInt32", true, true);
+                case "system.int64":
+                    return Type.GetType("System.Int64", true, true);
+                case "system.uint64":
+                    return Type.GetType("System.UInt64", true, true);
+                case "system.object":
+                    return Type.GetType("System.Object", true, true);
+                case "system.int16":
+                    return Type.GetType("System.Int16", true, true);
+                case "system.uint16":
+                    return Type.GetType("System.UInt16", true, true);
+                case "system.string":
+                    return Type.GetType("System.String", true, true);
+                case "system.datetime":
+                case "datetime":
+                    return Type.GetType("System.DateTime", true, true);
+                case "system.guid":
+                    return Type.GetType("System.Guid", true, true);
+                default:
+                    return Type.GetType(type, true, true);
+            }
+        }
+
     }
 }

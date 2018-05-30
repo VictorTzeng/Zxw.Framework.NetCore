@@ -5,12 +5,15 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Scaffolding;
 using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.NetCore.DbContextCore
 {
     public interface IDbContextCore:IDisposable
     {
+        DatabaseFacade GetDatabase();
         int Add<T>(T entity, bool withTrigger = false) where T : class;
         Task<int> AddAsync<T>(T entity, bool withTrigger = false) where T : class;
         int AddRange<T>(ICollection<T> entities, bool withTrigger = false) where T : class;

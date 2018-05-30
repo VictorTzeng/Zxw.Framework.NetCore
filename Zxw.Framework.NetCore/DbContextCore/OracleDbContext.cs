@@ -1,5 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Scaffolding;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Zxw.Framework.NetCore.Options;
 

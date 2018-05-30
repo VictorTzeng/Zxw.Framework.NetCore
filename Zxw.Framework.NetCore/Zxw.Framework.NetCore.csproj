@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,11 +20,13 @@
 
   <ItemGroup>
     <None Remove="CodeTemplate\ControllerTemplate.txt" />
+    <None Remove="CodeTemplate\ModelTemplate.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="CodeTemplate\ControllerTemplate.txt" />
     <EmbeddedResource Include="CodeTemplate\IRepositoryTemplate.txt" />
+    <EmbeddedResource Include="CodeTemplate\ModelTemplate.txt" />
     <EmbeddedResource Include="CodeTemplate\RepositoryTemplate.txt" />
   </ItemGroup>
 
@@ -42,6 +44,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.2" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.1" />
     <PackageReference Include="StackExchange.Redis.Extensions.JilCore" Version="1.0.1" />

@@ -7,6 +7,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Scaffolding;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Z.EntityFramework.Plus;
 using Zxw.Framework.NetCore.Models;
@@ -17,6 +20,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
     public abstract class BaseDbContext : DbContext, IDbContextCore
     {
         protected readonly DbContextOption _option;
+        public DatabaseFacade GetDatabase() => Database;
+
         public virtual int Add<T>(T entity, bool withTrigger = false) where T : class
         {
             base.Add(entity);
