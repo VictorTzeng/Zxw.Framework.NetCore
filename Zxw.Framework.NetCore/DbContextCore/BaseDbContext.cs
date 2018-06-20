@@ -94,7 +94,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
             return await (where == null ? Set<T>().CountAsync() : Set<T>().CountAsync(@where));
         }
 
-        public int Delete<T, TKey>(TKey key, bool withTrigger = false) where T : class
+        public virtual int Delete<T, TKey>(TKey key, bool withTrigger = false) where T : class
         {
             var entity = Find<T>(key);
             Remove(entity);
