@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
-using System.Text;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.InMemory.Storage.Internal;
 using MySql.Data.MySqlClient;
 using Npgsql;
-using SQLitePCL;
 using Zxw.Framework.NetCore.DbContextCore;
 
 namespace Zxw.Framework.NetCore.Extensions
@@ -20,6 +16,7 @@ namespace Zxw.Framework.NetCore.Extensions
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
             var db = context.GetDatabase();
+            db.EnsureCreated();
             var connection = db.GetDbConnection();
             if (connection.State == ConnectionState.Closed)
                 connection.Open();
