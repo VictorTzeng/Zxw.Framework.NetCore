@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -186,6 +187,18 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             WriteAndSave(fullPath, content);
         }
 
+        private static void GenerateEntities(string connectionString, string modelTypeName, bool ifExsitedCovered = false)
+        {
+
+        }
+        public static DataTable GetAllTables(string connectionString)
+        {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+            var db = context.GetDatabase();
+            db.EnsureCreated();
+            var sql = "";
+            return context.GetDataTable(sql);
+        }
         /// <summary>
         /// 写文件
         /// </summary>

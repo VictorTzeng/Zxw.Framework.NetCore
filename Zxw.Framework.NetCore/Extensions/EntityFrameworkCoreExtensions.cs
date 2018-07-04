@@ -69,7 +69,7 @@ namespace Zxw.Framework.NetCore.Extensions
             }
             else
             {
-                throw new NotImplementedException("This method does not support current database yet.");
+                throw new NotSupportedException("This method does not support current database yet.");
             }
 
             da.Fill(ds);
