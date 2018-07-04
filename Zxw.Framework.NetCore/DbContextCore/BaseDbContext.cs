@@ -38,8 +38,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
                 throw new ArgumentNullException(nameof(option));
             if(string.IsNullOrEmpty(option.Value.ConnectionString))
                 throw new ArgumentNullException(nameof(option.Value.ConnectionString));
-            if (string.IsNullOrEmpty(option.Value.ModelAssemblyName))
-                throw new ArgumentNullException(nameof(option.Value.ModelAssemblyName));
+            //if (string.IsNullOrEmpty(option.Value.ModelAssemblyName))
+            //    throw new ArgumentNullException(nameof(option.Value.ModelAssemblyName));
             _option = option.Value;
         }
 
@@ -51,6 +51,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         private void MappingEntityTypes(ModelBuilder modelBuilder)
         {
+            if (string.IsNullOrEmpty(_option.ModelAssemblyName))
+                return;
             var assembly = Assembly.Load(_option.ModelAssemblyName);
             var types = assembly?.GetTypes();
             var list = types?.Where(t =>
