@@ -191,14 +191,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         {
 
         }
-        public static DataTable GetAllTables(string connectionString)
-        {
-            if (context == null) throw new ArgumentNullException(nameof(context));
-            var db = context.GetDatabase();
-            db.EnsureCreated();
-            var sql = "";
-            return context.GetDataTable(sql);
-        }
+
         /// <summary>
         /// 写文件
         /// </summary>

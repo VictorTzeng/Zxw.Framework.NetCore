@@ -27,12 +27,21 @@ namespace Zxw.Framework.UnitTest
             }
         }
 
+        [TestMethod]
+        public void TestGetDataTableList()
+        {
+            BuildService();
+            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var tables = dbContext.GetCurrentDatabaseTableList();
+            Assert.IsNotNull(tables);
+        }
+
         public IServiceProvider BuildService()
         {
             IServiceCollection services = new ServiceCollection();
 
             //在这里注册EF上下文
-            services = RegisterPostgreSQLContext(services);
+            services = RegisterSqlServerContext(services);
 
             services.AddOptions();
             return AspectCoreContainer.BuildServiceProvider(services);//接入AspectCore.Injector
@@ -80,6 +89,21 @@ namespace Zxw.Framework.UnitTest
                 //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
             });
             services.AddScoped<IDbContextCore, PostgreSQLDbContext>(); //注入EF上下文
+            return services;
+        }
+        /// <summary>
+        /// 注册SQLite上下文
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public IServiceCollection RegisterSQLiteContext(IServiceCollection services)
+        {
+            services.Configure<DbContextOption>(options =>
+            {
+                options.ConnectionString = "Data Source=F:\\EF6.db;Version=3;";
+                //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
+            });
+            services.AddScoped<IDbContextCore, SQLiteDbContext>(); //注入EF上下文
             return services;
         }
     }
