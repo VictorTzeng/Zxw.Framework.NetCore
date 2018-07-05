@@ -195,12 +195,19 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 .Replace("{KeyTypeName}", keyTypeName);
             WriteAndSave(fullPath, content);
         }
+
         /// <summary>
         /// 根据数据表生成实体类代码
         /// </summary>
+        /// <param name="modelNamespace"></param>
+        /// <param name="outputPath"></param>
         /// <param name="ifExsitedCovered">是否覆盖已存在的同名文件</param>
-        public static void GenerateEntities(bool ifExsitedCovered = false)
+        public static void GenerateEntities(string modelNamespace, string outputPath, bool ifExsitedCovered = false)
         {
+            if(string.IsNullOrEmpty(modelNamespace))
+                throw new ArgumentNullException(nameof(modelNamespace));
+            if(string.IsNullOrEmpty(outputPath))
+                throw new ArgumentNullException(nameof(outputPath));
             var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
             if(dbContext == null)
                 throw new Exception("未能获取到数据库上下文，请先注册数据库上下文。");
@@ -211,21 +218,19 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 {
                     if (table.Columns.Any(c => c.IsPrimaryKey))
                     {
-                        GenerateEntity(table, ifExsitedCovered);
+                        GenerateEntity(table, modelNamespace, outputPath, ifExsitedCovered);
                     }
                 }
             }
         }
 
-        private static void GenerateEntity(DbTable table, bool ifExsitedCovered = false)
+        private static void GenerateEntity(DbTable table, string modelNamespace, string outputPath, bool ifExsitedCovered = false)
         {
-            var entityPath = ParentPath + Delimiter + options.Value.ModelsNamespace;
-            if (!Directory.Exists(entityPath))
+            if (!Directory.Exists(outputPath))
             {
-                entityPath = ParentPath + Delimiter + "Models";
-                Directory.CreateDirectory(entityPath);
+                Directory.CreateDirectory(outputPath);
             }
-            var fullPath = entityPath + Delimiter + table.TableName + ".cs";
+            var fullPath = outputPath + Delimiter + table.TableName + ".cs";
             if (File.Exists(fullPath) && !ifExsitedCovered)
                 return;
 
@@ -233,12 +238,12 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             var sb = new StringBuilder();
             foreach (var column in table.Columns)
             {
-                var tmp = GenerateEntityProperty(column);
+                var tmp = GenerateEntityProperty(table.TableName, column);
                 sb.AppendLine(tmp);
                 sb.AppendLine();
             }
             var content = ReadTemplate("ModelTemplate.txt");
-            content = content.Replace("{ModelsNamespace}", options.Value.ModelsNamespace)
+            content = content.Replace("{ModelsNamespace}", modelNamespace)
                 .Replace("{Comment}", table.TableComment)
                 .Replace("{ModelName}", table.TableName)
                 .Replace("{KeyTypeName}", pkTypeName)
@@ -246,39 +251,53 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             WriteAndSave(fullPath, content);
         }
 
-        private static string GenerateEntityProperty(DbTableColumn column)
+        private static string GenerateEntityProperty(string tableName, DbTableColumn column)
         {
             var sb = new StringBuilder();
             if (!string.IsNullOrEmpty(column.Comment))
             {
-                sb.AppendLine("/// <summary>");
-                sb.AppendLine("/// " + column.Comment);
-                sb.AppendLine("/// </summary>");
+                sb.AppendLine("\t\t/// <summary>");
+                sb.AppendLine("\t\t/// " + column.Comment);
+                sb.AppendLine("\t\t/// </summary>");
             }
             if (column.IsPrimaryKey)
             {
-                sb.AppendLine("[Key]");
+                sb.AppendLine("\t\t[Key]");
+                sb.AppendLine($"\t\t[Column({tableName}Id)]");
+                if (column.IsIdentity)
+                {
+                    sb.AppendLine("\t\t[DatabaseGenerated(DatabaseGeneratedOption.Identity)]");
+                }
+                sb.AppendLine($"\t\tpublic override {column.CSharpType} Id " + "{get;set;}");
             }
-
-            if (!column.IsNullable)
+            else
             {
-                sb.AppendLine("[Required]");
+                if (!column.IsNullable)
+                {
+                    sb.AppendLine("\t\t[Required]");
+                }
+
+                if (column.ColumnLength.HasValue)
+                {
+                    sb.AppendLine($"\t\t[MaxLength({column.ColumnLength.Value})]");
+                }
+                if (column.IsIdentity)
+                {
+                    sb.AppendLine("\t\t[DatabaseGenerated(DatabaseGeneratedOption.Identity)]");
+                }
+
+                var colType = column.CSharpType;
+                if (colType.ToLower() != "string" && colType.ToLower() != "byte[]" && colType.ToLower() != "object" &&
+                    column.IsNullable)
+                {
+                    colType = colType + "?";
+                }
+
+                sb.AppendLine($"\t\tpublic {colType} {column.ColName} " + "{get;set;}");
+                if (!string.IsNullOrEmpty(column.DefaultValue))
+                    sb.Append(" = " + column.DefaultValue + ";");
             }
 
-            var colType = column.CSharpType.ToLower();
-            if (colType != "string" && colType != "byte[]" && colType != "object" && column.IsNullable)
-            {
-                colType = colType + "?";
-            }
-
-            if (column.IsIdentity)
-            {
-                sb.AppendLine("[DatabaseGenerated(DatabaseGeneratedOption.Identity)]");
-            }
-
-            sb.AppendLine($"public {colType} {column.ColName} " + "{get;set;}");
-            if (!string.IsNullOrEmpty(column.DefaultValue))
-                sb.Append(" = " + column.DefaultValue + ";");
             return sb.ToString();
         }
 

@@ -3,6 +3,7 @@ using System.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Zxw.Framework.NetCore.CodeGenerator;
 using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.IoC;
@@ -36,12 +37,19 @@ namespace Zxw.Framework.UnitTest
             Assert.IsNotNull(tables);
         }
 
+        [TestMethod]
+        public void TestGenerateEntities()
+        {
+            BuildService();
+            CodeGenerator.GenerateEntities("Zxw.Framework.Website.Models","F:\\Test");
+        }
+
         public IServiceProvider BuildService()
         {
             IServiceCollection services = new ServiceCollection();
 
             //在这里注册EF上下文
-            services = RegisterPostgreSQLContext(services);
+            services = RegisterSqlServerContext(services);
 
             services.AddOptions();
             return AspectCoreContainer.BuildServiceProvider(services);//接入AspectCore.Injector

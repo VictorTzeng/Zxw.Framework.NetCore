@@ -209,9 +209,10 @@ on
                 item.Columns = context.GetTableColumns(item.TableName).ToList<DbTableColumn>();
                 item.Columns.ForEach(x =>
                 {
-                    x.CSharpType = DbColumnTypeCollection.DbColumnDataTypes.FirstOrDefault(t =>
+                    var csharpType = DbColumnTypeCollection.DbColumnDataTypes.FirstOrDefault(t =>
                         t.DatabaseType == dbType && t.ColumnTypes.Split(',').Any(p =>
-                            p.Trim().Equals(x.ColName, StringComparison.OrdinalIgnoreCase)))?.CSharpType;
+                            p.Trim().Equals(x.ColumnType, StringComparison.OrdinalIgnoreCase)))?.CSharpType;
+                    x.CSharpType = csharpType;
                 });
             });
             return tables;

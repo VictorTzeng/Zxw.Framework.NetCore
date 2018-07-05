@@ -10,6 +10,6 @@ namespace {ModelsNamespace}
 	/// </summary>
 	public class {ModelName}:BaseModel<{KeyTypeName}>
 	{
-		{ModelProperties}
+{ModelProperties}
 	}
 }
