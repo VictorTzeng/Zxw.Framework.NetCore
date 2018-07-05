@@ -1,10 +1,19 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 using AspectCore.Extensions.Reflection;
 using Microsoft.Extensions.Options;
+using NpgsqlTypes;
+using Zxw.Framework.NetCore.DbContextCore;
+using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
@@ -186,11 +195,93 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 .Replace("{KeyTypeName}", keyTypeName);
             WriteAndSave(fullPath, content);
         }
-
-        private static void GenerateEntities(string connectionString, string modelTypeName, bool ifExsitedCovered = false)
+        /// <summary>
+        /// 根据数据表生成实体类代码
+        /// </summary>
+        /// <param name="ifExsitedCovered">是否覆盖已存在的同名文件</param>
+        public static void GenerateEntities(bool ifExsitedCovered = false)
         {
-
+            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            if(dbContext == null)
+                throw new Exception("未能获取到数据库上下文，请先注册数据库上下文。");
+            var tables = dbContext.GetCurrentDatabaseTableList();
+            if (tables != null && tables.Any())
+            {
+                foreach (var table in tables)
+                {
+                    if (table.Columns.Any(c => c.IsPrimaryKey))
+                    {
+                        GenerateEntity(table, ifExsitedCovered);
+                    }
+                }
+            }
         }
+
+        private static void GenerateEntity(DbTable table, bool ifExsitedCovered = false)
+        {
+            var entityPath = ParentPath + Delimiter + options.Value.ModelsNamespace;
+            if (!Directory.Exists(entityPath))
+            {
+                entityPath = ParentPath + Delimiter + "Models";
+                Directory.CreateDirectory(entityPath);
+            }
+            var fullPath = entityPath + Delimiter + table.TableName + ".cs";
+            if (File.Exists(fullPath) && !ifExsitedCovered)
+                return;
+
+            var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
+            var sb = new StringBuilder();
+            foreach (var column in table.Columns)
+            {
+                var tmp = GenerateEntityProperty(column);
+                sb.AppendLine(tmp);
+                sb.AppendLine();
+            }
+            var content = ReadTemplate("ModelTemplate.txt");
+            content = content.Replace("{ModelsNamespace}", options.Value.ModelsNamespace)
+                .Replace("{Comment}", table.TableComment)
+                .Replace("{ModelName}", table.TableName)
+                .Replace("{KeyTypeName}", pkTypeName)
+                .Replace("{ModelProperties}", sb.ToString());
+            WriteAndSave(fullPath, content);
+        }
+
+        private static string GenerateEntityProperty(DbTableColumn column)
+        {
+            var sb = new StringBuilder();
+            if (!string.IsNullOrEmpty(column.Comment))
+            {
+                sb.AppendLine("/// <summary>");
+                sb.AppendLine("/// " + column.Comment);
+                sb.AppendLine("/// </summary>");
+            }
+            if (column.IsPrimaryKey)
+            {
+                sb.AppendLine("[Key]");
+            }
+
+            if (!column.IsNullable)
+            {
+                sb.AppendLine("[Required]");
+            }
+
+            var colType = column.CSharpType.ToLower();
+            if (colType != "string" && colType != "byte[]" && colType != "object" && column.IsNullable)
+            {
+                colType = colType + "?";
+            }
+
+            if (column.IsIdentity)
+            {
+                sb.AppendLine("[DatabaseGenerated(DatabaseGeneratedOption.Identity)]");
+            }
+
+            sb.AppendLine($"public {colType} {column.ColName} " + "{get;set;}");
+            if (!string.IsNullOrEmpty(column.DefaultValue))
+                sb.Append(" = " + column.DefaultValue + ";");
+            return sb.ToString();
+        }
+
 
         /// <summary>
         /// 写文件

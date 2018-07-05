@@ -41,7 +41,7 @@ namespace Zxw.Framework.UnitTest
             IServiceCollection services = new ServiceCollection();
 
             //在这里注册EF上下文
-            services = RegisterSqlServerContext(services);
+            services = RegisterPostgreSQLContext(services);
 
             services.AddOptions();
             return AspectCoreContainer.BuildServiceProvider(services);//接入AspectCore.Injector

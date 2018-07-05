@@ -5,12 +5,11 @@ using Zxw.Framework.NetCore.Models;
 
 namespace {ModelsNamespace}
 {
-	 public class {ModelName}:BaseModel<KeyTypeName>
-	 {
-		[Key]
-		[Column("{ModelName}Id")]
-		public override {KeyTypeName} Id { get; set; }
-
-		{}
-	 }
+	/// <summary>
+	/// {Comment}
+	/// </summary>
+	public class {ModelName}:BaseModel<{KeyTypeName}>
+	{
+		{ModelProperties}
+	}
 }

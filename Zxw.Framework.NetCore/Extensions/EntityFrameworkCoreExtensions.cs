@@ -190,7 +190,30 @@ on
         public static IList<DbTable> GetCurrentDatabaseTableList(this IDbContextCore context)
         {
             var tables = context.GetCurrentDatabaseAllTables().ToList<DbTable>();
-            tables.ForEach(item => { item.Columns = context.GetTableColumns(item.TableName).ToList<DbTableColumn>(); });
+            var db = context.GetDatabase();
+            DatabaseType dbType;
+            if (db.IsSqlServer())
+                dbType = DatabaseType.MSSQL;
+            else if (db.IsMySql())
+                dbType = DatabaseType.MySQL;
+            else if (db.IsNpgsql())
+            {
+                dbType = DatabaseType.PostgreSQL;
+            }
+            else
+            {
+                throw new NotImplementedException("This method does not support current database yet.");
+            }
+            tables.ForEach(item =>
+            {
+                item.Columns = context.GetTableColumns(item.TableName).ToList<DbTableColumn>();
+                item.Columns.ForEach(x =>
+                {
+                    x.CSharpType = DbColumnTypeCollection.DbColumnDataTypes.FirstOrDefault(t =>
+                        t.DatabaseType == dbType && t.ColumnTypes.Split(',').Any(p =>
+                            p.Trim().Equals(x.ColName, StringComparison.OrdinalIgnoreCase)))?.CSharpType;
+                });
+            });
             return tables;
         }
     }

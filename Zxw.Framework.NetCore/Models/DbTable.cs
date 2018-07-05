@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Zxw.Framework.NetCore.Models
@@ -56,5 +57,10 @@ namespace Zxw.Framework.NetCore.Models
         /// 字段说明
         /// </summary>
         public string Comment { get; set; }
+
+        /// <summary>
+        /// C#数据类型
+        /// </summary>
+        public string CSharpType { get; set; }
     }
 }
