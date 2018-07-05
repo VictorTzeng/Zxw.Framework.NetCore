@@ -49,7 +49,7 @@ namespace Zxw.Framework.UnitTest
             IServiceCollection services = new ServiceCollection();
 
             //在这里注册EF上下文
-            services = RegisterSqlServerContext(services);
+            services = RegisterPostgreSQLContext(services);
 
             services.AddOptions();
             return AspectCoreContainer.BuildServiceProvider(services);//接入AspectCore.Injector
@@ -93,8 +93,8 @@ namespace Zxw.Framework.UnitTest
         {
             services.Configure<DbContextOption>(options =>
             {
-                options.ConnectionString = "User ID=zengxw;Password=123456;Host=localhost;Port=5432;Database=ZxwPgDemo;Pooling=true;";
-                //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
+                options.ConnectionString = "User ID=postgres;Password=admin123!@#;Host=localhost;Port=5432;Database=ZxwPgDemo;Pooling=true;";
+                options.ModelAssemblyName = "Zxw.Framework.Website.Models";
             });
             services.AddScoped<IDbContextCore, PostgreSQLDbContext>(); //注入EF上下文
             return services;

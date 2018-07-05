@@ -76,7 +76,7 @@ namespace Zxw.Framework.NetCore.Models
             new DbColumnDataType(){ DatabaseType = DatabaseType.PostgreSQL, ColumnTypes = "macaddr", CSharpType ="PhysicalAddress"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.PostgreSQL, ColumnTypes = "tsquery", CSharpType ="NpgsqlTypes.NpgsqlTsQuery"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.PostgreSQL, ColumnTypes = "tsvector", CSharpType ="NpgsqlTypes.NpgsqlTsVector"},
-            new DbColumnDataType(){ DatabaseType = DatabaseType.PostgreSQL, ColumnTypes = "date,timestamp,timestamp with time zone,", CSharpType ="DateTime"},
+            new DbColumnDataType(){ DatabaseType = DatabaseType.PostgreSQL, ColumnTypes = "date,timestamp,timestamp with time zone,timestamp without time zone", CSharpType ="DateTime"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.PostgreSQL, ColumnTypes = "interval,time", CSharpType ="TimeSpan"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.PostgreSQL, ColumnTypes = "time with time zone", CSharpType ="DateTimeOffset"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.PostgreSQL, ColumnTypes = "bytea", CSharpType ="Byte[]"},

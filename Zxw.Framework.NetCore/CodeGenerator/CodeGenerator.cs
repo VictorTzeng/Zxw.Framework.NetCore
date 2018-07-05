@@ -277,7 +277,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                     sb.AppendLine("\t\t[Required]");
                 }
 
-                if (column.ColumnLength.HasValue)
+                if (column.ColumnLength.HasValue && column.ColumnLength.Value>0)
                 {
                     sb.AppendLine($"\t\t[MaxLength({column.ColumnLength.Value})]");
                 }
@@ -294,8 +294,6 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 }
 
                 sb.AppendLine($"\t\tpublic {colType} {column.ColName} " + "{get;set;}");
-                if (!string.IsNullOrEmpty(column.DefaultValue))
-                    sb.Append(" = " + column.DefaultValue + ";");
             }
 
             return sb.ToString();
