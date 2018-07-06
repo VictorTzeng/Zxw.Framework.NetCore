@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.Linq;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -212,12 +213,10 @@ namespace Zxw.Framework.NetCore.Extensions
                             p.Trim().Equals(x.ColumnType, StringComparison.OrdinalIgnoreCase)))?.CSharpType;
                     if (string.IsNullOrEmpty(csharpType))
                     {
-                        x.CSharpType = "object";
+                        throw new SqlTypeException($"未从字典中找到\"{x.ColumnType}\"对应的C#数据类型，请更新DbColumnTypeCollection类型映射字典。");
                     }
-                    else
-                    {
-                        x.CSharpType = csharpType;
-                    }
+
+                    x.CSharpType = csharpType;
                 });
             });
             return tables;
