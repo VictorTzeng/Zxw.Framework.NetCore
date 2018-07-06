@@ -29,7 +29,6 @@ namespace Zxw.Framework.NetCore.CodeGenerator
     public class CodeGenerator
     {
         private static readonly string Delimiter = "\\";//分隔符，默认为windows下的\\分隔符
-        private static readonly string ParentPath;//
 
         private static IOptions<CodeGenerateOption> options =
             AspectCoreContainer.Resolve<IOptions<CodeGenerateOption>>();
@@ -46,8 +45,6 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             var flag = path.IndexOf("/bin");
             if (flag > 0)
                 Delimiter = "/";//如果可以取到值，修改分割符
-            path = path.Substring(0, path.IndexOf(Delimiter + "bin"));
-            ParentPath = path.Substring(0, path.LastIndexOf(Delimiter));
         }
 
         /// <summary>
@@ -128,10 +125,9 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         /// <param name="ifExsitedCovered"></param>
         private static void GenerateIRepository(string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
         {
-            var iRepositoryPath = ParentPath + Delimiter + options.Value.IRepositoriesNamespace;
+            var iRepositoryPath = options.Value.OutputPath + Delimiter + "IRepositories";
             if (!Directory.Exists(iRepositoryPath))
             {
-                iRepositoryPath = ParentPath + Delimiter + "IRepositories";
                 Directory.CreateDirectory(iRepositoryPath);
             }
             var fullPath = iRepositoryPath + Delimiter + "I" + modelTypeName + "Repository.cs";
@@ -152,10 +148,9 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         /// <param name="ifExsitedCovered"></param>
         private static void GenerateRepository(string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
         {
-            var repositoryPath = ParentPath + Delimiter + options.Value.RepositoriesNamespace;
+            var repositoryPath = options.Value.OutputPath + Delimiter + "Repositories";
             if (!Directory.Exists(repositoryPath))
             {
-                repositoryPath = ParentPath + Delimiter + "Repositories";
                 Directory.CreateDirectory(repositoryPath);
             }
             var fullPath = repositoryPath + Delimiter + modelTypeName + "Repository.cs";
@@ -178,10 +173,9 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         /// <param name="ifExsitedCovered"></param>
         private static void GenerateController(string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
         {
-            var controllerPath = ParentPath + Delimiter + options.Value.ControllersNamespace;
+            var controllerPath = options.Value.OutputPath + Delimiter + "Controllers";
             if (!Directory.Exists(controllerPath))
             {
-                controllerPath = ParentPath + Delimiter + "Controllers";
                 Directory.CreateDirectory(controllerPath);
             }
             var fullPath = controllerPath + Delimiter + modelTypeName + "Controller.cs";
@@ -197,17 +191,11 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         }
 
         /// <summary>
-        /// 根据数据表生成实体类代码
+        /// 根据数据表生成Model层、Controller层、IRepository层和Repository层代码
         /// </summary>
-        /// <param name="modelNamespace"></param>
-        /// <param name="outputPath"></param>
         /// <param name="ifExsitedCovered">是否覆盖已存在的同名文件</param>
-        public static void GenerateEntities(string modelNamespace, string outputPath, bool ifExsitedCovered = false)
+        public static void GenerateAllCodesFromDatabase(bool ifExsitedCovered = false)
         {
-            if(string.IsNullOrEmpty(modelNamespace))
-                throw new ArgumentNullException(nameof(modelNamespace));
-            if(string.IsNullOrEmpty(outputPath))
-                throw new ArgumentNullException(nameof(outputPath));
             var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
             if(dbContext == null)
                 throw new Exception("未能获取到数据库上下文，请先注册数据库上下文。");
@@ -218,19 +206,25 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 {
                     if (table.Columns.Any(c => c.IsPrimaryKey))
                     {
-                        GenerateEntity(table, modelNamespace, outputPath, ifExsitedCovered);
+                        var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
+                        GenerateEntity(table, ifExsitedCovered);
+                        GenerateIRepository(table.TableName, pkTypeName, ifExsitedCovered);
+                        GenerateRepository(table.TableName, pkTypeName, ifExsitedCovered);
+                        GenerateController(table.TableName, pkTypeName, ifExsitedCovered);
                     }
                 }
             }
         }
 
-        private static void GenerateEntity(DbTable table, string modelNamespace, string outputPath, bool ifExsitedCovered = false)
+        private static void GenerateEntity(DbTable table, bool ifExsitedCovered = false)
         {
-            if (!Directory.Exists(outputPath))
+            var modelPath = options.Value.OutputPath + Delimiter + "Models";
+            if (!Directory.Exists(modelPath))
             {
-                Directory.CreateDirectory(outputPath);
+                Directory.CreateDirectory(modelPath);
             }
-            var fullPath = outputPath + Delimiter + table.TableName + ".cs";
+
+            var fullPath = modelPath + Delimiter + table.TableName + ".cs";
             if (File.Exists(fullPath) && !ifExsitedCovered)
                 return;
 
@@ -243,7 +237,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 sb.AppendLine();
             }
             var content = ReadTemplate("ModelTemplate.txt");
-            content = content.Replace("{ModelsNamespace}", modelNamespace)
+            content = content.Replace("{ModelsNamespace}", options.Value.ModelsNamespace)
                 .Replace("{Comment}", table.TableComment)
                 .Replace("{ModelName}", table.TableName)
                 .Replace("{KeyTypeName}", pkTypeName)

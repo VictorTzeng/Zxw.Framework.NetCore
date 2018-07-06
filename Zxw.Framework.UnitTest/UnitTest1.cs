@@ -43,7 +43,7 @@ namespace Zxw.Framework.UnitTest
         public void TestGenerateEntitiesForPostgreSql()
         {
             BuildServiceForPostgreSql();
-            CodeGenerator.GenerateEntities("Zxw.Framework.Website.Models", "F:\\Test\\PostgreSQL", true);
+            CodeGenerator.GenerateAllCodesFromDatabase(true);
         }
 
         #endregion
@@ -77,7 +77,7 @@ namespace Zxw.Framework.UnitTest
         public void TestGenerateEntitiesForSqlServer()
         {
             BuildServiceForSqlServer();
-            CodeGenerator.GenerateEntities("Zxw.Framework.Website.Models", "F:\\Test\\SqlServer", true);
+            CodeGenerator.GenerateAllCodesFromDatabase(true);
         }
 
         #endregion
@@ -111,7 +111,7 @@ namespace Zxw.Framework.UnitTest
         public void TestGenerateEntitiesForMySql()
         {
             BuildServiceFoMySql();
-            CodeGenerator.GenerateEntities("Zxw.Framework.Website.Models", "F:\\Test\\MySql", true);
+            CodeGenerator.GenerateAllCodesFromDatabase(true);
         }
 
         #endregion
@@ -124,7 +124,14 @@ namespace Zxw.Framework.UnitTest
 
             //在这里注册EF上下文
             services = RegisterPostgreSqlContext(services);
-
+            services.Configure<CodeGenerateOption>(options =>
+            {
+                options.OutputPath = "F:\\Test\\PostgreSQL";
+                options.ModelsNamespace = "Zxw.Framework.Website.Models";
+                options.IRepositoriesNamespace = "Zxw.Framework.Website.IRepositories";
+                options.RepositoriesNamespace = "Zxw.Framework.Website.Repositories";
+                options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
+            });
             services.AddOptions();
             return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
         }
@@ -135,7 +142,14 @@ namespace Zxw.Framework.UnitTest
 
             //在这里注册EF上下文
             services = RegisterSqlServerContext(services);
-
+            services.Configure<CodeGenerateOption>(options =>
+            {
+                options.OutputPath = "F:\\Test\\SqlServer";
+                options.ModelsNamespace = "Zxw.Framework.Website.Models";
+                options.IRepositoriesNamespace = "Zxw.Framework.Website.IRepositories";
+                options.RepositoriesNamespace = "Zxw.Framework.Website.Repositories";
+                options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
+            });
             services.AddOptions();
             return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
         }
@@ -146,7 +160,14 @@ namespace Zxw.Framework.UnitTest
 
             //在这里注册EF上下文
             services = RegisterMySqlContext(services);
-
+            services.Configure<CodeGenerateOption>(options =>
+            {
+                options.OutputPath = "F:\\Test\\MySQL";
+                options.ModelsNamespace = "Zxw.Framework.Website.Models";
+                options.IRepositoriesNamespace = "Zxw.Framework.Website.IRepositories";
+                options.RepositoriesNamespace = "Zxw.Framework.Website.Repositories";
+                options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
+            });
             services.AddOptions();
             return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
         }
@@ -157,7 +178,14 @@ namespace Zxw.Framework.UnitTest
 
             //在这里注册EF上下文
             services = RegisterSqLiteContext(services);
-
+            services.Configure<CodeGenerateOption>(options =>
+            {
+                options.OutputPath = "F:\\Test\\SQLite";
+                options.ModelsNamespace = "Zxw.Framework.Website.Models";
+                options.IRepositoriesNamespace = "Zxw.Framework.Website.IRepositories";
+                options.RepositoriesNamespace = "Zxw.Framework.Website.Repositories";
+                options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
+            });
             services.AddOptions();
             return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
         }
@@ -172,7 +200,7 @@ namespace Zxw.Framework.UnitTest
             services.Configure<DbContextOption>(options =>
             {
                 options.ConnectionString =
-                    "initial catalog=NetCoreDemo;data source=192.168.42.103;password=xtyf;User id=xtyf;MultipleActiveResultSets=True;";
+                    "initial catalog=NetCoreDemo;data source=127.0.0.1;password=admin123!@#;User id=sa;MultipleActiveResultSets=True;";
                 //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
             });
             services.AddScoped<IDbContextCore, SqlServerDbContext>(); //注入EF上下文
