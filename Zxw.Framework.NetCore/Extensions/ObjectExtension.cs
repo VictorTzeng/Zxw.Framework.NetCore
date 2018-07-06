@@ -5,6 +5,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -27,7 +28,83 @@ namespace Zxw.Framework.NetCore.Extensions
         {
             return ListToDataSet(list, generic);
         }
+        /// <summary>
+        /// DataTable转List
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        public static IList<T> ToList<T>(this DataTable dt) where T:class, new ()
+        {    
+            // 定义集合    
+            IList<T> ts = new List<T>(); 
+     
+            // 获得此模型的类型   
+            Type type = typeof(T);      
+            string tempName = "";      
+      
+            foreach (DataRow dr in dt.Rows)      
+            {    
+                T t = new T();     
+                // 获得此模型的公共属性      
+                PropertyInfo[] propertys = t.GetType().GetProperties(); 
+                foreach (PropertyInfo pi in propertys)      
+                {      
+                    tempName = pi.Name;  // 检查DataTable是否包含此列    
+   
+                    if (dt.Columns.Contains(tempName))      
+                    {      
+                        // 判断此属性是否有Setter      
+                        if (!pi.CanWrite) continue;         
+   
+                        object value = dr[tempName];
+                        if (value != DBNull.Value)
+                        {
+                            pi.SetValue(t, ChangeType(value, pi.PropertyType), null);
+                        }  
+                    }     
+                }      
+                ts.Add(t);      
+            }     
+            return ts;     
+        }
 
+        /// <summary>
+        /// 类型转换（包含Nullable<>和非Nullable<>转换）
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="conversionType"></param>
+        /// <returns></returns>
+        private static object ChangeType(object value, Type conversionType)
+        {
+            // Note: This if block was taken from Convert.ChangeType as is, and is needed here since we're
+            // checking properties on conversionType below.
+            if (conversionType == null)
+            {
+                throw new ArgumentNullException("conversionType");
+            } // end if
+
+            // If it's not a nullable type, just pass through the parameters to Convert.ChangeType
+
+            if (conversionType.IsGenericType &&
+                conversionType.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+            {
+                if (value == null)
+                {
+                    return null;
+                } // end if
+
+                // It's a nullable type, and not null, so that means it can be converted to its underlying type,
+                // so overwrite the passed-in conversion type with this underlying type
+                System.ComponentModel.NullableConverter nullableConverter = new System.ComponentModel.NullableConverter(conversionType);
+
+                conversionType = nullableConverter.UnderlyingType;
+            } // end if
+
+            // Now that we've guaranteed conversionType is something Convert.ChangeType can handle (i.e. not a
+            // nullable type), pass the call on to Convert.ChangeType
+            return Convert.ChangeType(value, conversionType);
+        }
         /// <summary>
         /// 将集合转换为数据集。
         /// </summary>

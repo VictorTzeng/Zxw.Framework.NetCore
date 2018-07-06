@@ -1,8 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Dora.Interception;
-using Zxw.Framework.NetCore.Middlewares;
+using System.Linq;
+using System.Threading.Tasks;
+using AspectCore.DynamicProxy;
+using Microsoft.Extensions.Caching.Distributed;
+using Zxw.Framework.NetCore.Cache;
+using Zxw.Framework.NetCore.Extensions;
+using Zxw.Framework.NetCore.Helpers;
 
 namespace Zxw.Framework.NetCore.Attributes
 {
@@ -13,11 +16,40 @@ namespace Zxw.Framework.NetCore.Attributes
     /// </para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
-    public class RedisCacheAttribute : InterceptorAttribute
+    public class RedisCacheAttribute : AbstractInterceptorAttribute
     {
-        public override void Use(IInterceptorChainBuilder builder)
+        /// <summary>
+        /// 缓存有限期，单位：分钟。默认值：10。
+        /// </summary>
+        public int Expiration { get; set; } = 10;
+
+        public string CacheKey { get; set; } = null;
+
+        public override async Task Invoke(AspectContext context, AspectDelegate next)
         {
-            builder.Use<RedisCacheInterceptor>(this.Order);
+            var parameters = context.ServiceMethod.GetParameters();
+            //判断Method是否包含ref / out参数
+            if (parameters.Any(it => it.IsIn || it.IsOut))
+            {
+                await next(context);
+            }
+            else
+            {
+                var key = string.IsNullOrEmpty(CacheKey)
+                    ? new CacheKey(context.ServiceMethod, parameters).GetHashCode().ToString()
+                    : CacheKey;
+                var value =  await DistributedCacheManager.GetAsync(key);
+                if (value != null)
+                {
+                    context.ReturnValue = value;
+                }
+                else
+                {
+                    await context.Invoke(next);
+                    await DistributedCacheManager.SetAsync(key, context.ReturnValue, Expiration);
+                    await next(context);
+                }
+            }
         }
     }
 }

@@ -1,139 +1,207 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Zxw.Framework.NetCore.EfDbContext;
+using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Extensions;
-using Zxw.Framework.NetCore.IRepositories;
 using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.NetCore.Repositories
 {
-    public abstract class BaseRepository<T, TKey>:IRepository<T, TKey> where T : class, IBaseModel<TKey>
+    public abstract class BaseRepository<T, TKey>:IRepository<T, TKey> where T : BaseModel<TKey>
     {
-        private readonly DefaultDbContext _dbContext;
-        private readonly DbSet<T> _set;
-        public BaseRepository(DefaultDbContext dbContext)
+        protected readonly IDbContextCore DbContext;
+
+        protected DbSet<T> DbSet => DbContext.GetDbSet<T>();
+
+        protected BaseRepository(IDbContextCore dbContext)
         {
-            if (dbContext == null) throw new ArgumentNullException(nameof(dbContext));
-            _dbContext = dbContext;
-            _dbContext.Database.EnsureCreated();
-            _set = dbContext.Set<T>();
-        }
-        public virtual int Add(T entity)
-        {
-            _set.Add(entity);
-            return Save();
+            DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            DbContext.EnsureCreatedAsync();
         }
 
-        public virtual int AddRange(ICollection<T> entities)
+        #region Insert
+
+        public virtual int Add(T entity, bool withTrigger = false)
         {
-            _set.AddRange(entities);
-            return Save();
+            return DbContext.Add(entity, withTrigger);
+        }
+
+        public virtual async Task<int> AddAsync(T entity, bool withTrigger = false)
+        {
+            return await DbContext.AddAsync(entity, withTrigger);
+        }
+
+        public virtual int AddRange(ICollection<T> entities, bool withTrigger = false)
+        {
+            return DbContext.AddRange(entities, withTrigger);
+        }
+
+        public virtual async Task<int> AddRangeAsync(ICollection<T> entities, bool withTrigger = false)
+        {
+            return await DbContext.AddRangeAsync(entities, withTrigger);
         }
 
         public virtual void BulkInsert(IList<T> entities, string destinationTableName = null)
         {
-            _dbContext.BulkInsert(entities, destinationTableName);
+            DbContext.BulkInsert<T, TKey>(entities, destinationTableName);
         }
 
-        public virtual int Count(Expression<Func<T, bool>> @where = null)
+        #endregion
+
+        #region Update
+
+        public virtual int Edit(T entity, bool withTrigger = false)
         {
-            return where == null ? _set.Count() : _set.Count(@where);
+            return DbContext.Edit<T,TKey>(entity, withTrigger);
         }
 
-        public virtual int Delete(TKey key)
+        public virtual int EditRange(ICollection<T> entities, bool withTrigger = false)
         {
-            var entity = _set.Find(key);
-            if (entity == null) return 0;
-            _set.Remove(entity);
-            return Save();
+            return DbContext.EditRange(entities, withTrigger);
+        }
+        /// <summary>
+        /// update query datas by columns.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="where"></param>
+        /// <param name="updateExp"></param>
+        /// <returns></returns>
+        public virtual int BatchUpdate(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
+        {
+            return DbContext.Update(where, updateExp);
+        }
+
+        public virtual async Task<int> BatchUpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
+        {
+            return await DbContext.UpdateAsync(@where, updateExp);
+        }
+        public virtual int Update(T model, bool withTrigger = false, params string[] updateColumns)
+        {
+            DbContext.Update(model, withTrigger, updateColumns);
+            return DbContext.SaveChanges();
+        }
+
+        public virtual int Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
+        {
+            return DbContext.Update(where, updateFactory);
+        }
+
+        public virtual async Task<int> UpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
+        {
+            return await DbContext.UpdateAsync(where, updateFactory);
+        }
+
+        #endregion
+
+        #region Delete
+
+        public virtual int Delete(TKey key, bool withTrigger = false)
+        {
+            return DbContext.Delete<T,TKey>(key, withTrigger);
         }
 
         public virtual int Delete(Expression<Func<T, bool>> @where)
         {
-            return _dbContext.Delete(where);
+            return DbContext.Delete(where);
         }
 
-        public virtual int Edit(T entity)
+        public virtual async Task<int> DeleteAsync(Expression<Func<T, bool>> @where)
         {
-            return _dbContext.Edit(entity);
+            return await DbContext.DeleteAsync(where);
+        }
+        
+
+        #endregion
+
+        #region Query
+
+        public virtual int Count(Expression<Func<T, bool>> @where = null)
+        {
+            return DbContext.Count(where);
         }
 
-        public virtual int EditRange(ICollection<T> entities)
+        public virtual async Task<int> CountAsync(Expression<Func<T, bool>> @where = null)
         {
-            return _dbContext.EditRange(entities);
+            return await DbContext.CountAsync(where);
         }
+
 
         public virtual bool Exist(Expression<Func<T, bool>> @where = null)
         {
-            return Get(where).Any();
+            return DbContext.Exist(where);
         }
 
-        public virtual bool Exist(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes)
+        public virtual async Task<bool> ExistAsync(Expression<Func<T, bool>> @where = null)
         {
-            return Get(where, includes).Any();
+            return await DbContext.ExistAsync(where);
         }
 
-        public virtual int ExecuteSqlWithNonQuery(string sql, params object[] parameters)
-        {
-            return _dbContext.ExecuteSqlWithNonQuery(sql, parameters);
-        }
-
+        /// <summary>
+        /// 根据主键获取实体。建议：如需使用Include和ThenInclude请重载此方法。
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public virtual T GetSingle(TKey key)
         {
-            return _set.Find(key);
+            return DbSet.Find(key);
         }
 
-        public T GetSingle(TKey key, params Expression<Func<T, object>>[] includes)
+        public T GetSingle(TKey key, Func<IQueryable<T>, IQueryable<T>> includeFunc)
         {
-            if (includes == null) return GetSingle(key);
-            var query = _set.AsQueryable();
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-            Expression<Func<T, bool>> filter = m => m.Id.Equal(key);
-            return query.SingleOrDefault(filter.Compile());
+            if (includeFunc == null) return GetSingle(key);
+            return includeFunc(DbSet.Where(m => m.Id.Equal(key))).AsNoTracking().FirstOrDefault();
         }
 
-        public T GetSingle(Expression<Func<T, bool>> @where = null)
+        /// <summary>
+        /// 根据主键获取实体。建议：如需使用Include和ThenInclude请重载此方法。
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public virtual async Task<T> GetSingleAsync(TKey key)
         {
-            if (where == null) return _set.SingleOrDefault();
-            return _set.SingleOrDefault(@where);
+            return await DbContext.FindAsync<T,TKey>(key);
         }
 
-        public T GetSingle(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes)
+        /// <summary>
+        /// 获取单个实体。建议：如需使用Include和ThenInclude请重载此方法。
+        /// </summary>
+        public virtual T GetSingleOrDefault(Expression<Func<T, bool>> @where = null)
         {
-            if (includes == null) return GetSingle(where);
-            var query = _set.AsQueryable();
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-            if (where == null) return query.SingleOrDefault();
-            return query.SingleOrDefault(where);
+            return DbContext.GetSingleOrDefault(@where);
         }
 
+        /// <summary>
+        /// 获取单个实体。建议：如需使用Include和ThenInclude请重载此方法。
+        /// </summary>
+        public virtual async Task<T> GetSingleOrDefaultAsync(Expression<Func<T, bool>> @where = null)
+        {
+            return await DbContext.GetSingleOrDefaultAsync(where);
+        }
+
+        /// <summary>
+        /// 获取实体列表。建议：如需使用Include和ThenInclude请重载此方法。
+        /// </summary>
         public virtual IQueryable<T> Get(Expression<Func<T, bool>> @where = null)
         {
-            return @where != null ? _set.AsNoTracking().Where(@where) : _set.AsNoTracking();
+            return (@where != null ? DbSet.Where(@where).AsNoTracking() : DbSet.AsNoTracking());
         }
 
-        public virtual IQueryable<T> Get(Expression<Func<T, bool>> @where = null, params Expression<Func<T, object>>[] includes)
+        /// <summary>
+        /// 获取实体列表。建议：如需使用Include和ThenInclude请重载此方法。
+        /// </summary>
+        public virtual async Task<List<T>> GetAsync(Expression<Func<T, bool>> @where = null)
         {
-            if (includes == null)
-                return Get(where);
-            var query = _set.AsQueryable();
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-            return @where != null ? query.AsNoTracking().Where(@where) : query.AsNoTracking();
+            return await DbSet.Where(where).ToListAsync();
         }
 
-        public IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true, params Func<T, object>[] @orderby)
+        /// <summary>
+        /// 分页获取实体列表。建议：如需使用Include和ThenInclude请重载此方法。
+        /// </summary>
+        public virtual IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true, params Func<T, object>[] @orderby)
         {
             var filter = Get(where).AsEnumerable();
             if (orderby != null)
@@ -146,32 +214,57 @@ namespace Zxw.Framework.NetCore.Repositories
             return filter.Skip(pageSize * (pageIndex - 1)).Take(pageSize);
         }
 
-        public virtual int Save()
+        #endregion
+
+        public IEnumerator<T> GetEnumerator()
         {
-            return _dbContext.SaveChanges();
+            return DbSet.AsQueryable().GetEnumerator();
         }
 
-        public virtual IList<TView> SqlQuery<TView>(string sql, params object[] parameters) where TView : class, new()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return _dbContext.SqlQuery<T, TView>(sql, parameters);
+            return GetEnumerator();
         }
 
-        public virtual int Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
-        {
-            return _dbContext.Update(where, updateExp);
-        }
+        public Type ElementType => DbSet.AsQueryable().ElementType;
+        public Expression Expression => DbSet.AsQueryable().Expression;
+        public IQueryProvider Provider => DbSet.AsQueryable().Provider;
 
-        public virtual int Update(T model, params string[] updateColumns)
-        {
-            return _dbContext.Update(model, updateColumns);
-        }
+        #region IDisposable Support
+        private bool disposedValue = false; // 要检测冗余调用
 
-        public virtual void Dispose()
+        protected virtual void Dispose(bool disposing)
         {
-            if (_dbContext != null)
+            if (!disposedValue)
             {
-                _dbContext.Dispose();
+                if (disposing)
+                {
+                    // TODO: 释放托管状态(托管对象)。
+                    DbContext?.Dispose();
+                }
+
+                // TODO: 释放未托管的资源(未托管的对象)并在以下内容中替代终结器。
+                // TODO: 将大型字段设置为 null。
+
+                disposedValue = true;
             }
         }
+
+        // TODO: 仅当以上 Dispose(bool disposing) 拥有用于释放未托管资源的代码时才替代终结器。
+        // ~BaseRepository() {
+        //   // 请勿更改此代码。将清理代码放入以上 Dispose(bool disposing) 中。
+        //   Dispose(false);
+        // }
+
+        // 添加此代码以正确实现可处置模式。
+        public void Dispose()
+        {
+            // 请勿更改此代码。将清理代码放入以上 Dispose(bool disposing) 中。
+            Dispose(true);
+            // TODO: 如果在以上内容中替代了终结器，则取消注释以下行。
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }
+

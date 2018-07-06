@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Net;
 using System.Reflection;
 
 namespace Zxw.Framework.NetCore.Extensions
@@ -98,10 +102,10 @@ namespace Zxw.Framework.NetCore.Extensions
         {
             DataTable dtReturn = new DataTable();
 
-            // column names 
-            PropertyInfo[] oProps = null;
 
             if (source == null) return dtReturn;
+            // column names 
+            PropertyInfo[] oProps = null;
 
             foreach (var rec in source)
             {
@@ -113,9 +117,13 @@ namespace Zxw.Framework.NetCore.Extensions
                     {
                         var colType = pi.PropertyType;
 
-                        if ((colType.IsGenericType) && (colType.GetGenericTypeDefinition() == typeof(Nullable<>)))
+                        if (colType.IsNullable())
                         {
                             colType = colType.GetGenericArguments()[0];
+                        }
+                        if (colType == typeof(Boolean))
+                        {
+                            colType = typeof(int);
                         }
 
                         dtReturn.Columns.Add(new DataColumn(pi.Name, colType));
@@ -126,15 +134,116 @@ namespace Zxw.Framework.NetCore.Extensions
 
                 foreach (var pi in oProps)
                 {
-                    dr[pi.Name] = pi.GetValue(rec, null) == null
-                        ? DBNull.Value
-                        : pi.GetValue
-                            (rec, null);
+                    var value = pi.GetValue(rec, null) ?? DBNull.Value;
+                    if (value is bool)
+                    {
+                        dr[pi.Name] = (bool)value ? 1 : 0;
+                    }
+                    else
+                    {
+                        dr[pi.Name] = value;
+                    }
                 }
 
                 dtReturn.Rows.Add(dr);
             }
             return dtReturn;
+        }
+
+        /// <summary>
+        /// 快速复制
+        /// </summary>
+        /// <typeparam name="TIn"></typeparam>
+        /// <typeparam name="TOut"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static TOut FastClone<TIn, TOut>(this TIn source)
+        {
+            return ObjectFastClone<TIn, TOut>.Clone(source);
+        }
+
+        /// <summary>
+        /// 对IP地址列表实现排序
+        /// </summary>
+        /// <param name="ips"></param>
+        /// <param name="asc">true为升序，false为降序</param>
+        /// <returns></returns>
+        public static ICollection<string> Order(this ICollection<string> ips, bool asc = true)
+        {
+            if (ips == null)
+                throw new ArgumentNullException(nameof(ips));
+            foreach (var ip in ips)
+            {
+                IPAddress tmp;
+                if (!IPAddress.TryParse(ip, out tmp))
+                {
+                    throw new Exception("Illegal IPAdress data.");
+                }
+            }
+            Func<string, int, int> func = (s, i) =>
+            {
+                var tmp = s.Split('.');
+                return int.Parse(tmp[i]);
+            };
+            if (asc)
+            {
+                return ips.OrderBy(m => func(m, 0))
+                    .OrderBy(m => func(m, 1))
+                    .OrderBy(m => func(m, 2))
+                    .OrderBy(m => func(m, 3))
+                    .ToList();
+            }
+            return ips.OrderByDescending(m => func(m, 3))
+                .OrderByDescending(m => func(m, 2))
+                .OrderByDescending(m => func(m, 1))
+                .OrderByDescending(m => func(m, 0))
+                .ToList();
+        }
+
+        public static void SaveToCsv<T>(this IEnumerable<T> source, string csvFullName, string separator=",")
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+            if (string.IsNullOrEmpty(separator))
+                separator = ",";
+            var csv = string.Join(separator, source);
+            using (var sw = new StreamWriter(csvFullName, false))
+            {
+                sw.Write(csv);
+                sw.Close();
+            }
+        }
+    }
+
+    /// <summary>
+    /// 运用表达式树实现对象的快速复制
+    /// </summary>
+    /// <typeparam name="TIn">目标对象</typeparam>
+    /// <typeparam name="TOut">输出对象</typeparam>
+    public class ObjectFastClone<TIn, TOut>
+    {
+        private static readonly Func<TIn, TOut> cache = GetFunc();
+        private static Func<TIn, TOut> GetFunc()
+        {
+            var parameterExpression = Expression.Parameter(typeof(TIn), "p");
+            var memberBindingList = new List<MemberBinding>();
+
+            foreach (var item in typeof(TOut).GetRuntimeProperties())
+            {
+                var property = Expression.Property(parameterExpression, typeof(TIn).GetRuntimeProperty(item.Name));
+                var memberBinding = Expression.Bind(item, property);
+                memberBindingList.Add(memberBinding);
+            }
+
+            var memberInitExpression = Expression.MemberInit(Expression.New(typeof(TOut)), memberBindingList.ToArray());
+            var lambda = Expression.Lambda<Func<TIn, TOut>>(memberInitExpression, parameterExpression);
+
+            return lambda.Compile();
+        }
+
+        public static TOut Clone(TIn tIn)
+        {
+            return cache(tIn);
         }
     }
 }
