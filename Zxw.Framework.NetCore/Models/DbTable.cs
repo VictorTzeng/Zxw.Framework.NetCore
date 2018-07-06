@@ -44,7 +44,7 @@ namespace Zxw.Framework.NetCore.Models
         /// <summary>
         /// 字段数据长度
         /// </summary>
-        public int? ColumnLength { get; set; }
+        public long? ColumnLength { get; set; }
         /// <summary>
         /// 是否允许为空
         /// </summary>

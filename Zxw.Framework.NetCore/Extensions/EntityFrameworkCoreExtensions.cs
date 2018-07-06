@@ -90,31 +90,29 @@ namespace Zxw.Framework.NetCore.Extensions
             var sql = string.Empty;
             if (db.IsSqlServer())
             {
-                sql = @"select * from
-(SELECT 
-    TableName       = case when a.colorder=1 then d.name else '' end,
-    TableComment     = case when a.colorder=1 then isnull(f.value,'') else '' end
-FROM 
-    syscolumns a
-inner join 
-    sysobjects d 
-on 
-    a.id=d.id  and d.xtype='U' and  d.name<>'dtproperties'
-left join
-sys.extended_properties f
-on 
-    d.id=f.major_id and f.minor_id=0) t
-	where t.TableName!=''";
+                sql = "select * from (SELECT (case when a.colorder=1 then d.name else '' end) as TableName," +
+                      "(case when a.colorder=1 then isnull(f.value,'') else '' end) as TableComment" +
+                      " FROM syscolumns a" +
+                      " inner join sysobjects d on a.id=d.id  and d.xtype='U' and  d.name<>'dtproperties'" +
+                      " left join sys.extended_properties f on d.id=f.major_id and f.minor_id=0) t" +
+                      " where t.TableName!=''";
             }
             else if (db.IsMySql())
             {
                 sql =
-                    $"SELECT TABLE_NAME as TableName, Table_Comment as TableComment FROM INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = '{db.GetDbConnection().Database}'";
+                    "SELECT TABLE_NAME as TableName," +
+                    " Table_Comment as TableComment" +
+                    " FROM INFORMATION_SCHEMA.TABLES" +
+                    $" where TABLE_SCHEMA = '{db.GetDbConnection().Database}'";
             }
             else if (db.IsNpgsql())
             {
                 sql =
-                    "select relname as TableName,cast(obj_description(relfilenode,'pg_class') as varchar) as TableComment from pg_class c where relkind = 'r' and relname not like 'pg_%' and relname not like 'sql_%' order by relname";
+                    "select relname as TableName," +
+                    " cast(obj_description(relfilenode,'pg_class') as varchar) as TableComment" +
+                    " from pg_class c" +
+                    " where relkind = 'r' and relname not like 'pg_%' and relname not like 'sql_%'" +
+                    " order by relname";
             }
             else
             {
@@ -146,14 +144,14 @@ on
             {
                 sql =
                     "select column_name as ColName, " +
-                    "column_default as DefaultValue," +
-                    "CONVERT(CASE WHEN extra = 'auto_increment' THEN 1 ELSE 0 END, boolean) as IsIdentity"+
-                    "CONVERT(CASE WHEN is_nullable = 'YES' THEN 1 ELSE 0 END, boolean) as IsNullable," +
-                    "DATA_TYPE as ColumnType," +
-                    "CHARACTER_MAXIMUM_LENGTH as ColumnLength," +
-                    "CONVERT(CASE WHEN COLUMN_KEY = 'PRI' THEN 1 ELSE 0 END, boolean) as IsPrimaryKey," +
-                    "COLUMN_COMMENT as Comment " +
-                    $"from information_schema.columns where table_schema = '{db.GetDbConnection().Database}' and table_name = '{tableName}'";
+                    " column_default as DefaultValue," +
+                    " IF(extra = 'auto_increment','TRUE','FALSE') as IsIdentity," +
+                    " IF(is_nullable = 'YES','TRUE','FALSE') as IsNullable," +
+                    " DATA_TYPE as ColumnType," +
+                    " CHARACTER_MAXIMUM_LENGTH as ColumnLength," +
+                    " IF(COLUMN_KEY = 'PRI','TRUE','FALSE') as IsPrimaryKey," +
+                    " COLUMN_COMMENT as Comment " +
+                    $" from information_schema.columns where table_schema = '{db.GetDbConnection().Database}' and table_name = '{tableName}'";
             }
             else if (db.IsNpgsql())
             {
@@ -212,7 +210,14 @@ on
                     var csharpType = DbColumnTypeCollection.DbColumnDataTypes.FirstOrDefault(t =>
                         t.DatabaseType == dbType && t.ColumnTypes.Split(',').Any(p =>
                             p.Trim().Equals(x.ColumnType, StringComparison.OrdinalIgnoreCase)))?.CSharpType;
-                    x.CSharpType = csharpType;
+                    if (string.IsNullOrEmpty(csharpType))
+                    {
+                        x.CSharpType = "object";
+                    }
+                    else
+                    {
+                        x.CSharpType = csharpType;
+                    }
                 });
             });
             return tables;

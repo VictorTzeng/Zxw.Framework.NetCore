@@ -90,11 +90,11 @@ namespace Zxw.Framework.NetCore.Models
 
             #region MySQL，https://www.devart.com/dotconnect/mysql/docs/DataTypeMapping.html
 
-            new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "bool,boolean,bit(1)", CSharpType ="Boolean"},
+            new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "bool,boolean,bit(1),tinyint(1)", CSharpType ="Boolean"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "tinyint", CSharpType ="SByte"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "tinyint unsigned", CSharpType ="Byte"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "smallint, year", CSharpType ="Int16"},
-            new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "nt, integer, smallint unsigned, mediumint", CSharpType ="Int32"},
+            new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "int, integer, smallint unsigned, mediumint", CSharpType ="Int32"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "bigint, int unsigned, integer unsigned, bit", CSharpType ="Int64"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "float", CSharpType ="Single"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "double, real", CSharpType ="Double"},
@@ -102,7 +102,7 @@ namespace Zxw.Framework.NetCore.Models
             new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "date, timestamp, datetime", CSharpType ="DateTime"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "datetimeoffset", CSharpType ="DateTimeOffset"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "time", CSharpType ="TimeSpan"},
-            new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "har, varchar, tinytext, text, mediumtext, longtext, set, enum, nchar, national char, nvarchar, national varchar, character varying", CSharpType ="String"},
+            new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "char, varchar, tinytext, text, mediumtext, longtext, set, enum, nchar, national char, nvarchar, national varchar, character varying", CSharpType ="String"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "binary, varbinary, tinyblob, blob, mediumblob, longblob, char byte", CSharpType ="Byte[]"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "geometry", CSharpType ="System.Data.Spatial.DbGeometry"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.MySQL, ColumnTypes = "geometry", CSharpType ="System.Data.Spatial.DbGeography"},
