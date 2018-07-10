@@ -17,12 +17,14 @@
 * Sqlite
 * InMemory
 * PostgreSQL
+* Oracle [计划中]
 
 **日志组件**
 * log4net
 
 **DI组件**
 * Autofac
+* [Aspectcore.Injector](https://github.com/dotnetcore/AspectCore-Framework/blob/master/docs/injector.md)
 
 **缓存组件使用**
 
