@@ -22,7 +22,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(_option.ConnectionString);
+            optionsBuilder.UseLazyLoadingProxies().UseSqlServer(_option.ConnectionString);
             base.OnConfiguring(optionsBuilder);
         }
 
