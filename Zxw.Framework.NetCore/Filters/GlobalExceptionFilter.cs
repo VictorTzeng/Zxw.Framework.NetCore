@@ -9,6 +9,7 @@ namespace Zxw.Framework.NetCore.Filters
         {
             var type = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
             Log4NetHelper.WriteError(type, filterContext.Exception);
+            filterContext.ExceptionHandled = true;
         }
     }
 }

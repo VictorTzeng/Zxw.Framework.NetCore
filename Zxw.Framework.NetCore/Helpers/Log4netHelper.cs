@@ -4,7 +4,6 @@ using System.IO;
 using log4net;
 using log4net.Config;
 using log4net.Repository;
-using Zxw.Framework.NetCore.IoC;
 
 namespace Zxw.Framework.NetCore.Helpers
 {
