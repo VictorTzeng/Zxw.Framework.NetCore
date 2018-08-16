@@ -1,3 +1,5 @@
+# * 最新功能请参考[dev](https://github.com/VictorTzeng/Zxw.Framework.NetCore/tree/dev)分支
+
 
 # * Demo地址：[Zxw.Framework.NetCore.Demo](https://github.com/VictorTzeng/Zxw.Framework.NetCore.Demo)
 
