@@ -34,10 +34,11 @@
     <PackageReference Include="AspectCore.Extensions.Autofac" Version="0.7.0" />
     <PackageReference Include="AspectCore.Extensions.DependencyInjection" Version="0.7.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.2.2" />
+    <PackageReference Include="Caching.CSRedis" Version="2.3.9.2" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.0" />
     <PackageReference Include="Citms.EntityFrameworkCore.Oracle" Version="1.0.0" />
-    <PackageReference Include="CSRedisCore" Version="2.3.9" />
-    <PackageReference Include="DotNetCore.NPOI" Version="1.0.2" />
+    <PackageReference Include="CSRedisCore" Version="2.3.9.2" />
+    <PackageReference Include="DotNetCore.NPOI" Version="1.2.0" />
     <PackageReference Include="EntityFrameworkCore.Triggers" Version="1.1.1" />
     <PackageReference Include="Jil" Version="2.16.0" />
     <PackageReference Include="log4net" Version="2.0.8" />
