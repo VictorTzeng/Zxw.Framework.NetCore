@@ -257,7 +257,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             if (column.IsPrimaryKey)
             {
                 sb.AppendLine("\t\t[Key]");
-                sb.AppendLine($"\t\t[Column({tableName}Id)]");
+                sb.AppendLine($"\t\t[Column(\"{tableName}Id\")]");
                 if (column.IsIdentity)
                 {
                     sb.AppendLine("\t\t[DatabaseGenerated(DatabaseGeneratedOption.Identity)]");

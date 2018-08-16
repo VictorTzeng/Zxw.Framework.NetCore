@@ -24,7 +24,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySql(_option.ConnectionString);
+            optionsBuilder.UseLazyLoadingProxies().UseMySql(_option.ConnectionString);
             base.OnConfiguring(optionsBuilder);
         }
 

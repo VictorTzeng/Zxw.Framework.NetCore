@@ -1,11 +1,14 @@
 using System;
 using System.Data;
+using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Zxw.Framework.NetCore.Cache;
 using Zxw.Framework.NetCore.CodeGenerator;
 using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Extensions;
+using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Options;
 
@@ -116,6 +119,18 @@ namespace Zxw.Framework.UnitTest
 
         #endregion
 
+        [TestMethod]
+        public void TestCsRedisClient()
+        {
+            BuildServiceForSqlServer();
+            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            RedisHelper.Set("test_cache_key", JsonConvertor.Serialize(dbContext.GetCurrentDatabaseTableList()),
+                10 * 60);
+            Thread.Sleep(2000);
+            var content = DistributedCacheManager.Get("test_cache_key");
+            Assert.IsNotNull(content);
+        }
+
         #region public methods
 
         public IServiceProvider BuildServiceForPostgreSql()
@@ -150,6 +165,8 @@ namespace Zxw.Framework.UnitTest
                 options.RepositoriesNamespace = "Zxw.Framework.Website.Repositories";
                 options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
             });
+            services.UseCsRedisClient(
+                "127.0.0.1:6379,abortConnect=false,connectRetry=3,connectTimeout=3000,defaultDatabase=1,syncTimeout=3000,version=3.2.100,responseTimeout=3000");
             services.AddOptions();
             return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
         }
@@ -200,7 +217,7 @@ namespace Zxw.Framework.UnitTest
             services.Configure<DbContextOption>(options =>
             {
                 options.ConnectionString =
-                    "initial catalog=NetCoreDemo;data source=127.0.0.1;password=admin123!@#;User id=sa;MultipleActiveResultSets=True;";
+                    "initial catalog=NetCoreDemo;data source=192.168.42.103;password=xtyf;User id=xtyf;MultipleActiveResultSets=True;";
                 //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
             });
             services.AddScoped<IDbContextCore, SqlServerDbContext>(); //注入EF上下文

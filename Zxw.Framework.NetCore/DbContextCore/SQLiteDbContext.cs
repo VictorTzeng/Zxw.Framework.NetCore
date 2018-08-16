@@ -12,7 +12,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite(_option.ConnectionString);
+            optionsBuilder.UseLazyLoadingProxies().UseSqlite(_option.ConnectionString);
             base.OnConfiguring(optionsBuilder);
         }
     }
