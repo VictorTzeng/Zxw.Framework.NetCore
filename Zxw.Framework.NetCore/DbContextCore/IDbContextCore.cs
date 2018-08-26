@@ -45,6 +45,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
         void BulkInsert<T, TKey>(IList<T> entities, string destinationTableName = null)
             where T : BaseModel<TKey>;
         List<TView> SqlQuery<T, TView>(string sql, params object[] parameters) 
+            where T : class;
+        PaginationResult SqlQueryByPagnation<T, TView>(string sql, string[] orderBys, int pageIndex, int pageSize, Action<TView> eachAction = null)
             where T : class
             where TView : class;
         Task<List<TView>> SqlQueryAsync<T, TView>(string sql, params object[] parameters)

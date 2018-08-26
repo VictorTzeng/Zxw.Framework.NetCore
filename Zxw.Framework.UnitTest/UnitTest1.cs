@@ -119,6 +119,8 @@ namespace Zxw.Framework.UnitTest
 
         #endregion
 
+        #region Test methods for Redis
+
         [TestMethod]
         public void TestCsRedisClient()
         {
@@ -130,6 +132,8 @@ namespace Zxw.Framework.UnitTest
             var content = DistributedCacheManager.Get("test_cache_key");
             Assert.IsNotNull(content);
         }
+        
+        #endregion
 
         #region public methods
 

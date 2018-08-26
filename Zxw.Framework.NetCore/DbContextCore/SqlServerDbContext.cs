@@ -87,5 +87,24 @@ namespace Zxw.Framework.NetCore.DbContextCore
             }
         }
 
+        public override PaginationResult SqlQueryByPagnation<T, TView>(string sql, string[] orderBys, int pageIndex, int pageSize,
+            Action<TView> eachAction = null)
+        {
+            var total = SqlQuery<T, int>($"select count(1) from ({sql}) as s").FirstOrDefault();
+            var jsonResults = SqlQuery<T, TView>(
+                    $"select * from (select *,row_number() over (order by {string.Join(",", orderBys)}) as RowId from ({sql}) as s) as t where RowId between {pageSize * (pageIndex - 1) + 1} and {pageSize * pageIndex} order by {string.Join(",", orderBys)}")
+                .ToList();
+            if (eachAction != null)
+            {
+                jsonResults = jsonResults.Each(eachAction).ToList();
+            }
+
+            return new PaginationResult(true, string.Empty, jsonResults)
+            {
+                pageIndex = pageIndex,
+                pageSize = pageSize,
+                total = total
+            };
+        }
     }
 }
