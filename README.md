@@ -17,7 +17,7 @@
 * Sqlite
 * InMemory
 * PostgreSQL
-* Oracle [计划中]
+* Oracle 
 
 **日志组件**
 * log4net
@@ -51,6 +51,12 @@
 
 **项目说明**
 * 请参考我的博客：[http://www.cnblogs.com/zengxw/p/7673952.html](http://www.cnblogs.com/zengxw/p/7673952.html)
+
+# 更新日志
+
+**2018/08/26**
+* 1.添加自定义视图分页查询，数据库分页，目前只支持sqlserver
+* 2.update packages
 
 **2018/07/06 合并dev分支到master**
 * 1.添加EFCore直接返回[DataTable](https://github.com/VictorTzeng/Zxw.Framework.NetCore/blob/d99b321006ad7ee12883e92742d3ef1fe44968f7/Zxw.Framework.NetCore/Extensions/EntityFrameworkCoreExtensions.cs#L20)功能
