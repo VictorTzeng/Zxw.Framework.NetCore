@@ -144,10 +144,10 @@ namespace Zxw.Framework.UnitTest
             Assert.IsTrue(context.Add(new MongoModel()
             {
                 Age = 28,
-                Birthday = Convert.ToDateTime("1990-01-22"),
+                Birthday = Convert.ToDateTime("1999-01-22"),
                 IsBitch = false,
                 UniqueId = Guid.NewGuid().ToString("N"),
-                UserName = "ÔøÏéÍú",
+                UserName = "µÛÍõÐ·",
                 Wage = 100000000
             }) > 0);
             context.Dispose();
