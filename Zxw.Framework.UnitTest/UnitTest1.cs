@@ -11,6 +11,7 @@ using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Options;
+using Zxw.Framework.UnitTest.TestModels;
 
 namespace Zxw.Framework.UnitTest
 {
@@ -135,6 +136,23 @@ namespace Zxw.Framework.UnitTest
         
         #endregion
 
+        [TestMethod]
+        public void TestForMongoDb()
+        {
+            BuildServiceForMongoDB();
+            var context = AspectCoreContainer.Resolve<IDbContextCore>();
+            Assert.IsTrue(context.Add(new MongoModel()
+            {
+                Age = 28,
+                Birthday = Convert.ToDateTime("1990-01-22"),
+                IsBitch = false,
+                UniqueId = Guid.NewGuid().ToString("N"),
+                UserName = "曾祥旺",
+                Wage = 100000000
+            }) > 0);
+            context.Dispose();
+        }
+
         #region public methods
 
         public IServiceProvider BuildServiceForPostgreSql()
@@ -210,7 +228,15 @@ namespace Zxw.Framework.UnitTest
             services.AddOptions();
             return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
         }
+        public IServiceProvider BuildServiceForMongoDB()
+        {
+            IServiceCollection services = new ServiceCollection();
 
+            //在这里注册EF上下文
+            services = RegisterMongoDbContext(services);
+            services.AddOptions();
+            return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
+        }
         /// <summary>
         /// 注册SQLServer上下文
         /// </summary>
@@ -278,6 +304,21 @@ namespace Zxw.Framework.UnitTest
             return services;
         }
 
+        /// <summary>
+        /// 注册SQLite上下文
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public IServiceCollection RegisterMongoDbContext(IServiceCollection services)
+        {
+            services.Configure<DbContextOption>(options =>
+            {
+                options.ConnectionString = "mongodb://localhost";
+                options.ModelAssemblyName = "Zxw.Framework.UnitTest";
+            });
+            services.AddScoped<IDbContextCore, MongoDbContext>(); //注入EF上下文
+            return services;
+        }
 
         #endregion
     }
