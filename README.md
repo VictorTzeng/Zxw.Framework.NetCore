@@ -17,8 +17,8 @@
 * Sqlite
 * InMemory
 * PostgreSQL
-* Oracle 
-* MongoDB (Planning...)
+* Oracle (**未测试**)(第三方驱动[Citms.EntityFrameworkCore.Oracle](https://github.com/CrazyJson/Citms.EntityFrameworkCore.Oracle))
+* MongoDB (Beta)(第三方驱动[Blueshift.EntityFrameworkCore.MongoDB](https://github.com/BlueshiftSoftware/EntityFrameworkCore))
 
 **日志组件**
 * log4net
@@ -55,6 +55,10 @@
 * 请参考我的博客：[http://www.cnblogs.com/zengxw/p/7673952.html](http://www.cnblogs.com/zengxw/p/7673952.html)
 
 # 更新日志
+
+**2018/09/24**
+* 1.实现Oracle for EfCore，引用第三方驱动[Citms.EntityFrameworkCore.Oracle](https://github.com/CrazyJson/Citms.EntityFrameworkCore.Oracle)
+* 2.实现MongoDB for EfCore，引用第三方驱动[Blueshift.EntityFrameworkCore.MongoDB](https://github.com/BlueshiftSoftware/EntityFrameworkCore)
 
 **2018/08/26**
 * 1.添加自定义视图分页查询，数据库分页，目前只支持sqlserver
