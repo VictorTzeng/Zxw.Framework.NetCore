@@ -18,6 +18,7 @@
 * InMemory
 * PostgreSQL
 * Oracle 
+* MongoDB (Planning...)
 
 **日志组件**
 * log4net
