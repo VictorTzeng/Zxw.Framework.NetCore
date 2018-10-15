@@ -13,6 +13,20 @@ namespace Zxw.Framework.NetCore.Extensions
     /// </summary>
     public static class ExpressionExtensions
     {
+        /// <summary>
+        ///     取的  Expression<Func<T,TProperty>> predicate 表达式对应的属性名称
+        ///         例如：c=>c.Value.Year 侧返回：Value.Year
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TProperty"></typeparam>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public static string GetPropertyName<T, TProperty>(this Expression<Func<T, TProperty>> predicate)
+        {
+            var expression = predicate.Body as MemberExpression;
+            //return expression.Member.Name; //该属性只返回最后一个属性，因此采用下面方法返回。
+            return expression.ToString().Substring(2);
+        }
         public static ParameterExpression CreateLambdaParam<T>(string name)
         {
             return Expression.Parameter(typeof(T), name);
