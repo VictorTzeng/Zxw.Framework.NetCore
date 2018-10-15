@@ -283,9 +283,14 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         public virtual List<TView> SqlQuery<T,TView>(string sql, params object[] parameters) 
             where T : class
-            where TView : class
         {
             return Set<T>().FromSql(sql, parameters).Cast<TView>().ToList();
+        }
+
+        public virtual PaginationResult SqlQueryByPagnation<T, TView>(string sql, string[] orderBys, int pageIndex, int pageSize,
+            Action<TView> eachAction = null) where T : class where TView : class
+        {
+            throw new NotImplementedException();
         }
 
         public virtual async Task<List<TView>> SqlQueryAsync<T,TView>(string sql, params object[] parameters) 
