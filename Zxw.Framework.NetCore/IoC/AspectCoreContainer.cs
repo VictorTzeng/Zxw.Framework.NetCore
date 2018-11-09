@@ -12,7 +12,7 @@ namespace Zxw.Framework.NetCore.IoC
         public static IServiceProvider BuildServiceProvider(IServiceCollection services, Action<IAspectConfiguration> configure = null)
         {
             if(services==null)throw new ArgumentNullException(nameof(services));
-            services.AddDynamicProxy(configure);
+            services.ConfigureDynamicProxy(configure);
             services.AddAspectCoreContainer();
             return resolver = services.ToServiceContainer().Build();
         }
