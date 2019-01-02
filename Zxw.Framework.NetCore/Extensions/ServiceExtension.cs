@@ -284,8 +284,7 @@ namespace Zxw.Framework.NetCore.Extensions
                 redisClient = new CSRedisClient(null, redisConnectionStrings);
             }
             //初始化 RedisHelper
-            RedisHelper.Initialization(redisClient, serialize: value => JsonConvertor.Serialize(value),
-                deserialize: (data, type) => JsonConvertor.Deserialize(data, type));
+            RedisHelper.Initialization(redisClient);
             //注册mvc分布式缓存
             services.AddSingleton<IDistributedCache>(new Microsoft.Extensions.Caching.Redis.CSRedisCache(RedisHelper.Instance));
             return services;
@@ -298,7 +297,7 @@ namespace Zxw.Framework.NetCore.Extensions
         public static IServiceProvider BuildAspectCoreWithAutofacServiceProvider(this IServiceCollection services, Action<IAspectConfiguration> configure = null)
         {
             if(services==null)throw new ArgumentNullException(nameof(services));
-            services.AddDynamicProxy();
+            services.ConfigureDynamicProxy(configure);
             services.AddAspectCoreContainer();
             return AutofacContainer.Build(services, configure);
         }
@@ -307,7 +306,7 @@ namespace Zxw.Framework.NetCore.Extensions
             Action<IAspectConfiguration> configure = null)
         {
             if(services==null)throw new ArgumentNullException(nameof(services));
-            services.AddDynamicProxy(configure);
+            services.ConfigureDynamicProxy(configure);
             services.AddAspectCoreContainer();
             return services.ToServiceContainer().Build();
         }
