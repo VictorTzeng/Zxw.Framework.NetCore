@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Zxw.Framework.NetCore.Extensions;
+using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IoC;
 
 namespace Zxw.Framework.NetCore.Cache
@@ -10,30 +11,56 @@ namespace Zxw.Framework.NetCore.Cache
     {
         private static IDistributedCache Instance => AspectCoreContainer.Resolve<IDistributedCache>();
 
-        public static object Get(string key) => Instance.Get(key).ToObject();
-
-        public static async Task<object> GetAsync(string key)
+        public static string Get(string key)
         {
-            var content = await Instance.GetAsync(key);
-            return content.ToObject();
+            if (RedisHelper.Exists(key))
+            {
+                return RedisHelper.Get(key);
+            }
+
+            return null;
         }
-        public static T Get<T>(string key) => (T) Get(key);
 
-        public static async Task<T> GetAsync<T>(string key) => (T) await GetAsync(key);
-
-        public static void Set(string key, object data, int expiredSeconds) => Instance.Set(key, data.ToBytes(),
-            new DistributedCacheEntryOptions()
+        public static async Task<string> GetAsync(string key)
+        {
+            if (await RedisHelper.ExistsAsync(key))
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(expiredSeconds)
-            });
+                var content = await RedisHelper.GetAsync(key);
+                return content;
+            }
 
-        public static async Task SetAsync(string key, object data, int expiredSeconds) => await Instance.SetAsync(
-            key,
-            data.ToBytes(),
-            new DistributedCacheEntryOptions()
+            return null;
+        }
+
+        public static T Get<T>(string key)
+        {
+            var value = Get(key);
+            if (!string.IsNullOrEmpty(value))
+                return JsonConvertor.Deserialize<T>(value);
+            return default(T);
+        }
+
+        public static async Task<T> GetAsync<T>(string key)
+        {
+            var value = await GetAsync(key);
+            if (!string.IsNullOrEmpty(value))
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(expiredSeconds)
-            });
+                return JsonConvertor.Deserialize<T>(value);
+            }
+
+            return default(T);
+        }
+
+        public static void Set(string key, object data, int expiredSeconds)
+        {
+            RedisHelper.Set(key, JsonConvertor.Serialize(data), expiredSeconds);
+        }
+
+        public static async Task<bool> SetAsync(string key, object data, int expiredSeconds)
+        {
+            return await RedisHelper.SetAsync(key, JsonConvertor.Serialize(data), expiredSeconds);
+        }
+
 
         public static void Remove(string key) => Instance.Remove(key);
 

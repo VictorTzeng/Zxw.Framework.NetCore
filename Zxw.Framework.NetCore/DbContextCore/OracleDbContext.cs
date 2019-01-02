@@ -1,7 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Scaffolding;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Zxw.Framework.NetCore.Options;
 
@@ -14,7 +12,13 @@ namespace Zxw.Framework.NetCore.DbContextCore
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            throw new NotImplementedException("Oracle for EF Core Database Provider is not yet available.");
+            optionsBuilder.UseLazyLoadingProxies().UseOracle(_option.ConnectionString);
+            base.OnConfiguring(optionsBuilder);
+        }
+
+        public override void BulkInsert<T, TKey>(IList<T> entities, string destinationTableName = null)
+        {
+            base.BulkInsert<T, TKey>(entities, destinationTableName);
         }
     }
 }

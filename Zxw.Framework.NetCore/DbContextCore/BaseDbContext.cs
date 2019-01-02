@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Z.EntityFramework.Plus;
+using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
 
@@ -22,10 +23,10 @@ namespace Zxw.Framework.NetCore.DbContextCore
         protected readonly DbContextOption _option;
         public DatabaseFacade GetDatabase() => Database;
 
-        public virtual int Add<T>(T entity, bool withTrigger = false) where T : class
+        public new virtual int Add<T>(T entity) where T : class
         {
             base.Add(entity);
-            return withTrigger ? SaveChangesWithTriggers() : SaveChanges();
+            return SaveChanges();
         }
 
         /// <summary>
@@ -68,22 +69,22 @@ namespace Zxw.Framework.NetCore.DbContextCore
             }
         }
 
-        public virtual async Task<int> AddAsync<T>(T entity, bool withTrigger = false) where T : class
+        public virtual async Task<int> AddAsync<T>(T entity) where T : class
         {
             await base.AddAsync(entity);
-            return await (withTrigger ? SaveChangesWithTriggersAsync() : SaveChangesAsync());
+            return await SaveChangesAsync();
         }
 
-        public virtual int AddRange<T>(ICollection<T> entities, bool withTrigger = false) where T : class
+        public virtual int AddRange<T>(ICollection<T> entities) where T : class
         {
             base.AddRange(entities);
-            return withTrigger ? SaveChangesWithTriggers() : SaveChanges();
+            return SaveChanges();
         }
 
-        public virtual async Task<int> AddRangeAsync<T>(ICollection<T> entities, bool withTrigger = false) where T : class
+        public virtual async Task<int> AddRangeAsync<T>(ICollection<T> entities) where T : class
         {
             await base.AddRangeAsync(entities);
-            return await (withTrigger ? SaveChangesWithTriggersAsync() : SaveChangesAsync());
+            return await SaveChangesAsync();
         }
 
         public virtual int Count<T>(Expression<Func<T, bool>> @where = null) where T : class
@@ -96,11 +97,11 @@ namespace Zxw.Framework.NetCore.DbContextCore
             return await (where == null ? Set<T>().CountAsync() : Set<T>().CountAsync(@where));
         }
 
-        public virtual int Delete<T, TKey>(TKey key, bool withTrigger = false) where T : class
+        public virtual int Delete<T, TKey>(TKey key) where T : class
         {
             var entity = Find<T>(key);
             Remove(entity);
-            return withTrigger ? SaveChangesWithTriggers() : SaveChanges();
+            return SaveChanges();
         }
 
         public virtual bool EnsureCreated()
@@ -141,11 +142,11 @@ namespace Zxw.Framework.NetCore.DbContextCore
         /// <param name="entity"></param>
         /// <param name="withTrigger"></param>
         /// <returns></returns>
-        public virtual int Edit<T,TKey>(T entity, bool withTrigger = false) where T : BaseModel<TKey>
+        public virtual int Edit<T,TKey>(T entity) where T : BaseModel<TKey>
         {
             var model = Find<T>(entity.Id);
             Entry(model).CurrentValues.SetValues(entity);
-            return withTrigger ? SaveChangesWithTriggers() : SaveChanges();
+            return SaveChanges();
         }
 
         /// <summary>
@@ -155,10 +156,10 @@ namespace Zxw.Framework.NetCore.DbContextCore
         /// <param name="entities"></param>
         /// <param name="withTrigger"></param>
         /// <returns></returns>
-        public virtual int EditRange<T>(ICollection<T> entities, bool withTrigger = false) where T : class
+        public virtual int EditRange<T>(ICollection<T> entities) where T : class
         {
             Set<T>().AttachRange(entities.ToArray());
-            return withTrigger ? SaveChangesWithTriggers() : SaveChanges();
+            return  SaveChanges();
         }
 
         public virtual bool Exist<T>(Expression<Func<T, bool>> @where = null) where T : class
@@ -224,7 +225,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
         /// <param name="withTrigger"></param>
         /// <param name="updateColumns"></param>
         /// <returns></returns>
-        public virtual int Update<T>(T model, bool withTrigger = false, params string[] updateColumns) where T : class
+        public virtual int Update<T>(T model, params string[] updateColumns) where T : class
         {
             if (updateColumns != null && updateColumns.Length > 0)
             {
@@ -239,7 +240,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
             {
                 Entry(model).State = EntityState.Modified;
             }
-            return withTrigger ? SaveChangesWithTriggers() : SaveChanges();
+            return SaveChanges();
         }
 
         public virtual int Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
@@ -283,9 +284,14 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         public virtual List<TView> SqlQuery<T,TView>(string sql, params object[] parameters) 
             where T : class
-            where TView : class
         {
             return Set<T>().FromSql(sql, parameters).Cast<TView>().ToList();
+        }
+
+        public virtual PaginationResult SqlQueryByPagnation<T, TView>(string sql, string[] orderBys, int pageIndex, int pageSize,
+            Action<TView> eachAction = null) where T : class where TView : class
+        {
+            throw new NotImplementedException();
         }
 
         public virtual async Task<List<TView>> SqlQueryAsync<T,TView>(string sql, params object[] parameters) 
@@ -295,27 +301,41 @@ namespace Zxw.Framework.NetCore.DbContextCore
             return await Set<T>().FromSql(sql, parameters).Cast<TView>().ToListAsync();
         }
 
-        public int SaveChangesWithTriggers()
+        public override int SaveChanges()
         {
-            return this.SaveChangesWithTriggers(SaveChanges);
+            if (_option.OpenDbTrigger)
+            {
+                return this.SaveChangesWithTriggers(base.SaveChanges);
+            }
+            return base.SaveChanges();
         }
 
-        public int SaveChangesWithTriggers(bool acceptAllChangesOnSuccess)
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
-            return this.SaveChangesWithTriggers(SaveChanges, acceptAllChangesOnSuccess);
+            if (_option.OpenDbTrigger)
+            {
+                return this.SaveChangesWithTriggers(base.SaveChanges, acceptAllChangesOnSuccess);
+            }
+            return base.SaveChanges(acceptAllChangesOnSuccess);
         }
 
-        public async Task<int> SaveChangesWithTriggersAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            return await this.SaveChangesWithTriggersAsync(SaveChangesAsync, acceptAllChangesOnSuccess: true,
-                cancellationToken: cancellationToken);
+            if (_option.OpenDbTrigger)
+            {
+                return this.SaveChangesWithTriggersAsync(base.SaveChangesAsync, cancellationToken);
+            }
+            return base.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<int> SaveChangesWithTriggersAsync(bool acceptAllChangesOnSuccess,
-            CancellationToken cancellationToken = default(CancellationToken))
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await this.SaveChangesWithTriggersAsync(SaveChangesAsync, acceptAllChangesOnSuccess,
-                cancellationToken: cancellationToken);
+            if (_option.OpenDbTrigger)
+            {
+                return this.SaveChangesWithTriggersAsync(base.SaveChangesAsync, acceptAllChangesOnSuccess,
+                    cancellationToken);
+            }
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseInMemoryDatabase(_option.ConnectionString);
+            optionsBuilder.UseLazyLoadingProxies().UseInMemoryDatabase(_option.ConnectionString);
             base.OnConfiguring(optionsBuilder);
         }
     }

@@ -25,24 +25,24 @@ namespace Zxw.Framework.NetCore.Repositories
 
         #region Insert
 
-        public virtual int Add(T entity, bool withTrigger = false)
+        public virtual int Add(T entity)
         {
-            return DbContext.Add(entity, withTrigger);
+            return DbContext.Add(entity);
         }
 
-        public virtual async Task<int> AddAsync(T entity, bool withTrigger = false)
+        public virtual async Task<int> AddAsync(T entity)
         {
-            return await DbContext.AddAsync(entity, withTrigger);
+            return await DbContext.AddAsync(entity);
         }
 
-        public virtual int AddRange(ICollection<T> entities, bool withTrigger = false)
+        public virtual int AddRange(ICollection<T> entities)
         {
-            return DbContext.AddRange(entities, withTrigger);
+            return DbContext.AddRange(entities);
         }
 
-        public virtual async Task<int> AddRangeAsync(ICollection<T> entities, bool withTrigger = false)
+        public virtual async Task<int> AddRangeAsync(ICollection<T> entities)
         {
-            return await DbContext.AddRangeAsync(entities, withTrigger);
+            return await DbContext.AddRangeAsync(entities);
         }
 
         public virtual void BulkInsert(IList<T> entities, string destinationTableName = null)
@@ -54,14 +54,14 @@ namespace Zxw.Framework.NetCore.Repositories
 
         #region Update
 
-        public virtual int Edit(T entity, bool withTrigger = false)
+        public virtual int Edit(T entity)
         {
-            return DbContext.Edit<T,TKey>(entity, withTrigger);
+            return DbContext.Edit<T,TKey>(entity);
         }
 
-        public virtual int EditRange(ICollection<T> entities, bool withTrigger = false)
+        public virtual int EditRange(ICollection<T> entities)
         {
-            return DbContext.EditRange(entities, withTrigger);
+            return DbContext.EditRange(entities);
         }
         /// <summary>
         /// update query datas by columns.
@@ -79,9 +79,9 @@ namespace Zxw.Framework.NetCore.Repositories
         {
             return await DbContext.UpdateAsync(@where, updateExp);
         }
-        public virtual int Update(T model, bool withTrigger = false, params string[] updateColumns)
+        public virtual int Update(T model, params string[] updateColumns)
         {
-            DbContext.Update(model, withTrigger, updateColumns);
+            DbContext.Update(model, updateColumns);
             return DbContext.SaveChanges();
         }
 
@@ -99,9 +99,9 @@ namespace Zxw.Framework.NetCore.Repositories
 
         #region Delete
 
-        public virtual int Delete(TKey key, bool withTrigger = false)
+        public virtual int Delete(TKey key)
         {
-            return DbContext.Delete<T,TKey>(key, withTrigger);
+            return DbContext.Delete<T,TKey>(key);
         }
 
         public virtual int Delete(Expression<Func<T, bool>> @where)
@@ -251,10 +251,11 @@ namespace Zxw.Framework.NetCore.Repositories
         }
 
         // TODO: 仅当以上 Dispose(bool disposing) 拥有用于释放未托管资源的代码时才替代终结器。
-        // ~BaseRepository() {
-        //   // 请勿更改此代码。将清理代码放入以上 Dispose(bool disposing) 中。
-        //   Dispose(false);
-        // }
+        ~BaseRepository()
+        {
+            // 请勿更改此代码。将清理代码放入以上 Dispose(bool disposing) 中。
+            Dispose(false);
+        }
 
         // 添加此代码以正确实现可处置模式。
         public void Dispose()
@@ -262,7 +263,7 @@ namespace Zxw.Framework.NetCore.Repositories
             // 请勿更改此代码。将清理代码放入以上 Dispose(bool disposing) 中。
             Dispose(true);
             // TODO: 如果在以上内容中替代了终结器，则取消注释以下行。
-            // GC.SuppressFinalize(this);
+            GC.SuppressFinalize(this);
         }
         #endregion
     }

@@ -1,13 +1,17 @@
 using System;
 using System.Data;
+using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Zxw.Framework.NetCore.Cache;
 using Zxw.Framework.NetCore.CodeGenerator;
 using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Extensions;
+using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Options;
+using Zxw.Framework.UnitTest.TestModels;
 
 namespace Zxw.Framework.UnitTest
 {
@@ -43,7 +47,7 @@ namespace Zxw.Framework.UnitTest
         public void TestGenerateEntitiesForPostgreSql()
         {
             BuildServiceForPostgreSql();
-            CodeGenerator.GenerateEntities("Zxw.Framework.Website.Models", "F:\\Test\\PostgreSQL", true);
+            CodeGenerator.GenerateAllCodesFromDatabase(true);
         }
 
         #endregion
@@ -77,7 +81,7 @@ namespace Zxw.Framework.UnitTest
         public void TestGenerateEntitiesForSqlServer()
         {
             BuildServiceForSqlServer();
-            CodeGenerator.GenerateEntities("Zxw.Framework.Website.Models", "F:\\Test\\SqlServer", true);
+            CodeGenerator.GenerateAllCodesFromDatabase(true);
         }
 
         #endregion
@@ -111,10 +115,43 @@ namespace Zxw.Framework.UnitTest
         public void TestGenerateEntitiesForMySql()
         {
             BuildServiceFoMySql();
-            CodeGenerator.GenerateEntities("Zxw.Framework.Website.Models", "F:\\Test\\MySql", true);
+            CodeGenerator.GenerateAllCodesFromDatabase(true);
         }
 
         #endregion
+
+        #region Test methods for Redis
+
+        [TestMethod]
+        public void TestCsRedisClient()
+        {
+            BuildServiceForSqlServer();
+            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            RedisHelper.Set("test_cache_key", JsonConvertor.Serialize(dbContext.GetCurrentDatabaseTableList()),
+                10 * 60);
+            Thread.Sleep(2000);
+            var content = DistributedCacheManager.Get("test_cache_key");
+            Assert.IsNotNull(content);
+        }
+        
+        #endregion
+
+        [TestMethod]
+        public void TestForMongoDb()
+        {
+            BuildServiceForMongoDB();
+            var context = AspectCoreContainer.Resolve<IDbContextCore>();
+            Assert.IsTrue(context.Add(new MongoModel()
+            {
+                Age = 28,
+                Birthday = Convert.ToDateTime("1999-01-22"),
+                IsBitch = false,
+                UniqueId = Guid.NewGuid().ToString("N"),
+                UserName = "帝王蟹",
+                Wage = 100000000
+            }) > 0);
+            context.Dispose();
+        }
 
         #region public methods
 
@@ -124,7 +161,14 @@ namespace Zxw.Framework.UnitTest
 
             //在这里注册EF上下文
             services = RegisterPostgreSqlContext(services);
-
+            services.Configure<CodeGenerateOption>(options =>
+            {
+                options.OutputPath = "F:\\Test\\PostgreSQL";
+                options.ModelsNamespace = "Zxw.Framework.Website.Models";
+                options.IRepositoriesNamespace = "Zxw.Framework.Website.IRepositories";
+                options.RepositoriesNamespace = "Zxw.Framework.Website.Repositories";
+                options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
+            });
             services.AddOptions();
             return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
         }
@@ -135,7 +179,16 @@ namespace Zxw.Framework.UnitTest
 
             //在这里注册EF上下文
             services = RegisterSqlServerContext(services);
-
+            services.Configure<CodeGenerateOption>(options =>
+            {
+                options.OutputPath = "F:\\Test\\SqlServer";
+                options.ModelsNamespace = "Zxw.Framework.Website.Models";
+                options.IRepositoriesNamespace = "Zxw.Framework.Website.IRepositories";
+                options.RepositoriesNamespace = "Zxw.Framework.Website.Repositories";
+                options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
+            });
+            services.UseCsRedisClient(
+                "127.0.0.1:6379,abortConnect=false,connectRetry=3,connectTimeout=3000,defaultDatabase=1,syncTimeout=3000,version=3.2.100,responseTimeout=3000");
             services.AddOptions();
             return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
         }
@@ -146,7 +199,14 @@ namespace Zxw.Framework.UnitTest
 
             //在这里注册EF上下文
             services = RegisterMySqlContext(services);
-
+            services.Configure<CodeGenerateOption>(options =>
+            {
+                options.OutputPath = "F:\\Test\\MySQL";
+                options.ModelsNamespace = "Zxw.Framework.Website.Models";
+                options.IRepositoriesNamespace = "Zxw.Framework.Website.IRepositories";
+                options.RepositoriesNamespace = "Zxw.Framework.Website.Repositories";
+                options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
+            });
             services.AddOptions();
             return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
         }
@@ -157,11 +217,26 @@ namespace Zxw.Framework.UnitTest
 
             //在这里注册EF上下文
             services = RegisterSqLiteContext(services);
-
+            services.Configure<CodeGenerateOption>(options =>
+            {
+                options.OutputPath = "F:\\Test\\SQLite";
+                options.ModelsNamespace = "Zxw.Framework.Website.Models";
+                options.IRepositoriesNamespace = "Zxw.Framework.Website.IRepositories";
+                options.RepositoriesNamespace = "Zxw.Framework.Website.Repositories";
+                options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
+            });
             services.AddOptions();
             return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
         }
+        public IServiceProvider BuildServiceForMongoDB()
+        {
+            IServiceCollection services = new ServiceCollection();
 
+            //在这里注册EF上下文
+            services = RegisterMongoDbContext(services);
+            services.AddOptions();
+            return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
+        }
         /// <summary>
         /// 注册SQLServer上下文
         /// </summary>
@@ -229,6 +304,21 @@ namespace Zxw.Framework.UnitTest
             return services;
         }
 
+        /// <summary>
+        /// 注册SQLite上下文
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public IServiceCollection RegisterMongoDbContext(IServiceCollection services)
+        {
+            services.Configure<DbContextOption>(options =>
+            {
+                options.ConnectionString = "mongodb://localhost";
+                options.ModelAssemblyName = "Zxw.Framework.UnitTest";
+            });
+            services.AddScoped<IDbContextCore, MongoDbContext>(); //注入EF上下文
+            return services;
+        }
 
         #endregion
     }

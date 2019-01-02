@@ -12,17 +12,17 @@ namespace Zxw.Framework.NetCore.Repositories
     {
         #region Insert
 
-        int Add(T entity, bool withTrigger = false);
-        Task<int> AddAsync(T entity, bool withTrigger = false);
-        int AddRange(ICollection<T> entities, bool withTrigger = false);
-        Task<int> AddRangeAsync(ICollection<T> entities, bool withTrigger = false);
+        int Add(T entity);
+        Task<int> AddAsync(T entity);
+        int AddRange(ICollection<T> entities);
+        Task<int> AddRangeAsync(ICollection<T> entities);
         void BulkInsert(IList<T> entities, string destinationTableName = null);
 
         #endregion
 
         #region Delete
 
-        int Delete(TKey key, bool withTrigger = false);
+        int Delete(TKey key);
         int Delete(Expression<Func<T, bool>> @where);
         Task<int> DeleteAsync(Expression<Func<T, bool>> @where);
 
@@ -30,11 +30,11 @@ namespace Zxw.Framework.NetCore.Repositories
 
         #region Update
 
-        int Edit(T entity, bool withTrigger = false);
-        int EditRange(ICollection<T> entities, bool withTrigger = false);
+        int Edit(T entity);
+        int EditRange(ICollection<T> entities);
         int BatchUpdate(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp);
         Task<int> BatchUpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp);
-        int Update(T model, bool withTrigger = false, params string[] updateColumns);
+        int Update(T model, params string[] updateColumns);
         int Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory);
         Task<int> UpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory);
 

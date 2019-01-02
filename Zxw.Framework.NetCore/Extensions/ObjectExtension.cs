@@ -17,6 +17,116 @@ namespace Zxw.Framework.NetCore.Extensions
 {
     public static class ObjectExtension
     {
+        public static bool HasProperty<T>(this T obj, string propertyName)
+        {
+            return obj != null && obj.GetType().GetProperties().Any(p => p.Name.Equals(propertyName));
+        }
+        /// <summary>
+        ///     取得对象指定属性的值
+        /// </summary>
+        /// <param name="predicate">要取值的属性</param>
+        /// <returns></returns>
+        public static object GetPropertyValue<T, TProperty>(this T obj, Expression<Func<T, TProperty>> predicate)
+        {
+            var propertyName = predicate.GetPropertyName(); //属性名称
+
+            return obj.GetPropertyValue(propertyName);
+        }
+
+        /// <summary>
+        ///     取对象属性值
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="propertyName">支持“.”分隔的多级属性取值。</param>
+        /// <returns></returns>
+        public static object GetPropertyValue<T>(this T obj, string propertyName)
+        {
+            var strs = propertyName.Split('.');
+
+            PropertyInfo property = null;
+            object value = obj;
+
+            for (var i = 0; i < strs.Length; i++)
+            {
+                property = value.GetType().GetProperty(strs[i]);
+                value = property.GetValue(value, null);
+            }
+            return value;
+        }
+
+        /// <summary>
+        ///     设置对象指定属性的值
+        /// </summary>
+        /// <param name="predicate">要设置值的属性</param>
+        /// <param name="value">设置值</param>
+        /// <returns>是否设置成功</returns>
+        public static bool SetPropertyValue<T, TProperty>(this T obj, Expression<Func<T, TProperty>> predicate,
+            object value)
+        {
+            var propertyName = predicate.GetPropertyName(); //属性名称
+
+            return obj.SetPropertyValue(propertyName, value);
+        }
+
+        /// <summary>
+        ///     设置对象属性值
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="propertyName">propertyName1.propertyName2.propertyName3</param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool SetPropertyValue<T>(this T obj, string propertyName, object value)
+        {
+            var strs = propertyName.Split('.');
+
+            PropertyInfo property = null;
+            object target = obj;
+
+            for (var i = 0; i < strs.Length; i++)
+            {
+                property = target.GetType().GetProperty(strs[i]);
+                if (i < strs.Length - 1)
+                    target = property.GetValue(target, null);
+            }
+
+            var flag = false; //设置成功标记
+            if (property != null && property.CanWrite)
+            {
+                if (false == property.PropertyType.IsGenericType) //非泛型
+                {
+                    if (property.PropertyType.IsEnum)
+                    {
+                        property.SetValue(target, Convert.ChangeType(value, typeof(int)));
+                        flag = true;
+                    }
+                    else if (value.ToString() != property.PropertyType.ToString())
+                    {
+                        //property.SetValue(target, string.IsNullOrEmpty(value) ? null : Convert.ChangeType(value, property.PropertyType), null);
+                        property.SetValue(target,
+                            value == null ? null : Convert.ChangeType(value, property.PropertyType),
+                            null);
+                        flag = true;
+                    }
+                }
+                else //泛型Nullable<>
+                {
+                    var genericTypeDefinition = property.PropertyType.GetGenericTypeDefinition();
+                    if (genericTypeDefinition == typeof(Nullable<>))
+                    {
+                        //property.SetValue(target, string.IsNullOrEmpty(value) ? null : Convert.ChangeType(value, Nullable.GetUnderlyingType(property.PropertyType)), null);
+                        property.SetValue(target,
+                            value == null
+                                ? null
+                                : Convert.ChangeType(value, Nullable.GetUnderlyingType(property.PropertyType)),
+                            null);
+                        flag = true;
+                    }
+                }
+            }
+
+            return flag;
+        }
+
         /// <summary>
         /// 将集合转换为数据集。
         /// </summary>
@@ -1181,78 +1291,5 @@ namespace Zxw.Framework.NetCore.Extensions
         {
             return EmailRegex.IsMatch(email);
         }
-    }
-
-    /// <summary>
-    /// 结果。
-    /// </summary>
-    /// <typeparam name="T">结果返回值类型。</typeparam>
-    public class Result<T>
-    {
-        /// <summary>
-        /// 标记。
-        /// </summary>
-        public Flag Flag { get; set; }
-
-        /// <summary>
-        /// 返回值。
-        /// </summary>
-        public T Return { get; set; }
-
-        /// <summary>
-        /// 消息。
-        /// </summary>
-        public string Message { get; set; }
-
-        /// <summary>
-        /// 异常。
-        /// </summary>
-        public Exception Exception { get; set; }
-
-        /// <summary>
-        /// 时间。
-        /// </summary>
-        public DateTime DateTime { get; set; }
-
-        /// <summary>
-        /// 整型数据。
-        /// </summary>
-        public int Int { get; set; }
-
-        /// <summary>
-        /// 浮点数据。
-        /// </summary>
-        public decimal Decimal { get; set; }
-
-        /// <summary>
-        /// 布尔数据。
-        /// </summary>
-        public bool Bool { get; set; }
-
-        /// <summary>
-        /// 对象。
-        /// </summary>
-        public object Object { get; set; }
-    }
-
-    /// <summary>
-    /// 标记。
-    /// </summary>
-    public enum Flag
-    {
-        /// <summary>
-        /// 默认。
-        /// </summary>
-        Default,
-
-        /// <summary>
-        /// 真。
-        /// </summary>
-        True,
-
-        /// <summary>
-        /// 假。
-        /// </summary>
-        False
     }
 }

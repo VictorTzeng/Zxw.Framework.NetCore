@@ -16,7 +16,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(_option.ConnectionString);
+            optionsBuilder.UseLazyLoadingProxies().UseNpgsql(_option.ConnectionString);
             base.OnConfiguring(optionsBuilder);
         }
     }

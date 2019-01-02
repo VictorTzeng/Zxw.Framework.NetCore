@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceRoot}/Zxw.Framework.Website/bin/Debug/netcoreapp2.0/Zxw.Framework.Website.dll",
+            "program": "${workspaceFolder}/Zxw.Framework.Website/bin/Debug/netcoreapp2.0/Zxw.Framework.Website.dll",
             "args": [],
-            "cwd": "${workspaceRoot}/Zxw.Framework.Website",
+            "cwd": "${workspaceFolder}/Zxw.Framework.Website",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
             "launchBrowser": {
@@ -33,7 +33,7 @@
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
             "sourceFileMap": {
-                "/Views": "${workspaceRoot}/Views"
+                "/Views": "${workspaceFolder}/Views"
             }
         },
         {

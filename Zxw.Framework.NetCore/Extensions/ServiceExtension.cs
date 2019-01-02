@@ -7,7 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Zxw.Framework.NetCore.Helpers;
 using AspectCore.Configuration;
 using AspectCore.Injector;
+using CSRedis;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.IoC;
+using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.Extensions
 {
@@ -250,26 +256,206 @@ namespace Zxw.Framework.NetCore.Extensions
 
             return service;
         }
+        /// <summary>
+        /// 使用CSRedis代替StackChange.Redis
+        /// <remarks>
+        /// 关于CSRedis项目，请参考<seealso cref="https://github.com/2881099/csredis"/>
+        /// </remarks>
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="redisConnectionStrings">redis连接字符串。
+        /// <remarks>
+        /// 如果是单机模式，请只输入一个连接字符串；如果是集群模式，请输入多个连接字符串
+        /// </remarks>
+        /// </param>
+        /// <returns></returns>
+        public static IServiceCollection UseCsRedisClient(this IServiceCollection services, params string[] redisConnectionStrings)
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (redisConnectionStrings == null || redisConnectionStrings.Length == 0)
+            {
+                throw new ArgumentNullException(nameof(redisConnectionStrings));
+            }
+            CSRedisClient redisClient;
+            if (redisConnectionStrings.Length == 1)
+            {
+                //单机模式
+                redisClient = new CSRedisClient(redisConnectionStrings[0]);
+            }
+            else
+            {
+                //集群模式
+                redisClient = new CSRedisClient(null, redisConnectionStrings);
+            }
+            //初始化 RedisHelper
+            RedisHelper.Initialization(redisClient
+                //, value => JsonConvertor.Serialize(value)
+                //, (data, type) => JsonConvertor.Deserialize(data, type)
+                );
+            
+            //注册mvc分布式缓存
+            services.AddSingleton<IDistributedCache>(new Microsoft.Extensions.Caching.Redis.CSRedisCache(RedisHelper.Instance));
+            return services;
+        }
+        /// <summary>
+        /// 单独接入Autofac
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
         public static IServiceProvider BuildAutofacServiceProvider(this IServiceCollection services)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
             return AutofacContainer.Build(services);
         }
+        /// <summary>
+        /// 接入Autofac和AspectCore
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configure"></param>
+        /// <returns></returns>
         public static IServiceProvider BuildAspectCoreWithAutofacServiceProvider(this IServiceCollection services, Action<IAspectConfiguration> configure = null)
         {
             if(services==null)throw new ArgumentNullException(nameof(services));
-            services.AddDynamicProxy();
+            services.ConfigureDynamicProxy(configure);
             services.AddAspectCoreContainer();
             return AutofacContainer.Build(services, configure);
         }
-
+        /// <summary>
+        /// 单独接入AspectCore
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configure"></param>
+        /// <returns></returns>
         public static IServiceProvider BuildAspectCoreServiceProvider(this IServiceCollection services,
             Action<IAspectConfiguration> configure = null)
         {
             if(services==null)throw new ArgumentNullException(nameof(services));
-            services.AddDynamicProxy(configure);
+            services.ConfigureDynamicProxy(configure);
             services.AddAspectCoreContainer();
-            return services.ToServiceContainer().Build();
+            return AspectCoreContainer.BuildServiceProvider(services);
+        }
+        /// <summary>
+        /// 开启代码生成器功能
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static IServiceCollection UseCodeGenerator(this IServiceCollection services,
+            Action<CodeGenerateOption> options)
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            return services.Configure(options);
+        }
+        /// <summary>
+        /// 开启ConfigHelper
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        public static IServiceCollection UseConfigHelper(this IServiceCollection services, IConfiguration configuration)
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+            return services.AddSingleton(configuration);
+        }
+        /// <summary>
+        /// 接入Sqlserver数据库
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        public static IServiceCollection UseMsSqlServer(this IServiceCollection services,
+            Action<DbContextOption> configure)
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (configure == null) throw new ArgumentNullException(nameof(configure));
+            services.Configure(configure).AddScoped<IDbContextCore, SqlServerDbContext>();
+            return services;
+        }
+        /// <summary>
+        /// 接入MySQL数据库
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        public static IServiceCollection UseMySql(this IServiceCollection services,
+            Action<DbContextOption> configure)
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (configure == null) throw new ArgumentNullException(nameof(configure));
+            services.Configure(configure).AddScoped<IDbContextCore, MySqlDbContext>();
+            return services;
+        }
+        /// <summary>
+        /// 接入Oracle数据库
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        public static IServiceCollection UseOracle(this IServiceCollection services,
+            Action<DbContextOption> configure)
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (configure == null) throw new ArgumentNullException(nameof(configure));
+            services.Configure(configure).AddScoped<IDbContextCore, OracleDbContext>();
+            return services;
+        }
+        /// <summary>
+        /// 接入SQLite数据库
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        public static IServiceCollection UseSqlite(this IServiceCollection services,
+            Action<DbContextOption> configure)
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (configure == null) throw new ArgumentNullException(nameof(configure));
+            services.Configure(configure).AddScoped<IDbContextCore, SQLiteDbContext>();
+            return services;
+        }
+        /// <summary>
+        /// 接入PostgreSql数据库
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        public static IServiceCollection UsePostgreSql(this IServiceCollection services,
+            Action<DbContextOption> configure)
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (configure == null) throw new ArgumentNullException(nameof(configure));
+            services.Configure(configure).AddScoped<IDbContextCore, PostgreSQLDbContext>();
+            return services;
+        }
+        /// <summary>
+        /// 接入MongoDB
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        public static IServiceCollection UseMongoDb(this IServiceCollection services,
+            Action<DbContextOption> configure)
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (configure == null) throw new ArgumentNullException(nameof(configure));
+            services.Configure(configure).AddScoped<IDbContextCore, MongoDbContext>();
+            return services;
+        }
+        /// <summary>
+        /// 接入InMemory数据库
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        public static IServiceCollection UseInMemory(this IServiceCollection services,
+            Action<DbContextOption> configure)
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (configure == null) throw new ArgumentNullException(nameof(configure));
+            services.Configure(configure).AddScoped<IDbContextCore, InMemoryDbContext>();
+            return services;
         }
     }
 }
