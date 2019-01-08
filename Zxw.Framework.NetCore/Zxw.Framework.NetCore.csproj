@@ -35,10 +35,10 @@
     <PackageReference Include="AspectCore.Extensions.DependencyInjection" Version="1.1.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.1" />
     <PackageReference Include="Blueshift.EntityFrameworkCore.MongoDB" Version="2.1.0-preview2-t006f54f83" />
-    <PackageReference Include="Caching.CSRedis" Version="3.0.27" />
+    <PackageReference Include="Caching.CSRedis" Version="3.0.31" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.0" />
     <PackageReference Include="Citms.EntityFrameworkCore.Oracle" Version="1.0.3" />
-    <PackageReference Include="CSRedisCore" Version="3.0.30" />
+    <PackageReference Include="CSRedisCore" Version="3.0.31" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.1" />
     <PackageReference Include="EntityFrameworkCore.Triggers" Version="1.1.1" />
     <PackageReference Include="Jil" Version="2.16.0" />
