@@ -281,7 +281,7 @@ namespace Zxw.Framework.NetCore.Extensions
             else
             {
                 //集群模式
-                redisClient = new CSRedisClient(null, redisConnectionStrings);
+                redisClient = new CSRedisClient(NodeRule: null, connectionStrings: redisConnectionStrings);
             }
             //初始化 RedisHelper
             RedisHelper.Initialization(redisClient);

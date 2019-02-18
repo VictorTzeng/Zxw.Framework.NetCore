@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Blueshift.EntityFrameworkCore.MongoDB.Annotations;
+using Blueshift.EntityFrameworkCore.MongoDB.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
