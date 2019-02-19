@@ -115,6 +115,11 @@ namespace Zxw.Framework.NetCore.Extensions
                     " where relkind = 'r' and relname not like 'pg_%' and relname not like 'sql_%'" +
                     " order by relname";
             }
+            else if (db.IsOracle())
+            {
+                sql =
+                    "select \"a\".TABLE_NAME as \"TableName\",\"b\".COMMENTS as \"TableComment\" from USER_TABLES \"a\" JOIN user_tab_comments \"b\" on \"b\".TABLE_NAME=\"a\".TABLE_NAME";
+            }
             else
             {
                 throw new NotImplementedException("This method does not support current database yet.");
@@ -177,6 +182,10 @@ namespace Zxw.Framework.NetCore.Extensions
                     " left join pg_description pg_desc on pg_desc.objoid = pg_attr.attrelid and pg_desc.objsubid = pg_attr.attnum " +
                     $" where pg_attr.attnum > 0 and pg_attr.attrelid = pg_class.oid and pg_class.relname = '{tableName}') c on c.attname = information_schema.columns.column_name" +
                     $" where table_schema = 'public' and table_name = '{tableName}' order by ordinal_position asc";
+            }
+            else if (db.IsOracle())
+            {
+                sql = "select * from USER_TABLES";
             }
             else
             {

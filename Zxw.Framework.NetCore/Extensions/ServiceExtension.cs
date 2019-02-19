@@ -269,7 +269,7 @@ namespace Zxw.Framework.NetCore.Extensions
         /// </remarks>
         /// </param>
         /// <returns></returns>
-        public static IServiceCollection UseCsRedisClient(this IServiceCollection services, params string[] redisConnectionStrings)
+        public static IServiceCollection AddCsRedisClient(this IServiceCollection services, params string[] redisConnectionStrings)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (redisConnectionStrings == null || redisConnectionStrings.Length == 0)
@@ -340,7 +340,7 @@ namespace Zxw.Framework.NetCore.Extensions
         /// <param name="services"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection UseCodeGenerator(this IServiceCollection services,
+        public static IServiceCollection AddCodeGenerator(this IServiceCollection services,
             Action<CodeGenerateOption> options)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -353,7 +353,7 @@ namespace Zxw.Framework.NetCore.Extensions
         /// <param name="services"></param>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        public static IServiceCollection UseConfigHelper(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddConfigHelper(this IServiceCollection services, IConfiguration configuration)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
@@ -365,7 +365,7 @@ namespace Zxw.Framework.NetCore.Extensions
         /// <param name="services"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static IServiceCollection UseMsSqlServer(this IServiceCollection services,
+        public static IServiceCollection AddSqlServer(this IServiceCollection services,
             Action<DbContextOption> configure)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -379,7 +379,7 @@ namespace Zxw.Framework.NetCore.Extensions
         /// <param name="services"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static IServiceCollection UseMySql(this IServiceCollection services,
+        public static IServiceCollection AddMySql(this IServiceCollection services,
             Action<DbContextOption> configure)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -393,7 +393,7 @@ namespace Zxw.Framework.NetCore.Extensions
         /// <param name="services"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static IServiceCollection UseOracle(this IServiceCollection services,
+        public static IServiceCollection AddOracle(this IServiceCollection services,
             Action<DbContextOption> configure)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -407,7 +407,7 @@ namespace Zxw.Framework.NetCore.Extensions
         /// <param name="services"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static IServiceCollection UseSqlite(this IServiceCollection services,
+        public static IServiceCollection AddSqlite(this IServiceCollection services,
             Action<DbContextOption> configure)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -421,7 +421,7 @@ namespace Zxw.Framework.NetCore.Extensions
         /// <param name="services"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static IServiceCollection UsePostgreSql(this IServiceCollection services,
+        public static IServiceCollection AddPostgreSql(this IServiceCollection services,
             Action<DbContextOption> configure)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -435,7 +435,7 @@ namespace Zxw.Framework.NetCore.Extensions
         /// <param name="services"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static IServiceCollection UseMongoDb(this IServiceCollection services,
+        public static IServiceCollection AddMongoDb(this IServiceCollection services,
             Action<DbContextOption> configure)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -449,7 +449,7 @@ namespace Zxw.Framework.NetCore.Extensions
         /// <param name="services"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static IServiceCollection UseInMemory(this IServiceCollection services,
+        public static IServiceCollection AddInMemory(this IServiceCollection services,
             Action<DbContextOption> configure)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));

@@ -15,7 +15,5 @@ namespace Zxw.Framework.NetCore.Models
     public abstract class BaseModel<TKey>: IAggregateRoot
     {
         public abstract TKey Id { get; set; }
-
-        public virtual string UniqueId { get; set; } = CommonHelper.NewMongodbId().ToString();
     }
 }
