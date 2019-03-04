@@ -9,6 +9,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 using Npgsql;
+using Oracle.ManagedDataAccess.Client;
 using StackExchange.Redis.Extensions.Core.Extensions;
 using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Models;
@@ -72,6 +73,16 @@ namespace Zxw.Framework.NetCore.Extensions
                 connection.Close();
                 return dt;
             }
+            else if(db.IsOracle())
+            {
+                cmd = new OracleCommand(sql,(OracleConnection)connection);
+                if (parameters != null && parameters.Length > 0)
+                {
+                    cmd.Parameters.AddRange(parameters);
+                }
+
+                da = new OracleDataAdapter((OracleCommand)cmd);
+            }
             else
             {
                 throw new NotSupportedException("This method does not support current database yet.");
@@ -114,6 +125,11 @@ namespace Zxw.Framework.NetCore.Extensions
                     " from pg_class c" +
                     " where relkind = 'r' and relname not like 'pg_%' and relname not like 'sql_%'" +
                     " order by relname";
+            }
+            else if (db.IsOracle())
+            {
+                sql =
+                    "select \"a\".TABLE_NAME as \"TableName\",\"b\".COMMENTS as \"TableComment\" from USER_TABLES \"a\" JOIN user_tab_comments \"b\" on \"b\".TABLE_NAME=\"a\".TABLE_NAME";
             }
             else
             {
