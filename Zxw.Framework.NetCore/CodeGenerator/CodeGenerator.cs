@@ -248,16 +248,16 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         private static string GenerateEntityProperty(string tableName, DbTableColumn column)
         {
             var sb = new StringBuilder();
-            if (!string.IsNullOrEmpty(column.Comment))
+            if (!string.IsNullOrEmpty(column.Comments))
             {
                 sb.AppendLine("\t\t/// <summary>");
-                sb.AppendLine("\t\t/// " + column.Comment);
+                sb.AppendLine("\t\t/// " + column.Comments);
                 sb.AppendLine("\t\t/// </summary>");
             }
             if (column.IsPrimaryKey)
             {
                 sb.AppendLine("\t\t[Key]");
-                sb.AppendLine($"\t\t[Column(\"{tableName}Id\")]");
+                sb.AppendLine($"\t\t[Column(\"{column.ColName}\")]");
                 if (column.IsIdentity)
                 {
                     sb.AppendLine("\t\t[DatabaseGenerated(DatabaseGeneratedOption.Identity)]");
@@ -266,6 +266,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             }
             else
             {
+                sb.AppendLine($"\t\t[Column(\"{column.ColName}\")]");
                 if (!column.IsNullable)
                 {
                     sb.AppendLine("\t\t[Required]");

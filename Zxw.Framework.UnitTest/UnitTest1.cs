@@ -18,6 +18,40 @@ namespace Zxw.Framework.UnitTest
     [TestClass]
     public class UnitTest1
     {
+        #region Test methods for Oracle
+
+        [TestMethod]
+        public void TestGetDataTableForOracle()
+        {
+            BuildServiceForOracle();
+            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var dt1 = dbContext.GetCurrentDatabaseAllTables();
+            Assert.IsNotNull(dt1);
+            foreach (DataRow row in dt1.Rows)
+            {
+                var dt2 = dbContext.GetTableColumns(row["TableName"].ToString());
+                Assert.IsNotNull(dt2);
+            }
+        }
+
+        [TestMethod]
+        public void TestGetDataTableListForOracle()
+        {
+            BuildServiceForOracle();
+            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var tables = dbContext.GetCurrentDatabaseTableList();
+            Assert.IsNotNull(tables);
+        }
+
+        [TestMethod]
+        public void TestGenerateEntitiesForOracle()
+        {
+            BuildServiceForOracle();
+            CodeGenerator.GenerateAllCodesFromDatabase(true);
+        }
+
+        #endregion
+
         #region Test methods for PostgreSQL
 
         [TestMethod]
@@ -237,11 +271,28 @@ namespace Zxw.Framework.UnitTest
             services.AddOptions();
             return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
         }
+        public IServiceProvider BuildServiceForOracle()
+        {
+            IServiceCollection services = new ServiceCollection();
+
+            services.Configure<CodeGenerateOption>(options =>
+            {
+                options.OutputPath = "F:\\Test\\Oracle";
+                options.ModelsNamespace = "Zxw.Framework.UnitTest.Models";
+                options.IRepositoriesNamespace = "Zxw.Framework.UnitTest.IRepositories";
+                options.RepositoriesNamespace = "Zxw.Framework.UnitTest.Repositories";
+                options.ControllersNamespace = "Zxw.Framework.UnitTest.Controllers";
+            });
+            //在这里注册EF上下文
+            services = RegisterOracleDbContext(services);
+            services.AddOptions();
+            return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
+        }
         /// <summary>
-        /// 注册SQLServer上下文
-        /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
+         /// 注册SQLServer上下文
+         /// </summary>
+         /// <param name="services"></param>
+         /// <returns></returns>
         public IServiceCollection RegisterSqlServerContext(IServiceCollection services)
         {
             services.Configure<DbContextOption>(options =>
@@ -320,6 +371,20 @@ namespace Zxw.Framework.UnitTest
             return services;
         }
 
+        /// <summary>
+        /// 注册Oracle上下文
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public IServiceCollection RegisterOracleDbContext(IServiceCollection services)
+        {
+            services.Configure<DbContextOption>(options =>
+            {
+                options.ConnectionString = "DATA SOURCE=127.0.0.1:1234/testdb;USER ID=test;PASSWORD=123456;PERSIST SECURITY INFO=True;Pooling=True;Max Pool Size=100;Incr Pool Size=2;";
+            });
+            services.AddScoped<IDbContextCore, OracleDbContext>(); //注入EF上下文
+            return services;
+        }
         #endregion
     }
 }

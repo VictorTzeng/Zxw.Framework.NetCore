@@ -56,7 +56,7 @@ namespace Zxw.Framework.NetCore.Models
         /// <summary>
         /// 字段说明
         /// </summary>
-        public string Comment { get; set; }
+        public string Comments { get; set; }
 
         /// <summary>
         /// C#数据类型

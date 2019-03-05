@@ -121,7 +121,7 @@ namespace Zxw.Framework.NetCore.Models
             new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "BINARY FLOAT,BINARY DOUBLE", CSharpType ="System.Byte"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "INTERVAL YEAR TO MONTH", CSharpType ="Int32"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "FLOAT,INTEGER,NUMBER", CSharpType ="Decimal"},
-            new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "DATE, TIMESTAMP, TIMESTAMP WITH LOCAL TIME ZONE,TIMESTAMP WITH TIME ZONE", CSharpType ="DateTime"},
+            new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "DATE, TIMESTAMP, TIMESTAMP WITH LOCAL TIME ZONE,TIMESTAMP WITH TIME ZONE,TIMESTAMP(0),TIMESTAMP(1),TIMESTAMP(2),TIMESTAMP(3),TIMESTAMP(4),TIMESTAMP(5),TIMESTAMP(6),TIMESTAMP(7),TIMESTAMP(8),TIMESTAMP(9)", CSharpType ="DateTime"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "INTERVAL DAY TO SECOND", CSharpType ="TimeSpan"},
 
             #endregion

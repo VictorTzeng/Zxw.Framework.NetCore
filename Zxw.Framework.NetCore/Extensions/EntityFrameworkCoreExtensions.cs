@@ -153,7 +153,7 @@ namespace Zxw.Framework.NetCore.Extensions
                       "COLUMNPROPERTY(a.id,a.name,'PRECISION') as ColumnLength," +
                       "CONVERT(bit,(case when a.isnullable=1 then 1 else 0 end)) as IsNullable,  " +
                       "isnull(e.text,'') as DefaultValue," +
-                      "isnull(g.[value], ' ') AS Comment " +
+                      "isnull(g.[value], ' ') AS Comments " +
                       "FROM  syscolumns a left join systypes b on a.xtype=b.xusertype  inner join sysobjects d on a.id=d.id and d.xtype='U' and d.name<>'dtproperties' left join syscomments e on a.cdefault=e.id  left join sys.extended_properties g on a.id=g.major_id AND a.colid=g.minor_id left join sys.extended_properties f on d.id=f.class and f.minor_id=0 " +
                       $"where b.name is not null and d.name='{tableName}' order by a.id,a.colorder";
             }
@@ -167,7 +167,7 @@ namespace Zxw.Framework.NetCore.Extensions
                     " DATA_TYPE as ColumnType," +
                     " CHARACTER_MAXIMUM_LENGTH as ColumnLength," +
                     " IF(COLUMN_KEY = 'PRI','TRUE','FALSE') as IsPrimaryKey," +
-                    " COLUMN_COMMENT as Comment " +
+                    " COLUMN_COMMENT as Comments " +
                     $" from information_schema.columns where table_schema = '{db.GetDbConnection().Database}' and table_name = '{tableName}'";
             }
             else if (db.IsNpgsql())
@@ -180,7 +180,7 @@ namespace Zxw.Framework.NetCore.Extensions
                     "column_default as DefaultValue," +
                     "CAST((case when position('nextval' in column_default)> 0 then 1 else 0 end) as bool) as IsIdentity, " +
                     "CAST((case when b.pk_name is null then 0 else 1 end) as bool) as IsPrimaryKey," +
-                    "c.DeText as Comment" +
+                    "c.DeText as Comments" +
                     " from information_schema.columns" +
                     " left join " +
                     " (select pg_attr.attname as colname,pg_constraint.conname as pk_name from pg_constraint " +
@@ -193,6 +193,22 @@ namespace Zxw.Framework.NetCore.Extensions
                     " left join pg_description pg_desc on pg_desc.objoid = pg_attr.attrelid and pg_desc.objsubid = pg_attr.attnum " +
                     $" where pg_attr.attnum > 0 and pg_attr.attrelid = pg_class.oid and pg_class.relname = '{tableName}') c on c.attname = information_schema.columns.column_name" +
                     $" where table_schema = 'public' and table_name = '{tableName}' order by ordinal_position asc";
+            }
+            else if (db.IsOracle())
+            {
+                sql = "select "
+                      + "a.DATA_LENGTH as ColumnLength,"
+                      + "a.COLUMN_NAME as ColName,"
+                      + "a.DATA_TYPE as ColumnType,"
+                      + "decode(a.NULLABLE, 'Y', 'TRUE', 'N', 'FALSE') as IsNullable,"
+                      + "case when d.COLUMN_NAME is null then 'FALSE' else 'TRUE' end as IsPrimaryKey,"
+                      + "decode(a.IDENTITY_COLUMN, 'YES', 'TRUE', 'NO', 'FALSE') as IsIdentity,"
+                      + "b.COMMENTS as Comments "
+                      + "from user_tab_columns a "
+                      + "left join user_tab_comments b on b.TABLE_NAME = a.COLUMN_NAME "
+                      + "left join user_constraints c on c.TABLE_NAME = a.TABLE_NAME and c.CONSTRAINT_TYPE = 'P' "
+                      + "left join user_cons_columns d on d.CONSTRAINT_NAME = c.CONSTRAINT_NAME and d.COLUMN_NAME = a.COLUMN_NAME "
+                      + $"where a.Table_Name = '{tableName.ToUpper()}'";
             }
             else
             {
@@ -214,6 +230,10 @@ namespace Zxw.Framework.NetCore.Extensions
             else if (db.IsNpgsql())
             {
                 dbType = DatabaseType.PostgreSQL;
+            }
+            else if(db.IsOracle())
+            {
+                dbType = DatabaseType.Oracle;
             }
             else
             {
