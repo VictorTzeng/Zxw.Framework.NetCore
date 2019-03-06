@@ -62,5 +62,13 @@ namespace Zxw.Framework.NetCore.Models
         /// C#数据类型
         /// </summary>
         public string CSharpType { get; set; }
+        /// <summary>
+        /// 数据精度
+        /// </summary>
+        public int? DataPrecision { get; set; }
+        /// <summary>
+        /// 数据刻度
+        /// </summary>
+        public int? DataScale { get; set; }
     }
 }

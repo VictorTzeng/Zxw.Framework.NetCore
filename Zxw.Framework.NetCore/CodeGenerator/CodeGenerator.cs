@@ -232,7 +232,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             var sb = new StringBuilder();
             foreach (var column in table.Columns)
             {
-                var tmp = GenerateEntityProperty(table.TableName, column);
+                var tmp = GenerateEntityProperty(column);
                 sb.AppendLine(tmp);
                 sb.AppendLine();
             }
@@ -245,7 +245,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             WriteAndSave(fullPath, content);
         }
 
-        private static string GenerateEntityProperty(string tableName, DbTableColumn column)
+        private static string GenerateEntityProperty(DbTableColumn column)
         {
             var sb = new StringBuilder();
             if (!string.IsNullOrEmpty(column.Comments))
@@ -288,7 +288,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                     colType = colType + "?";
                 }
 
-                sb.AppendLine($"\t\tpublic {colType} {column.ColName} " + "{get;set;}");
+                sb.AppendLine($"\t\tpublic {colType} {column.ColName.ToPascalCase()} " + "{get;set;}");
             }
 
             return sb.ToString();

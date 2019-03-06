@@ -199,6 +199,8 @@ namespace Zxw.Framework.NetCore.Extensions
                 sql = "select "
                       + "a.DATA_LENGTH as ColumnLength,"
                       + "a.COLUMN_NAME as ColName,"
+                      + "a.DATA_PRECISION as DataPrecision,"
+                      + "a.DATA_SCALE as DataScale,"
                       + "a.DATA_TYPE as ColumnType,"
                       + "decode(a.NULLABLE, 'Y', 'TRUE', 'N', 'FALSE') as IsNullable,"
                       + "case when d.COLUMN_NAME is null then 'FALSE' else 'TRUE' end as IsPrimaryKey,"
