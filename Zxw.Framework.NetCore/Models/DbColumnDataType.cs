@@ -10,6 +10,27 @@ using NpgsqlTypes;
 
 namespace Zxw.Framework.NetCore.Models
 {
+    public class Range
+    {
+        public Range()
+        {
+
+        }
+
+        public Range(int min, int max)
+        {
+            Min = min < max ? min : max;
+            Max = min < max ? max : min;
+        }
+
+        public int Min { get; set; } = 0;
+        public int Max { get; set; } = 0;
+
+        public bool IsInRange(int target)
+        {
+            return target >= Min && target <= Max;
+        }
+    }
     public class DbColumnDataType
     {
         public DatabaseType DatabaseType { get; set; }
@@ -17,6 +38,8 @@ namespace Zxw.Framework.NetCore.Models
         public string ColumnTypes { get; set; }
 
         public string CSharpType { get; set; }
+        public Range PrecisionRange { get; set; } = null;
+        public Range ScaleRange { get; set; } = null;
     }
 
     public enum DatabaseType
@@ -130,7 +153,12 @@ namespace Zxw.Framework.NetCore.Models
             new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "Int64,IntervalYM", CSharpType ="Int64"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "DATE, TIMESTAMP, TimeStampLTZ,TimeStampTZ,TIMESTAMP(0),TIMESTAMP(1),TIMESTAMP(2),TIMESTAMP(3),TIMESTAMP(4),TIMESTAMP(5),TIMESTAMP(6),TIMESTAMP(7),TIMESTAMP(8),TIMESTAMP(9)", CSharpType ="DateTime"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "IntervalDS,INTERVAL DAY TO SECOND", CSharpType ="TimeSpan"},
-            new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "NUMBER", CSharpType ="Boolean,Int16,Int32,Int64,Double,Decimal"},
+            new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "NUMBER", CSharpType ="Double"},
+            new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "NUMBER", CSharpType ="Boolean", PrecisionRange = new Range(1,1),ScaleRange = new Range(0,0)},
+            new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "NUMBER", CSharpType ="Int16",PrecisionRange = new Range(2,4)},
+            new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "NUMBER", CSharpType ="Int32", PrecisionRange = new Range(5,9)},
+            new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "NUMBER", CSharpType ="Int64", PrecisionRange = new Range(10,19)},
+            new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "NUMBER", CSharpType ="Decimal", PrecisionRange = new Range(1,38), ScaleRange = new Range(-84,127)},
 
             #endregion
         };
