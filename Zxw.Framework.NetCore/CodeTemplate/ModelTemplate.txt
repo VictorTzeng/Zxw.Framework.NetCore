@@ -8,7 +8,7 @@ namespace {ModelsNamespace}
 	/// <summary>
 	/// {Comment}
 	/// </summary>
-	[Table("{ModelName}")]
+	[Table("{TableName}")]
 	public class {ModelName}:BaseModel<{KeyTypeName}>
 	{
 {ModelProperties}

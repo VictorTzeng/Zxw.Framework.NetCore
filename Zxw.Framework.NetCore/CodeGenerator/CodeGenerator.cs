@@ -208,9 +208,9 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                     {
                         var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
                         GenerateEntity(table, ifExsitedCovered);
-                        GenerateIRepository(table.TableName, pkTypeName, ifExsitedCovered);
-                        GenerateRepository(table.TableName, pkTypeName, ifExsitedCovered);
-                        GenerateController(table.TableName, pkTypeName, ifExsitedCovered);
+                        GenerateIRepository(table.TableName.ToPascalCase(), pkTypeName, ifExsitedCovered);
+                        GenerateRepository(table.TableName.ToPascalCase(), pkTypeName, ifExsitedCovered);
+                        GenerateController(table.TableName.ToPascalCase(), pkTypeName, ifExsitedCovered);
                     }
                 }
             }
@@ -239,7 +239,8 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             var content = ReadTemplate("ModelTemplate.txt");
             content = content.Replace("{ModelsNamespace}", options.Value.ModelsNamespace)
                 .Replace("{Comment}", table.TableComment)
-                .Replace("{ModelName}", table.TableName)
+                .Replace("{TableName}", table.TableName)
+                .Replace("{ModelName}", table.TableName.ToPascalCase())
                 .Replace("{KeyTypeName}", pkTypeName)
                 .Replace("{ModelProperties}", sb.ToString());
             WriteAndSave(fullPath, content);
