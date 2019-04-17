@@ -7,6 +7,10 @@ namespace Zxw.Framework.NetCore.DbContextCore
 {
     public class OracleDbContext:BaseDbContext
     {
+        public OracleDbContext(DbContextOption option) : base(option)
+        {
+
+        }
         public OracleDbContext(IOptions<DbContextOption> option) : base(option)
         {
         }

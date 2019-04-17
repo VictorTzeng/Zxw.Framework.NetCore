@@ -8,7 +8,9 @@ using Zxw.Framework.NetCore.Helpers;
 using AspectCore.Configuration;
 using AspectCore.Injector;
 using CSRedis;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.IoC;
 
 namespace Zxw.Framework.NetCore.Extensions
@@ -309,6 +311,14 @@ namespace Zxw.Framework.NetCore.Extensions
             services.ConfigureDynamicProxy(configure);
             services.AddAspectCoreContainer();
             return services.ToServiceContainer().Build();
+        }
+
+        public static IServiceCollection AddDbContext<TDbContext,TDbContextInterface>(this IServiceCollection services, string tag, Action<DbContextOptionsBuilder> builder) where TDbContext : DbContext, TDbContextInterface
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            services.AddDbContext<TDbContextInterface, TDbContext>(builder, ServiceLifetime.Scoped,
+                ServiceLifetime.Scoped);
+            return services;
         }
     }
 }

@@ -9,6 +9,10 @@ namespace Zxw.Framework.NetCore.DbContextCore
 {
     public class InMemoryDbContext:BaseDbContext
     {
+        public InMemoryDbContext(DbContextOption option) : base(option)
+        {
+
+        }
         public InMemoryDbContext(IOptions<DbContextOption> option) : base(option)
         {
         }

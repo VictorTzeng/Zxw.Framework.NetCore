@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Extensions;
@@ -17,7 +18,7 @@ namespace Zxw.Framework.NetCore.Repositories
 
         protected DbSet<T> DbSet => DbContext.GetDbSet<T>();
 
-        protected BaseRepository(IDbContextCore dbContext)
+        protected BaseRepository([FromServices]IDbContextCore dbContext)
         {
             DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             DbContext.EnsureCreatedAsync();
@@ -25,24 +26,24 @@ namespace Zxw.Framework.NetCore.Repositories
 
         #region Insert
 
-        public virtual int Add(T entity, bool withTrigger = false)
+        public virtual int Add(T entity)
         {
-            return DbContext.Add(entity, withTrigger);
+            return DbContext.Add(entity);
         }
 
-        public virtual async Task<int> AddAsync(T entity, bool withTrigger = false)
+        public virtual async Task<int> AddAsync(T entity)
         {
-            return await DbContext.AddAsync(entity, withTrigger);
+            return await DbContext.AddAsync(entity);
         }
 
-        public virtual int AddRange(ICollection<T> entities, bool withTrigger = false)
+        public virtual int AddRange(ICollection<T> entities)
         {
-            return DbContext.AddRange(entities, withTrigger);
+            return DbContext.AddRange(entities);
         }
 
-        public virtual async Task<int> AddRangeAsync(ICollection<T> entities, bool withTrigger = false)
+        public virtual async Task<int> AddRangeAsync(ICollection<T> entities)
         {
-            return await DbContext.AddRangeAsync(entities, withTrigger);
+            return await DbContext.AddRangeAsync(entities);
         }
 
         public virtual void BulkInsert(IList<T> entities, string destinationTableName = null)
@@ -54,14 +55,14 @@ namespace Zxw.Framework.NetCore.Repositories
 
         #region Update
 
-        public virtual int Edit(T entity, bool withTrigger = false)
+        public virtual int Edit(T entity)
         {
-            return DbContext.Edit<T,TKey>(entity, withTrigger);
+            return DbContext.Edit<T,TKey>(entity);
         }
 
-        public virtual int EditRange(ICollection<T> entities, bool withTrigger = false)
+        public virtual int EditRange(ICollection<T> entities)
         {
-            return DbContext.EditRange(entities, withTrigger);
+            return DbContext.EditRange(entities);
         }
         /// <summary>
         /// update query datas by columns.
@@ -79,9 +80,9 @@ namespace Zxw.Framework.NetCore.Repositories
         {
             return await DbContext.UpdateAsync(@where, updateExp);
         }
-        public virtual int Update(T model, bool withTrigger = false, params string[] updateColumns)
+        public virtual int Update(T model, params string[] updateColumns)
         {
-            DbContext.Update(model, withTrigger, updateColumns);
+            DbContext.Update(model, updateColumns);
             return DbContext.SaveChanges();
         }
 
@@ -99,9 +100,9 @@ namespace Zxw.Framework.NetCore.Repositories
 
         #region Delete
 
-        public virtual int Delete(TKey key, bool withTrigger = false)
+        public virtual int Delete(TKey key)
         {
-            return DbContext.Delete<T,TKey>(key, withTrigger);
+            return DbContext.Delete<T,TKey>(key);
         }
 
         public virtual int Delete(Expression<Func<T, bool>> @where)

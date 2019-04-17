@@ -40,7 +40,6 @@
     <PackageReference Include="Citms.EntityFrameworkCore.Oracle" Version="1.0.7" />
     <PackageReference Include="CSRedisCore" Version="3.0.50" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.1" />
-    <PackageReference Include="EntityFrameworkCore.Triggers" Version="1.1.1" />
     <PackageReference Include="Jil" Version="2.17.0" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />

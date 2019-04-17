@@ -13,6 +13,10 @@ namespace Zxw.Framework.NetCore.DbContextCore
     [MongoDatabase("ZxwMongoDb")]
     public class MongoDbContext:BaseDbContext
     {
+        public MongoDbContext(DbContextOption option) : base(option)
+        {
+
+        }
         public MongoDbContext(IOptions<DbContextOption> option) : base(option)
         {
         }

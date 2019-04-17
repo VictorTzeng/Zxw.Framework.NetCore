@@ -4,6 +4,7 @@ using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Zxw.Framework.NetCore.Attributes;
 using Zxw.Framework.NetCore.Cache;
 using Zxw.Framework.NetCore.CodeGenerator;
 using Zxw.Framework.NetCore.DbContextCore;
@@ -192,7 +193,6 @@ namespace Zxw.Framework.UnitTest
         public IServiceProvider BuildServiceForPostgreSql()
         {
             IServiceCollection services = new ServiceCollection();
-
             //在这里注册EF上下文
             services = RegisterPostgreSqlContext(services);
             services.Configure<CodeGenerateOption>(options =>
@@ -332,9 +332,10 @@ namespace Zxw.Framework.UnitTest
             services.Configure<DbContextOption>(options =>
             {
                 options.ConnectionString =
-                    "User ID=zengxw;Password=123456;Host=localhost;Port=5432;Database=ZxwPgDemo;Pooling=true;";
+                    "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=ZxwPgDemo;Pooling=true;";
                 //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
             });
+
             services.AddScoped<IDbContextCore, PostgreSQLDbContext>(); //注入EF上下文
             return services;
         }

@@ -16,6 +16,10 @@ namespace Zxw.Framework.NetCore.DbContextCore
 {
     public class SqlServerDbContext:BaseDbContext
     {
+        public SqlServerDbContext(DbContextOption option) : base(option)
+        {
+
+        }
         public SqlServerDbContext(IOptions<DbContextOption> option) : base(option)
         {
         }

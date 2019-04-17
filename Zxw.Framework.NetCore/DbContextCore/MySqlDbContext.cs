@@ -18,6 +18,10 @@ namespace Zxw.Framework.NetCore.DbContextCore
 {
     public class MySqlDbContext: BaseDbContext
     {
+        public MySqlDbContext(DbContextOption option) : base(option)
+        {
+
+        }
         public MySqlDbContext(IOptions<DbContextOption> option) : base(option)
         {
         }

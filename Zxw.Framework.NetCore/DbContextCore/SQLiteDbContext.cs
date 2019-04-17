@@ -6,6 +6,10 @@ namespace Zxw.Framework.NetCore.DbContextCore
 {
     public class SQLiteDbContext:BaseDbContext
     {
+        public SQLiteDbContext(DbContextOption option) : base(option)
+        {
+
+        }
         public SQLiteDbContext(IOptions<DbContextOption> option) : base(option)
         {
         }

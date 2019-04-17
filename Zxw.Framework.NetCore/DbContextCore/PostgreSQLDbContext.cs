@@ -11,6 +11,10 @@ namespace Zxw.Framework.NetCore.DbContextCore
 {
     public class PostgreSQLDbContext:BaseDbContext
     {
+        public PostgreSQLDbContext(DbContextOption option) : base(option)
+        {
+
+        }
         public PostgreSQLDbContext(IOptions<DbContextOption> option) : base(option)
         {
         }
