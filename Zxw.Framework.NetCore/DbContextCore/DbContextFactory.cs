@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.DbContextCore
@@ -43,6 +45,20 @@ namespace Zxw.Framework.NetCore.DbContextCore
         {
             TContext context = (TContext) Activator.CreateInstance(typeof(TContext), option);
             AddDbContext(tagName, context);
+        }
+
+        public IDbContextCore GetDbContext(string tagName)
+        {
+            foreach (var dic in dicDbContexts)
+            {
+                foreach (var x in dic.Value)
+                {
+                    if (x.Key == tagName)
+                        return (IDbContextCore) x.Value;
+                }
+            }
+
+            return null;
         }
 
         public IDbContextCore GetDbContext<TContext>(string tagName) where TContext : DbContext, IDbContextCore
