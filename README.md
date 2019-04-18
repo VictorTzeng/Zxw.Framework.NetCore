@@ -56,6 +56,39 @@
 
 # 更新日志
 
+**2019/04/18**
+* 1.删除触发器功能...
+* 2.实现多数据库上下文。用法：
+```
+    //注入数据库上下文
+    var factory = DbContextFactory.Instance;
+    factory.AddDbContext<PostgreSQLDbContext>("db1", new DbContextOption(){ConnectionString = "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=ZxwPgDemo;Pooling=true;" });
+    factory.AddDbContext<SqlServerDbContext>("db2", new DbContextOption() { ConnectionString = "" });
+    factory.AddDbContext<MongoDbContext>("db3", new DbContextOption() { ConnectionString = "" });
+    services.AddSingleton(factory);
+    
+    //获取
+    public class TestController
+    {
+        public IDbContextCore DbContext1 { get; set; }
+        public IDbContextCore DbContext2 { get; set; }
+        public IDbContextCore DbContext3 { get; set; }
+
+        public TestController(DbContextFactory factory)
+        {
+            DbContext1 = factory.GetDbContext("db1");
+            DbContext2 = factory.GetDbContext("db2");
+            DbContext3 = factory.GetDbContext("db3");
+        }
+
+        public void Run()
+        {
+            var db = DbContext1.GetDatabase();
+            Console.WriteLine();
+        }
+    }
+```
+
 **2018/09/24**
 * 1.实现Oracle for EfCore，引用第三方驱动[Citms.EntityFrameworkCore.Oracle](https://github.com/CrazyJson/Citms.EntityFrameworkCore.Oracle)
 * 2.实现MongoDB for EfCore，引用第三方驱动[Blueshift.EntityFrameworkCore.MongoDB](https://github.com/BlueshiftSoftware/EntityFrameworkCore)
