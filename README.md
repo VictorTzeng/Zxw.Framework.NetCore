@@ -1,15 +1,15 @@
 # Zxw.Framework.NetCore
 基于EF Core的Code First模式的DotNetCore快速开发框架
 
-**Nuget [最新版本：2.0.1]**
+**Nuget [最新版本：2.1.3-preview2-t007bc0fad]**
 
-[Zxw.Framework.NetCore](https://www.nuget.org/packages/Zxw.Framework.NetCore/2.0.1) 
-* Install-Package Zxw.Framework.NetCore -Version 2.0.1
-* dotnet add package Zxw.Framework.NetCore --version 2.0.1
+[Zxw.Framework.NetCore](https://www.nuget.org/packages/Zxw.Framework.NetCore/2.1.3-preview2-t007bc0fad) 
+* Install-Package Zxw.Framework.NetCore -Version 2.1.3-preview2-t007bc0fad
+* dotnet add package Zxw.Framework.NetCore --version 2.1.3-preview2-t007bc0fad
 
 **开发环境**
 * VS2017 / VS Code
-* .net core 2.1
+* .net core 2.2
 
 **支持的数据库**
 * SQL Server
@@ -17,7 +17,7 @@
 * Sqlite
 * InMemory
 * PostgreSQL
-* Oracle (**未测试**)(第三方驱动[Citms.EntityFrameworkCore.Oracle](https://github.com/CrazyJson/Citms.EntityFrameworkCore.Oracle))
+* Oracle (第三方驱动[Citms.EntityFrameworkCore.Oracle](https://github.com/CrazyJson/Citms.EntityFrameworkCore.Oracle))
 * MongoDB (Beta)(第三方驱动[Blueshift.EntityFrameworkCore.MongoDB](https://github.com/BlueshiftSoftware/EntityFrameworkCore))
 
 **日志组件**
@@ -62,12 +62,14 @@
 
 ```
     //注入数据库上下文
-    var factory = DbContextFactory.Instance;
-    factory.AddDbContext<PostgreSQLDbContext>("db1", new DbContextOption(){ConnectionString = "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=ZxwPgDemo;Pooling=true;" });
-    factory.AddDbContext<SqlServerDbContext>("db2", new DbContextOption() { ConnectionString = "" });
-    factory.AddDbContext<MongoDbContext>("db3", new DbContextOption() { ConnectionString = "" });
-    services.AddSingleton(factory);
-    
+    services.AddDbContextFactory(factory =>
+    {
+        factory.AddDbContext<PostgreSQLDbContext>("db1", new DbContextOption(){ConnectionString = "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=ZxwPgDemo;Pooling=true;" });
+        factory.AddDbContext<SqlServerDbContext>("db2", new DbContextOption() { ConnectionString = "" });
+        factory.AddDbContext<MongoDbContext>("db3", new DbContextOption() { ConnectionString = "" });
+    });
+
+
     //获取
     public class TestController
     {
