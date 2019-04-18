@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Reflection;
+using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IoC;
 
@@ -318,11 +319,14 @@ namespace Zxw.Framework.NetCore.Extensions
             return services.BuildAspectCoreServiceContainer(configure).Build();
         }
 
-        public static IServiceCollection AddDbContext<TDbContext,TDbContextInterface>(this IServiceCollection services, string tag, Action<DbContextOptionsBuilder> builder) where TDbContext : DbContext, TDbContextInterface
+        public static IServiceCollection AddDbContextFactory(this IServiceCollection services,
+            Action<DbContextFactory> action)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
-            services.AddDbContext<TDbContextInterface, TDbContext>(builder, ServiceLifetime.Scoped,
-                ServiceLifetime.Scoped);
+            var factory = DbContextFactory.Instance;
+            action?.Invoke(factory);
+
+            services.AddSingleton(factory);
             return services;
         }
     }

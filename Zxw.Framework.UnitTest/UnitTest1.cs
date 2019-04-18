@@ -343,14 +343,15 @@ namespace Zxw.Framework.UnitTest
                 //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
             });
 
-            var factory = DbContextFactory.Instance;
-            factory.AddDbContext<PostgreSQLDbContext>("db1", new DbContextOption(){ConnectionString = "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=ZxwPgDemo;Pooling=true;" });
-            factory.AddDbContext<SqlServerDbContext>("db2", new DbContextOption() { ConnectionString = "" });
-            factory.AddDbContext<MongoDbContext>("db3", new DbContextOption() { ConnectionString = "" });
-            services.AddSingleton(factory);
+            services.AddDbContextFactory(factory =>
+            {
+                factory.AddDbContext<PostgreSQLDbContext>("db1", new DbContextOption(){ConnectionString = "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=ZxwPgDemo;Pooling=true;" });
+                factory.AddDbContext<SqlServerDbContext>("db2", new DbContextOption() { ConnectionString = "" });
+                factory.AddDbContext<MongoDbContext>("db3", new DbContextOption() { ConnectionString = "" });
+            });
 
             services.AddScoped<IDbContextCore, PostgreSQLDbContext>(); //注入EF上下文
-            services.AddScoped<IMongoRepository,TestController>();
+            services.AddScoped<IMongoRepository,TestRepository>();
             return services;
         }
 
