@@ -59,6 +59,7 @@
 **2019/04/18**
 * 1.删除触发器功能...
 * 2.实现多数据库上下文。用法：
+
 ```
     //注入数据库上下文
     var factory = DbContextFactory.Instance;
@@ -85,6 +86,30 @@
         {
             var db = DbContext1.GetDatabase();
             Console.WriteLine();
+        }
+    }
+```
+
+* 3.多数据库上下文支持属性注入,用法如下：（具体请参考单元测试）
+```    
+public class TestRepository: BaseRepository<MongoModel, ObjectId>, IMongoRepository
+    {
+        [FromDbContextFactory("db1")]
+        public IDbContextCore DbContext1 { get; set; }
+        [FromDbContextFactory("db2")]
+        public IDbContextCore DbContext2 { get; set; }
+        [FromDbContextFactory("db3")]
+        public IDbContextCore DbContext3 { get; set; }
+
+
+
+        public void Run()
+        {
+            Console.WriteLine("Over!");
+        }
+
+        public TestRepository(IDbContextCore dbContext) : base(dbContext)
+        {
         }
     }
 ```
