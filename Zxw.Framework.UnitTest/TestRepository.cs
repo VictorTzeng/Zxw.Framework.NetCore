@@ -8,7 +8,7 @@ using Zxw.Framework.UnitTest.TestModels;
 
 namespace Zxw.Framework.UnitTest
 {
-    public class TestController: BaseRepository<MongoModel, ObjectId>, IMongoRepository
+    public class TestRepository: BaseRepository<MongoModel, ObjectId>, IMongoRepository
     {
         [FromDbContextFactory("db1")]
         public IDbContextCore DbContext1 { get; set; }
@@ -24,7 +24,7 @@ namespace Zxw.Framework.UnitTest
             Console.WriteLine("Over!");
         }
 
-        public TestController(IDbContextCore dbContext) : base(dbContext)
+        public TestRepository(IDbContextCore dbContext) : base(dbContext)
         {
         }
     }
