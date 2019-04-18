@@ -17,7 +17,7 @@
 * Sqlite
 * InMemory
 * PostgreSQL
-* Oracle (**未测试**)(第三方驱动[Citms.EntityFrameworkCore.Oracle](https://github.com/CrazyJson/Citms.EntityFrameworkCore.Oracle))
+* Oracle (第三方驱动[Citms.EntityFrameworkCore.Oracle](https://github.com/CrazyJson/Citms.EntityFrameworkCore.Oracle))
 * MongoDB (Beta)(第三方驱动[Blueshift.EntityFrameworkCore.MongoDB](https://github.com/BlueshiftSoftware/EntityFrameworkCore))
 
 **日志组件**
