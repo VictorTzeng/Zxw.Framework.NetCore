@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Threading;
+using AspectCore.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -59,6 +60,9 @@ namespace Zxw.Framework.UnitTest
         public void TestGetDataTableForPostgreSql()
         {
             BuildServiceForPostgreSql();
+            var factory = AspectCoreContainer.Resolve<DbContextFactory>();
+            var test = new TestController(factory);
+            test.Run();
             var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
             var dt1 = dbContext.GetCurrentDatabaseAllTables();
             Assert.IsNotNull(dt1);
@@ -204,6 +208,7 @@ namespace Zxw.Framework.UnitTest
                 options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
             });
             services.AddOptions();
+            
             return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
         }
 
@@ -335,6 +340,12 @@ namespace Zxw.Framework.UnitTest
                     "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=ZxwPgDemo;Pooling=true;";
                 //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
             });
+
+            var factory = DbContextFactory.Instance;
+            factory.AddDbContext<PostgreSQLDbContext>("db1", new DbContextOption(){ConnectionString = "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=ZxwPgDemo;Pooling=true;" });
+            factory.AddDbContext<SqlServerDbContext>("db2", new DbContextOption() { ConnectionString = "" });
+            factory.AddDbContext<MongoDbContext>("db3", new DbContextOption() { ConnectionString = "" });
+            services.AddSingleton(factory);
 
             services.AddScoped<IDbContextCore, PostgreSQLDbContext>(); //注入EF上下文
             return services;

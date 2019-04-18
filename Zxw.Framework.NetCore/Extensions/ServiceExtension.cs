@@ -1,16 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
+﻿using AspectCore.Configuration;
 using AspectCore.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Zxw.Framework.NetCore.Helpers;
-using AspectCore.Configuration;
 using AspectCore.Injector;
 using CSRedis;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
-using Zxw.Framework.NetCore.DbContextCore;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Linq;
+using System.Reflection;
+using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IoC;
 
 namespace Zxw.Framework.NetCore.Extensions
@@ -304,13 +303,19 @@ namespace Zxw.Framework.NetCore.Extensions
             return AutofacContainer.Build(services, configure);
         }
 
+        public static IServiceContainer BuildAspectCoreServiceContainer(this IServiceCollection services,
+            Action<IAspectConfiguration> configure = null)
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            services.ConfigureDynamicProxy(configure);
+            services.AddAspectCoreContainer();
+            return services.ToServiceContainer();
+        }
+
         public static IServiceProvider BuildAspectCoreServiceProvider(this IServiceCollection services,
             Action<IAspectConfiguration> configure = null)
         {
-            if(services==null)throw new ArgumentNullException(nameof(services));
-            services.ConfigureDynamicProxy(configure);
-            services.AddAspectCoreContainer();
-            return services.ToServiceContainer().Build();
+            return services.BuildAspectCoreServiceContainer(configure).Build();
         }
 
         public static IServiceCollection AddDbContext<TDbContext,TDbContextInterface>(this IServiceCollection services, string tag, Action<DbContextOptionsBuilder> builder) where TDbContext : DbContext, TDbContextInterface
