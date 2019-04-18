@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Threading;
 using AspectCore.Configuration;
+using AspectCore.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -60,9 +61,10 @@ namespace Zxw.Framework.UnitTest
         public void TestGetDataTableForPostgreSql()
         {
             BuildServiceForPostgreSql();
-            var factory = AspectCoreContainer.Resolve<DbContextFactory>();
-            var test = new TestController(factory);
+            var test = AspectCoreContainer.Resolve<IMongoRepository>();
+
             test.Run();
+
             var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
             var dt1 = dbContext.GetCurrentDatabaseAllTables();
             Assert.IsNotNull(dt1);
@@ -209,7 +211,7 @@ namespace Zxw.Framework.UnitTest
             });
             services.AddOptions();
             
-            return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
+            return AspectCoreContainer.BuildServiceProvider(services, configure=>configure.Interceptors.AddTyped<FromDbContextFactoryInterceptor>()); //接入AspectCore.Injector
         }
 
         public IServiceProvider BuildServiceForSqlServer()
@@ -348,6 +350,7 @@ namespace Zxw.Framework.UnitTest
             services.AddSingleton(factory);
 
             services.AddScoped<IDbContextCore, PostgreSQLDbContext>(); //注入EF上下文
+            services.AddScoped<IMongoRepository,TestController>();
             return services;
         }
 

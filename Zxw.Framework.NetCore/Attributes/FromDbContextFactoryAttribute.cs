@@ -4,6 +4,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
+using AspectCore.DynamicProxy;
+using AspectCore.Extensions.Reflection;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Zxw.Framework.NetCore.DbContextCore;
@@ -172,5 +175,26 @@ namespace Zxw.Framework.NetCore.Attributes
             return dbContextFactory.GetDbContext(fromDbContextFactoryAttribute.DbContextTagName);
         }
 
+    }
+
+    public class FromDbContextFactoryInterceptor : AbstractInterceptorAttribute
+    {
+        public override Task Invoke(AspectContext context, AspectDelegate next)
+        {
+            var impType = context.Implementation.GetType();
+            var properties = impType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(p => p.IsDefined(typeof(FromDbContextFactoryAttribute))).ToList();
+            if (properties.Any())
+            {
+                var factory = context.ServiceProvider.GetRequiredService<DbContextFactory>();
+                foreach (var property in properties)
+                {
+                    var attribute = property.GetCustomAttribute<FromDbContextFactoryAttribute>();
+                    var dbContext = factory.GetDbContext(attribute.DbContextTagName);
+                    property.SetValue(context.Implementation, dbContext);
+                }
+            }
+            return context.Invoke(next);
+        }
     }
 }
