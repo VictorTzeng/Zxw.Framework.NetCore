@@ -329,5 +329,11 @@ namespace Zxw.Framework.NetCore.Extensions
 
             return factory.ServiceCollection;
         }
+
+        public static IDbContextCore GetDbContext(this IServiceProvider provider, string dbContextTagName)
+        {
+            if (provider == null) throw new ArgumentNullException(nameof(provider));
+            return provider.GetServices<IDbContextCore>().FirstOrDefault(m => m.Option.TagName == dbContextTagName);
+        }
     }
 }

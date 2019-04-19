@@ -6,6 +6,7 @@ using AspectCore.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Zxw.Framework.NetCore.DbContextCore;
+using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.Attributes
@@ -40,11 +41,10 @@ namespace Zxw.Framework.NetCore.Attributes
                 .Where(p => p.IsDefined(typeof(FromDbContextFactoryAttribute))).ToList();
             if (properties.Any())
             {
-                var dbContexts = context.ServiceProvider.GetServices<IDbContextCore>().ToList();
                 foreach (var property in properties)
                 {
                     var attribute = property.GetCustomAttribute<FromDbContextFactoryAttribute>();
-                    var dbContext = dbContexts.FirstOrDefault(m=>m.Option.TagName == attribute.DbContextTagName);
+                    var dbContext = context.ServiceProvider.GetDbContext(attribute.DbContextTagName);
                     property.SetValue(context.Implementation, dbContext);
                 }
             }
