@@ -324,10 +324,10 @@ namespace Zxw.Framework.NetCore.Extensions
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
             var factory = DbContextFactory.Instance;
+            factory.ServiceCollection = services;
             action?.Invoke(factory);
 
-            services.AddSingleton(factory);
-            return services;
+            return factory.ServiceCollection;
         }
     }
 }

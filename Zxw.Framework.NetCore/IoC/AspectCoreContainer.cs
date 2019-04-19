@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using AspectCore.Configuration;
 using AspectCore.Extensions.DependencyInjection;
 using AspectCore.Injector;
@@ -22,6 +24,12 @@ namespace Zxw.Framework.NetCore.IoC
             if (resolver == null)
                 throw new ArgumentNullException(nameof(resolver), "调用此方法时必须先调用BuildServiceProvider！");
             return resolver.Resolve<T>();
+        }
+        public static List<T> ResolveServices<T>()
+        {
+            if (resolver == null)
+                throw new ArgumentNullException(nameof(resolver), "调用此方法时必须先调用BuildServiceProvider！");
+            return resolver.GetServices<T>().ToList();
         }
     }
 }

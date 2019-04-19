@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Options;
 using Z.EntityFramework.Plus;
+using Zxw.Framework.NetCore.Attributes;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
 
@@ -16,7 +17,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 {
     public abstract class BaseDbContext : DbContext, IDbContextCore
     {
-        protected readonly DbContextOption _option;
+        public DbContextOption Option { get; }
         public DatabaseFacade GetDatabase() => Database;
 
         public new virtual int Add<T>(T entity) where T : class
@@ -27,7 +28,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         protected BaseDbContext(DbContextOption option)
         {
-            _option = option ?? throw new ArgumentNullException(nameof(option));
+            Option = option ?? throw new ArgumentNullException(nameof(option));
         }
         /// <summary>
         /// 构造函数
@@ -41,7 +42,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
                 throw new ArgumentNullException(nameof(option.Value.ConnectionString));
             //if (string.IsNullOrEmpty(option.Value.ModelAssemblyName))
             //    throw new ArgumentNullException(nameof(option.Value.ModelAssemblyName));
-            _option = option.Value;
+            Option = option.Value;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -52,9 +53,9 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         private void MappingEntityTypes(ModelBuilder modelBuilder)
         {
-            if (string.IsNullOrEmpty(_option.ModelAssemblyName))
+            if (string.IsNullOrEmpty(Option.ModelAssemblyName))
                 return;
-            var assembly = Assembly.Load(_option.ModelAssemblyName);
+            var assembly = Assembly.Load(Option.ModelAssemblyName);
             var types = assembly?.GetTypes();
             var list = types?.Where(t =>
                 t.IsClass && !t.IsGenericType && !t.IsAbstract &&

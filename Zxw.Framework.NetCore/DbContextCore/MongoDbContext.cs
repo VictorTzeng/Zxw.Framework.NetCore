@@ -23,7 +23,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var mongoUrl = new MongoUrl(_option.ConnectionString);
+            var mongoUrl = new MongoUrl(Option.ConnectionString);
             var settings = MongoClientSettings.FromUrl(mongoUrl);
             var mongoClient = new MongoClient(settings);
             optionsBuilder.UseMongoDb(mongoClient);

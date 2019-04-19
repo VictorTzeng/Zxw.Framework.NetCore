@@ -7,12 +7,16 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Scaffolding;
+using Zxw.Framework.NetCore.Attributes;
 using Zxw.Framework.NetCore.Models;
+using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.DbContextCore
 {
+    [FromDbOptionInterceptor]
     public interface IDbContextCore:IDisposable
     {
+        DbContextOption Option { get; }
         DatabaseFacade GetDatabase();
         int Add<T>(T entity) where T : class;
         Task<int> AddAsync<T>(T entity) where T : class;

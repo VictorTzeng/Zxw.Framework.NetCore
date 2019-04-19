@@ -28,7 +28,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseLazyLoadingProxies().UseMySql(_option.ConnectionString);
+            optionsBuilder.UseLazyLoadingProxies().UseMySql(Option.ConnectionString);
             base.OnConfiguring(optionsBuilder);
         }
 
@@ -53,7 +53,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
                 File.Create(csvFileName);
             var separator = ",";
             entities.SaveToCsv(csvFileName, separator);
-            using (var conn = Database.GetDbConnection() as MySqlConnection ?? new MySqlConnection(_option.ConnectionString))
+            using (var conn = Database.GetDbConnection() as MySqlConnection ?? new MySqlConnection(Option.ConnectionString))
             {
                 conn.Open();
                 var bulk = new MySqlBulkLoader(conn)

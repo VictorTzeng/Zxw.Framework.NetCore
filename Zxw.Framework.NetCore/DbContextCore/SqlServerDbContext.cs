@@ -26,7 +26,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseLazyLoadingProxies().UseSqlServer(_option.ConnectionString);
+            optionsBuilder.UseLazyLoadingProxies().UseSqlServer(Option.ConnectionString);
             base.OnConfiguring(optionsBuilder);
         }
 
@@ -46,7 +46,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
             using (var dt = entities.ToDataTable())
             {
                 dt.TableName = destinationTableName;
-                using (var conn = Database.GetDbConnection() as SqlConnection ?? new SqlConnection(_option.ConnectionString))
+                using (var conn = Database.GetDbConnection() as SqlConnection ?? new SqlConnection(Option.ConnectionString))
                 {
                     if (conn.State != ConnectionState.Open)
                         conn.Open();
