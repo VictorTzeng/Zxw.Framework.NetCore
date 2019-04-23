@@ -3,6 +3,7 @@ using AspectCore.Injector;
 using MongoDB.Bson;
 using Zxw.Framework.NetCore.Attributes;
 using Zxw.Framework.NetCore.DbContextCore;
+using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.Repositories;
 using Zxw.Framework.UnitTest.TestModels;
 

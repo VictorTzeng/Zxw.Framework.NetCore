@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.DbContextCore
 {
-    public class OracleDbContext:BaseDbContext
+    public class OracleDbContext:BaseDbContext, IOracleDbContext
     {
         public OracleDbContext(DbContextOption option) : base(option)
         {

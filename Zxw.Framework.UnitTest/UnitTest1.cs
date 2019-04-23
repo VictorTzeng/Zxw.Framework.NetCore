@@ -12,6 +12,7 @@ using Zxw.Framework.NetCore.CodeGenerator;
 using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Helpers;
+using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Options;
 using Zxw.Framework.UnitTest.TestModels;

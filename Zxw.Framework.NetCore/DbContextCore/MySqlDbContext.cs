@@ -11,12 +11,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using Zxw.Framework.NetCore.Extensions;
+using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.DbContextCore
 {
-    public class MySqlDbContext: BaseDbContext
+    public class MySqlDbContext: BaseDbContext, IMySqlDbContext
     {
         public MySqlDbContext(DbContextOption option) : base(option)
         {

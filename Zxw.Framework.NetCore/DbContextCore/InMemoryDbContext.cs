@@ -3,11 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.DbContextCore
 {
-    public class InMemoryDbContext:BaseDbContext
+    public class InMemoryDbContext:BaseDbContext,IInMemoryDbContext
     {
         public InMemoryDbContext(DbContextOption option) : base(option)
         {

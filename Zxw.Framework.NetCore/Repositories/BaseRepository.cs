@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Extensions;
+using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.NetCore.Repositories

@@ -12,6 +12,7 @@ using Npgsql;
 using Oracle.ManagedDataAccess.Client;
 using StackExchange.Redis.Extensions.Core.Extensions;
 using Zxw.Framework.NetCore.DbContextCore;
+using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.NetCore.Extensions

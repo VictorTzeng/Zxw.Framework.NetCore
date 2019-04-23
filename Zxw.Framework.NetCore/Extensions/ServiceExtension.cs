@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Helpers;
+using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.IoC;
 
 namespace Zxw.Framework.NetCore.Extensions

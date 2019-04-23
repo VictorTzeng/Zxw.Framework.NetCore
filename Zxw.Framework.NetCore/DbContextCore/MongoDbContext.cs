@@ -6,12 +6,13 @@ using Blueshift.EntityFrameworkCore.MongoDB.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.DbContextCore
 {
     [MongoDatabase("ZxwMongoDb")]
-    public class MongoDbContext:BaseDbContext
+    public class MongoDbContext:BaseDbContext, IMongoDbContext
     {
         public MongoDbContext(DbContextOption option) : base(option)
         {

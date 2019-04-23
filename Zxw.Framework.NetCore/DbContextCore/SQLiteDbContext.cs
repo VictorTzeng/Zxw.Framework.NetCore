@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.DbContextCore
 {
-    public class SQLiteDbContext:BaseDbContext
+    public class SQLiteDbContext:BaseDbContext, ISQLiteDbContext
     {
         public SQLiteDbContext(DbContextOption option) : base(option)
         {

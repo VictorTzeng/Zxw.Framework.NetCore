@@ -4,12 +4,13 @@ using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.DbContextCore
 {
-    public class PostgreSQLDbContext:BaseDbContext
+    public class PostgreSQLDbContext:BaseDbContext, IPostgreSQLDbContext
     {
         public PostgreSQLDbContext(DbContextOption option) : base(option)
         {
