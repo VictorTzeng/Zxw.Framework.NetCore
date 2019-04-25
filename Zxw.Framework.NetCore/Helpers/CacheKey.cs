@@ -48,11 +48,21 @@ namespace Zxw.Framework.NetCore.Helpers
             return true;
         }
 
+        public string GetRedisCacheKey()
+        {
+            return
+                $"{this.Method.DeclaringType.Namespace}:{this.Method.DeclaringType.Name}:{this.Method.Name}:{GetHashCode()}";
+        }
+
+        public string GetMemoryCacheKey()
+        {
+            return
+                $"{this.Method.DeclaringType.Namespace}_{this.Method.DeclaringType.Name}_{this.Method.Name}_{GetHashCode()}";
+        }
+
         public override int GetHashCode()
         {
-            int hashCode = this.Method.DeclaringType.Namespace.GetHashCode();
-            hashCode = hashCode ^ this.Method.DeclaringType.GetHashCode();
-            hashCode = hashCode ^ this.Method.GetHashCode();
+            int hashCode = this.Method.GetHashCode();
             foreach (var argument in this.InputArguments)
             {
                 hashCode = hashCode ^ argument.GetHashCode();

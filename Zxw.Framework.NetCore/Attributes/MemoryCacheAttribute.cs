@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Zxw.Framework.NetCore.Helpers;
 using System.Linq;
 using Zxw.Framework.NetCore.Cache;
+using Zxw.Framework.NetCore.Extensions;
 
 namespace Zxw.Framework.NetCore.Attributes
 {
@@ -36,7 +37,7 @@ namespace Zxw.Framework.NetCore.Attributes
             else
             {
                 var key = string.IsNullOrEmpty(CacheKey)
-                    ? new CacheKey(context.ServiceMethod, parameters, context.Parameters).GetHashCode().ToString()
+                    ? new CacheKey(context.ServiceMethod, parameters, context.Parameters).GetMemoryCacheKey()
                     : CacheKey;
                 if (_cache.TryGetValue(key, out object value))
                 {
@@ -44,8 +45,17 @@ namespace Zxw.Framework.NetCore.Attributes
                 }
                 else
                 {
+                    object returnValue = context.ReturnValue;
+                    var returnType = context.ServiceMethod.ReturnType;
+                    if (returnType.IsTask())
+                    {
+                        returnType = returnType.GenericTypeArguments[0];
+                        returnValue = typeof(Task).GetMethod("FromResult").MakeGenericMethod(new Type[] { returnType })
+                            .Invoke(returnValue, null);
+                    }
+
                     await context.Invoke(next);
-                    _cache.Set(key, context.ReturnValue, new MemoryCacheEntryOptions()
+                    _cache.Set(key, returnValue, new MemoryCacheEntryOptions()
                     {
                         AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(Expiration)
                     });

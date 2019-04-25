@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
 using System.Xml.Linq;
@@ -1290,6 +1291,11 @@ namespace Zxw.Framework.NetCore.Extensions
         public static bool IsEmail(this string email)
         {
             return EmailRegex.IsMatch(email);
+        }
+
+        public static bool IsTask(this Type source)
+        {
+            return source.BaseType == typeof(Task);
         }
     }
 }
