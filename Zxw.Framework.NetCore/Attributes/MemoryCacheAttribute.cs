@@ -36,7 +36,7 @@ namespace Zxw.Framework.NetCore.Attributes
             else
             {
                 var key = string.IsNullOrEmpty(CacheKey)
-                    ? new CacheKey(context.ServiceMethod, parameters).GetHashCode().ToString()
+                    ? new CacheKey(context.ServiceMethod, parameters, context.Parameters).GetHashCode().ToString()
                     : CacheKey;
                 if (_cache.TryGetValue(key, out object value))
                 {

@@ -5,12 +5,14 @@ namespace Zxw.Framework.NetCore.Helpers
     public class CacheKey
     {
         private MethodInfo Method { get; }
-        private object[] InputArguments { get; }
+        private ParameterInfo[] InputArguments { get; }
+        private object[] ParameterValues { get; }
 
-        public CacheKey(MethodInfo method, object[] arguments)
+        public CacheKey(MethodInfo method, ParameterInfo[] arguments, object[] values)
         {
             this.Method = method;
             this.InputArguments = arguments;
+            this.ParameterValues = values;
         }
 
         public override bool Equals(object obj)
@@ -48,10 +50,17 @@ namespace Zxw.Framework.NetCore.Helpers
 
         public override int GetHashCode()
         {
-            int hashCode = this.Method.GetHashCode();
+            int hashCode = this.Method.DeclaringType.Namespace.GetHashCode();
+            hashCode = hashCode ^ this.Method.DeclaringType.GetHashCode();
+            hashCode = hashCode ^ this.Method.GetHashCode();
             foreach (var argument in this.InputArguments)
             {
                 hashCode = hashCode ^ argument.GetHashCode();
+            }
+
+            foreach (var value in ParameterValues)
+            {
+                hashCode = hashCode ^ value.GetHashCode();
             }
             return hashCode;
         }

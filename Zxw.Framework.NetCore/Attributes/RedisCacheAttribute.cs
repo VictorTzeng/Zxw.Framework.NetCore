@@ -28,6 +28,7 @@ namespace Zxw.Framework.NetCore.Attributes
         public override async Task Invoke(AspectContext context, AspectDelegate next)
         {
             var parameters = context.ServiceMethod.GetParameters();
+            
             //判断Method是否包含ref / out参数
             if (parameters.Any(it => it.IsIn || it.IsOut))
             {
@@ -36,7 +37,7 @@ namespace Zxw.Framework.NetCore.Attributes
             else
             {
                 var key = string.IsNullOrEmpty(CacheKey)
-                    ? new CacheKey(context.ServiceMethod, parameters).GetHashCode().ToString()
+                    ? new CacheKey(context.ServiceMethod, parameters, context.Parameters).GetHashCode().ToString()
                     : CacheKey;
                 var value =  await DistributedCacheManager.GetAsync(key);
                 if (value != null)
