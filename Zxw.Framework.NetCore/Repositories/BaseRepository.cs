@@ -52,9 +52,19 @@ namespace Zxw.Framework.NetCore.Repositories
             DbContext.BulkInsert<T, TKey>(entities, destinationTableName);
         }
 
+        public int AddBySql(string sql)
+        {
+            return DbContext.ExecuteSqlWithNonQuery(sql);
+        }
+
         #endregion
 
         #region Update
+
+        public int DeleteBySql(string sql)
+        {
+            return DbContext.ExecuteSqlWithNonQuery(sql);
+        }
 
         public virtual int Edit(T entity)
         {
@@ -95,6 +105,11 @@ namespace Zxw.Framework.NetCore.Repositories
         public virtual async Task<int> UpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
         {
             return await DbContext.UpdateAsync(where, updateFactory);
+        }
+
+        public int UpdateBySql(string sql)
+        {
+            return DbContext.ExecuteSqlWithNonQuery(sql);
         }
 
         #endregion
@@ -216,21 +231,12 @@ namespace Zxw.Framework.NetCore.Repositories
             return filter.Skip(pageSize * (pageIndex - 1)).Take(pageSize);
         }
 
+        public List<T> GetBySql(string sql)
+        {
+            return DbContext.SqlQuery<T, T>(sql);
+        }
+
         #endregion
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return DbSet.AsQueryable().GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public Type ElementType => DbSet.AsQueryable().ElementType;
-        public Expression Expression => DbSet.AsQueryable().Expression;
-        public IQueryProvider Provider => DbSet.AsQueryable().Provider;
 
         #region IDisposable Support
         private bool disposedValue = false; // 要检测冗余调用

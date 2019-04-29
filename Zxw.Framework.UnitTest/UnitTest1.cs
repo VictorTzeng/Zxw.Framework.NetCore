@@ -223,11 +223,11 @@ namespace Zxw.Framework.UnitTest
             services = RegisterSqlServerContext(services);
             services.Configure<CodeGenerateOption>(options =>
             {
-                options.OutputPath = "F:\\Test\\SqlServer";
-                options.ModelsNamespace = "Zxw.Framework.Website.Models";
-                options.IRepositoriesNamespace = "Zxw.Framework.Website.IRepositories";
-                options.RepositoriesNamespace = "Zxw.Framework.Website.Repositories";
-                options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
+                options.ModelsNamespace = "Reach.AeroIOT.Models";
+                options.IRepositoriesNamespace = "Reach.AeroIOT.IRepositories";
+                options.RepositoriesNamespace = "Reach.AeroIOT.Repositories";
+                options.ControllersNamespace = "Reach.AeroIOT.Controllers";
+                options.OutputPath = "E:\\CodeGenerator\\Reach.AeroIOT";
             });
             services.UseCsRedisClient(
                 "127.0.0.1:6379,abortConnect=false,connectRetry=3,connectTimeout=3000,defaultDatabase=1,syncTimeout=3000,version=3.2.100,responseTimeout=3000");
@@ -306,7 +306,7 @@ namespace Zxw.Framework.UnitTest
             services.Configure<DbContextOption>(options =>
             {
                 options.ConnectionString =
-                    "initial catalog=NetCoreDemo;data source=192.168.42.103;password=xtyf;User id=xtyf;MultipleActiveResultSets=True;";
+                    "Data Source=59.110.138.137;Initial Catalog=ReachNewMainDB;User ID=sa;password=cry.cap.fox-999;";
                 //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
             });
             services.AddScoped<IDbContextCore, SqlServerDbContext>(); //注入EF上下文

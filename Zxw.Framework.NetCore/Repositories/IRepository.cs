@@ -8,7 +8,7 @@ using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.NetCore.Repositories
 {
-    public interface IRepository<T, in TKey>:IQueryable<T>, IDisposable where T : BaseModel<TKey>
+    public interface IRepository<T, in TKey>:IDisposable where T : BaseModel<TKey>
     {
         #region Insert
 
@@ -17,6 +17,7 @@ namespace Zxw.Framework.NetCore.Repositories
         int AddRange(ICollection<T> entities);
         Task<int> AddRangeAsync(ICollection<T> entities);
         void BulkInsert(IList<T> entities, string destinationTableName = null);
+        int AddBySql(string sql);
 
         #endregion
 
@@ -25,7 +26,7 @@ namespace Zxw.Framework.NetCore.Repositories
         int Delete(TKey key);
         int Delete(Expression<Func<T, bool>> @where);
         Task<int> DeleteAsync(Expression<Func<T, bool>> @where);
-
+        int DeleteBySql(string sql);
         #endregion
 
         #region Update
@@ -37,6 +38,7 @@ namespace Zxw.Framework.NetCore.Repositories
         int Update(T model, params string[] updateColumns);
         int Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory);
         Task<int> UpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory);
+        int UpdateBySql(string sql);
 
         #endregion
 
@@ -55,6 +57,8 @@ namespace Zxw.Framework.NetCore.Repositories
         Task<List<T>> GetAsync(Expression<Func<T, bool>> @where = null);
         IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true,
             params Func<T, object>[] @orderby);
+
+        List<T> GetBySql(string sql);
 
         #endregion
     }
