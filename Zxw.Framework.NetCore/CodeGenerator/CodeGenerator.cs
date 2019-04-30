@@ -31,13 +31,13 @@ namespace Zxw.Framework.NetCore.CodeGenerator
     {
         private static readonly string Delimiter = "\\";//分隔符，默认为windows下的\\分隔符
 
-        private static IOptions<CodeGenerateOption> options =
-            AspectCoreContainer.Resolve<IOptions<CodeGenerateOption>>();
+        private static IOptions<CodeGenerateOption> options;
         /// <summary>
         /// 静态构造函数：从IoC容器读取配置参数，如果读取失败则会抛出ArgumentNullException异常
         /// </summary>
         static CodeGenerator()
         {
+            options = AspectCoreContainer.Resolve<IOptions<CodeGenerateOption>>();
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
