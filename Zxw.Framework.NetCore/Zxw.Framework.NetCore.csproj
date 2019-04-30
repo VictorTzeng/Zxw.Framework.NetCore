@@ -4,9 +4,9 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Authors>victor.tzeng</Authors>
     <NeutralLanguage></NeutralLanguage>
-    <Version>2.1.4.43001-preview2-t007bc0fad</Version>
-    <AssemblyVersion>2.1.4.43001</AssemblyVersion>
-    <FileVersion>2.1.4.43001</FileVersion>
+    <Version>2.1.4.43002-preview2-t007bc0fad</Version>
+    <AssemblyVersion>2.1.4.43002</AssemblyVersion>
+    <FileVersion>2.1.4.43002</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

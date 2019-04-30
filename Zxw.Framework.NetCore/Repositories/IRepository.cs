@@ -60,6 +60,9 @@ namespace Zxw.Framework.NetCore.Repositories
 
         List<T> GetBySql(string sql);
 
+        List<TView> GetViews<TView>(string sql);
+        List<TView> GetViews<TView>(string viewName, Func<TView, bool> where);
+
         #endregion
     }
 }

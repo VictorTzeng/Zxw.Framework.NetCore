@@ -236,6 +236,23 @@ namespace Zxw.Framework.NetCore.Repositories
             return DbContext.SqlQuery<T, T>(sql);
         }
 
+        public List<TView> GetViews<TView>(string sql)
+        {
+            var list = DbContext.SqlQuery<T, TView>(sql);
+            return list;
+        }
+
+        public List<TView> GetViews<TView>(string viewName, Func<TView, bool> @where)
+        {
+            var list = DbContext.SqlQuery<T, TView>($"select * from {viewName}");
+            if (where != null)
+            {
+                return list.Where(where).ToList();
+            }
+
+            return list;
+        }
+
         #endregion
 
         #region IDisposable Support
