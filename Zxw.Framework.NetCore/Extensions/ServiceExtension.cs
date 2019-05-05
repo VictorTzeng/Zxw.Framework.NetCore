@@ -13,6 +13,7 @@ using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.IoC;
+using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.Extensions
 {
@@ -335,6 +336,21 @@ namespace Zxw.Framework.NetCore.Extensions
         {
             if (provider == null) throw new ArgumentNullException(nameof(provider));
             return provider.GetServices<IDbContextCore>().FirstOrDefault(m => m.Option.TagName == dbContextTagName);
+        }
+
+        public static IServiceCollection AddDbContext<IT, T>(this ServiceCollection services, string tag,
+            string connectionString) where IT:class,IDbContextCore where T:BaseDbContext,IT
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            return services.AddScoped<IT, T>(f =>
+            {
+                T context = (T) Activator.CreateInstance(typeof(T), new DbContextOption()
+                {
+                    ConnectionString = connectionString,
+                    TagName = tag
+                });
+                return context;
+            });
         }
     }
 }
