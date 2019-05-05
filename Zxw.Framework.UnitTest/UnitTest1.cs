@@ -189,7 +189,7 @@ namespace Zxw.Framework.UnitTest
                 Birthday = Convert.ToDateTime("1999-01-22"),
                 IsBitch = false,
                 UniqueId = Guid.NewGuid().ToString("N"),
-                UserName = "µÛÍõĞ·",
+                UserName = "å¸ç‹èŸ¹",
                 Wage = 100000000
             }) > 0);
             context.Dispose();
@@ -200,7 +200,7 @@ namespace Zxw.Framework.UnitTest
         public IServiceProvider BuildServiceForPostgreSql()
         {
             IServiceCollection services = new ServiceCollection();
-            //ÔÚÕâÀï×¢²áEFÉÏÏÂÎÄ
+            //åœ¨è¿™é‡Œæ³¨å†ŒEFä¸Šä¸‹æ–‡
             services = RegisterPostgreSqlContext(services);
             services.Configure<CodeGenerateOption>(options =>
             {
@@ -212,14 +212,14 @@ namespace Zxw.Framework.UnitTest
             });
             services.AddOptions();
             
-            return AspectCoreContainer.BuildServiceProvider(services, configure=>configure.Interceptors.AddTyped<FromDbContextFactoryInterceptor>()); //½ÓÈëAspectCore.Injector
+            return AspectCoreContainer.BuildServiceProvider(services, configure=>configure.Interceptors.AddTyped<FromDbContextFactoryInterceptor>()); //æ¥å…¥AspectCore.Injector
         }
 
         public IServiceProvider BuildServiceForSqlServer()
         {
             IServiceCollection services = new ServiceCollection();
 
-            //ÔÚÕâÀï×¢²áEFÉÏÏÂÎÄ
+            //åœ¨è¿™é‡Œæ³¨å†ŒEFä¸Šä¸‹æ–‡
             services = RegisterSqlServerContext(services);
             services.Configure<CodeGenerateOption>(options =>
             {
@@ -232,14 +232,14 @@ namespace Zxw.Framework.UnitTest
             services.UseCsRedisClient(
                 "127.0.0.1:6379,abortConnect=false,connectRetry=3,connectTimeout=3000,defaultDatabase=1,syncTimeout=3000,version=3.2.100,responseTimeout=3000");
             services.AddOptions();
-            return AspectCoreContainer.BuildServiceProvider(services); //½ÓÈëAspectCore.Injector
+            return AspectCoreContainer.BuildServiceProvider(services); //æ¥å…¥AspectCore.Injector
         }
 
         public IServiceProvider BuildServiceFoMySql()
         {
             IServiceCollection services = new ServiceCollection();
 
-            //ÔÚÕâÀï×¢²áEFÉÏÏÂÎÄ
+            //åœ¨è¿™é‡Œæ³¨å†ŒEFä¸Šä¸‹æ–‡
             services = RegisterMySqlContext(services);
             services.Configure<CodeGenerateOption>(options =>
             {
@@ -250,14 +250,14 @@ namespace Zxw.Framework.UnitTest
                 options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
             });
             services.AddOptions();
-            return AspectCoreContainer.BuildServiceProvider(services); //½ÓÈëAspectCore.Injector
+            return AspectCoreContainer.BuildServiceProvider(services); //æ¥å…¥AspectCore.Injector
         }
 
         public IServiceProvider BuildServiceForSqLite()
         {
             IServiceCollection services = new ServiceCollection();
 
-            //ÔÚÕâÀï×¢²áEFÉÏÏÂÎÄ
+            //åœ¨è¿™é‡Œæ³¨å†ŒEFä¸Šä¸‹æ–‡
             services = RegisterSqLiteContext(services);
             services.Configure<CodeGenerateOption>(options =>
             {
@@ -268,16 +268,16 @@ namespace Zxw.Framework.UnitTest
                 options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
             });
             services.AddOptions();
-            return AspectCoreContainer.BuildServiceProvider(services); //½ÓÈëAspectCore.Injector
+            return AspectCoreContainer.BuildServiceProvider(services); //æ¥å…¥AspectCore.Injector
         }
         public IServiceProvider BuildServiceForMongoDB()
         {
             IServiceCollection services = new ServiceCollection();
 
-            //ÔÚÕâÀï×¢²áEFÉÏÏÂÎÄ
+            //åœ¨è¿™é‡Œæ³¨å†ŒEFä¸Šä¸‹æ–‡
             services = RegisterMongoDbContext(services);
             services.AddOptions();
-            return AspectCoreContainer.BuildServiceProvider(services); //½ÓÈëAspectCore.Injector
+            return AspectCoreContainer.BuildServiceProvider(services); //æ¥å…¥AspectCore.Injector
         }
         public IServiceProvider BuildServiceForOracle()
         {
@@ -291,13 +291,13 @@ namespace Zxw.Framework.UnitTest
                 options.RepositoriesNamespace = "Zxw.Framework.UnitTest.Repositories";
                 options.ControllersNamespace = "Zxw.Framework.UnitTest.Controllers";
             });
-            //ÔÚÕâÀï×¢²áEFÉÏÏÂÎÄ
+            //åœ¨è¿™é‡Œæ³¨å†ŒEFä¸Šä¸‹æ–‡
             services = RegisterOracleDbContext(services);
             services.AddOptions();
-            return AspectCoreContainer.BuildServiceProvider(services); //½ÓÈëAspectCore.Injector
+            return AspectCoreContainer.BuildServiceProvider(services); //æ¥å…¥AspectCore.Injector
         }
         /// <summary>
-         /// ×¢²áSQLServerÉÏÏÂÎÄ
+         /// æ³¨å†ŒSQLServerä¸Šä¸‹æ–‡
          /// </summary>
          /// <param name="services"></param>
          /// <returns></returns>
@@ -306,15 +306,15 @@ namespace Zxw.Framework.UnitTest
             services.Configure<DbContextOption>(options =>
             {
                 options.ConnectionString =
-                    "Data Source=59.110.138.137;Initial Catalog=ReachNewMainDB;User ID=sa;password=cry.cap.fox-999;";
+                    "Data Source=127.0.0.1;Initial Catalog=testdb;User ID=sa;password=123456;";
                 //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
             });
-            services.AddScoped<IDbContextCore, SqlServerDbContext>(); //×¢ÈëEFÉÏÏÂÎÄ
+            services.AddScoped<IDbContextCore, SqlServerDbContext>(); //æ³¨å…¥EFä¸Šä¸‹æ–‡
             return services;
         }
 
         /// <summary>
-        /// ×¢²áMySQLÉÏÏÂÎÄ
+        /// æ³¨å†ŒMySQLä¸Šä¸‹æ–‡
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
@@ -326,12 +326,12 @@ namespace Zxw.Framework.UnitTest
                     "Server=127.0.0.1;Database=test; User ID=root;Password=123456;port=3306;CharSet=utf8;pooling=true;";
                 //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
             });
-            services.AddScoped<IDbContextCore, MySqlDbContext>(); //×¢ÈëEFÉÏÏÂÎÄ
+            services.AddScoped<IDbContextCore, MySqlDbContext>(); //æ³¨å…¥EFä¸Šä¸‹æ–‡
             return services;
         }
 
         /// <summary>
-        /// ×¢²áPostgreSQLÉÏÏÂÎÄ
+        /// æ³¨å†ŒPostgreSQLä¸Šä¸‹æ–‡
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
@@ -352,13 +352,13 @@ namespace Zxw.Framework.UnitTest
                 factory.AddDbContext<MongoDbContext>(new DbContextOption() { TagName = "db3", ConnectionString = "mongodb://root:crycapfox-999@dds-2ze7435b510c69c41131-pub.mongodb.rds.aliyuncs.com:3717,dds-2ze7435b510c69c42914-pub.mongodb.rds.aliyuncs.com:3717/HardwareData?replicaSet=mgset-12939431" });
             });
 
-            services.AddScoped<IDbContextCore, PostgreSQLDbContext>(); //×¢ÈëEFÉÏÏÂÎÄ
+            services.AddScoped<IDbContextCore, PostgreSQLDbContext>(); //æ³¨å…¥EFä¸Šä¸‹æ–‡
             services.AddScoped<IMongoRepository,TestRepository>();
             return services;
         }
 
         /// <summary>
-        /// ×¢²áSQLiteÉÏÏÂÎÄ
+        /// æ³¨å†ŒSQLiteä¸Šä¸‹æ–‡
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
@@ -369,12 +369,12 @@ namespace Zxw.Framework.UnitTest
                 options.ConnectionString = "Data Source=F:\\EF6.db;Version=3;";
                 //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
             });
-            services.AddScoped<IDbContextCore, SQLiteDbContext>(); //×¢ÈëEFÉÏÏÂÎÄ
+            services.AddScoped<IDbContextCore, SQLiteDbContext>(); //æ³¨å…¥EFä¸Šä¸‹æ–‡
             return services;
         }
 
         /// <summary>
-        /// ×¢²áSQLiteÉÏÏÂÎÄ
+        /// æ³¨å†ŒSQLiteä¸Šä¸‹æ–‡
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
@@ -385,12 +385,12 @@ namespace Zxw.Framework.UnitTest
                 options.ConnectionString = "mongodb://localhost";
                 options.ModelAssemblyName = "Zxw.Framework.UnitTest";
             });
-            services.AddScoped<IDbContextCore, MongoDbContext>(); //×¢ÈëEFÉÏÏÂÎÄ
+            services.AddScoped<IDbContextCore, MongoDbContext>(); //æ³¨å…¥EFä¸Šä¸‹æ–‡
             return services;
         }
 
         /// <summary>
-        /// ×¢²áOracleÉÏÏÂÎÄ
+        /// æ³¨å†ŒOracleä¸Šä¸‹æ–‡
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
@@ -400,7 +400,7 @@ namespace Zxw.Framework.UnitTest
             {
                 options.ConnectionString = "DATA SOURCE=127.0.0.1:1234/testdb;USER ID=test;PASSWORD=123456;PERSIST SECURITY INFO=True;Pooling=True;Max Pool Size=100;Incr Pool Size=2;";
             });
-            services.AddScoped<IDbContextCore, OracleDbContext>(); //×¢ÈëEFÉÏÏÂÎÄ
+            services.AddScoped<IDbContextCore, OracleDbContext>(); //æ³¨å…¥EFä¸Šä¸‹æ–‡
             return services;
         }
         #endregion
