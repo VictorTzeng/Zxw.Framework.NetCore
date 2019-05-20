@@ -51,7 +51,7 @@ namespace Zxw.Framework.NetCore.Attributes
                     {
                         returnType = returnType.GenericTypeArguments[0];
                         returnValue = typeof(Task).GetMethod("FromResult").MakeGenericMethod(new Type[] {returnType})
-                            .Invoke(this, new[] { returnValue });
+                            .Invoke(returnValue, null);
                     }
                     await context.Invoke(next);
                     await DistributedCacheManager.SetAsync(key, returnValue, Expiration);

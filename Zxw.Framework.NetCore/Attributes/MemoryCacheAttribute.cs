@@ -50,8 +50,8 @@ namespace Zxw.Framework.NetCore.Attributes
                     if (returnType.IsTask())
                     {
                         returnType = returnType.GenericTypeArguments[0];
-                        returnValue = typeof(Task).GetMethod("FromResult").MakeGenericMethod(new Type[] {returnType})
-                            .Invoke(this, new[] {returnValue});
+                        returnValue = typeof(Task).GetMethod("FromResult").MakeGenericMethod(new Type[] { returnType })
+                            .Invoke(returnValue, null);
                     }
 
                     await context.Invoke(next);
