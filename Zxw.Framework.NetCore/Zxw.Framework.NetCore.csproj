@@ -4,10 +4,13 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Authors>victor.tzeng</Authors>
     <NeutralLanguage></NeutralLanguage>
-    <Version>2.1.4.52001-preview2-t007bc0fad</Version>
-    <AssemblyVersion>2.1.4.52001</AssemblyVersion>
-    <FileVersion>2.1.4.52001</FileVersion>
+    <Version>2.1.4.52101-preview2-t007bc0fad</Version>
+    <AssemblyVersion>2.1.4.52101</AssemblyVersion>
+    <FileVersion>2.1.4.52101</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Copyright>Zxw.Framework.NetCore © victor.tzeng</Copyright>
+    <PackageProjectUrl>https://github.com/VictorTzeng/Zxw.Framework.NetCore</PackageProjectUrl>
+    <Description>基于EF Core的Code First模式的DotNetCore快速开发框架</Description>
   </PropertyGroup>
 
   <ItemGroup>
