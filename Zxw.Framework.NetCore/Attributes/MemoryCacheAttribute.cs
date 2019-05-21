@@ -4,6 +4,7 @@ using AspectCore.DynamicProxy;
 using Microsoft.Extensions.Caching.Memory;
 using Zxw.Framework.NetCore.Helpers;
 using System.Linq;
+using Newtonsoft.Json;
 using Zxw.Framework.NetCore.Cache;
 using Zxw.Framework.NetCore.Extensions;
 
@@ -41,20 +42,24 @@ namespace Zxw.Framework.NetCore.Attributes
                     : CacheKey;
                 if (_cache.TryGetValue(key, out object value))
                 {
-                    context.ReturnValue = value;
+                    if (context.ServiceMethod.IsReturnTask())
+                    {
+                        context.ReturnValue = Task.FromResult(value);
+                    }
+                    else
+                    {
+                        context.ReturnValue = value;
+                    }
                 }
                 else
                 {
+                    await context.Invoke(next);
                     object returnValue = context.ReturnValue;
-                    var returnType = context.ServiceMethod.ReturnType;
-                    if (returnType.IsTask())
+                    if (context.ServiceMethod.IsReturnTask())
                     {
-                        returnType = returnType.GenericTypeArguments[0];
-                        returnValue = typeof(Task).GetMethod("FromResult").MakeGenericMethod(new Type[] { returnType })
-                            .Invoke(returnValue, null);
+                        returnValue = returnValue.GetType().GetField("Result").GetValue(returnValue);
                     }
 
-                    await context.Invoke(next);
                     _cache.Set(key, returnValue, new MemoryCacheEntryOptions()
                     {
                         AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(Expiration)

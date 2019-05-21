@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AspectCore.DynamicProxy;
 using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 using Zxw.Framework.NetCore.Cache;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Helpers;
@@ -41,19 +42,24 @@ namespace Zxw.Framework.NetCore.Attributes
                 var value =  await DistributedCacheManager.GetAsync(key);
                 if (value != null)
                 {
-                    context.ReturnValue = value;
+                    if (context.ServiceMethod.IsReturnTask())
+                    {
+                        context.ReturnValue = Task.FromResult(JsonConvert.DeserializeObject(value,
+                            context.ServiceMethod.ReturnType.GenericTypeArguments[0]));
+                    }
+                    else
+                    {
+                        context.ReturnValue = JsonConvert.DeserializeObject(value, context.ServiceMethod.ReturnType);
+                    }
                 }
                 else
                 {
-                    object returnValue = context.ReturnValue;
-                    var returnType = context.ServiceMethod.ReturnType;
-                    if (returnType.IsTask())
-                    {
-                        returnType = returnType.GenericTypeArguments[0];
-                        returnValue = typeof(Task).GetMethod("FromResult").MakeGenericMethod(new Type[] {returnType})
-                            .Invoke(returnValue, null);
-                    }
                     await context.Invoke(next);
+                    object returnValue = context.ReturnValue;
+                    if (context.ServiceMethod.IsReturnTask())
+                    {
+                        returnValue = returnValue.GetType().GetField("Result").GetValue(returnValue);
+                    }
                     await DistributedCacheManager.SetAsync(key, returnValue, Expiration);
                     await next(context);
                 }
