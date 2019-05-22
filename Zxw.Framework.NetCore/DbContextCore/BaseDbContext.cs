@@ -5,11 +5,13 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using AspectCore.Extensions.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Options;
 using Z.EntityFramework.Plus;
 using Zxw.Framework.NetCore.Attributes;
+using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
@@ -145,9 +147,24 @@ namespace Zxw.Framework.NetCore.DbContextCore
         /// <returns></returns>
         public virtual int Edit<T,TKey>(T entity) where T : BaseModel<TKey>
         {
-            var model = Find<T>(entity.Id);
-            Entry(model).CurrentValues.SetValues(entity);
-            return  SaveChanges();
+            var dbModel = Find<T>(entity.Id);
+            if (dbModel == null) return -1;
+            //Entry(model).CurrentValues.SetValues(entity);
+            var properties = typeof(T).GetProperties();
+            var changedProperties = new List<string>();
+            foreach (var property in properties)
+            {
+                var reflector = property.GetReflector();
+
+                var value = reflector.GetValue(entity);
+                var dbvalue = reflector.GetValue(dbModel);
+                if (value != dbvalue)
+                {
+                    changedProperties.Add(property.Name);
+                }
+            }
+
+            return Update(entity, changedProperties.ToArray());
         }
 
         /// <summary>
