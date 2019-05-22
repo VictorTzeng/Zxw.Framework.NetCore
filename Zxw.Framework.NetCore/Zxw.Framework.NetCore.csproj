@@ -11,6 +11,7 @@
     <Copyright>Zxw.Framework.NetCore © victor.tzeng</Copyright>
     <PackageProjectUrl>https://github.com/VictorTzeng/Zxw.Framework.NetCore</PackageProjectUrl>
     <Description>基于EF Core的Code First模式的DotNetCore快速开发框架</Description>
+    <PackageReleaseNotes>修复aop缓存目标方法二次执行的bug</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
