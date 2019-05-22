@@ -61,7 +61,7 @@ namespace Zxw.Framework.NetCore.Attributes
                         returnValue = returnValue.GetType().GetField("Result").GetValue(returnValue);
                     }
                     await DistributedCacheManager.SetAsync(key, returnValue, Expiration);
-                    await next(context);
+                    //await next(context);
                 }
             }
         }

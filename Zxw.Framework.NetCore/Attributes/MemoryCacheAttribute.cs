@@ -64,7 +64,7 @@ namespace Zxw.Framework.NetCore.Attributes
                     {
                         AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(Expiration)
                     });
-                    await next(context);
+                    //await next(context);
                 }                
             }
         }
