@@ -4,9 +4,9 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Authors>victor.tzeng</Authors>
     <NeutralLanguage></NeutralLanguage>
-    <Version>2.1.4.52201-preview2-t007bc0fad</Version>
-    <AssemblyVersion>2.1.4.52201</AssemblyVersion>
-    <FileVersion>2.1.4.52201</FileVersion>
+    <Version>2.1.4.52202-preview2-t007bc0fad</Version>
+    <AssemblyVersion>2.1.4.52202</AssemblyVersion>
+    <FileVersion>2.1.4.52202</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Zxw.Framework.NetCore © victor.tzeng</Copyright>
     <PackageProjectUrl>https://github.com/VictorTzeng/Zxw.Framework.NetCore</PackageProjectUrl>
