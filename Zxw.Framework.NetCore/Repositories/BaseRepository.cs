@@ -93,7 +93,7 @@ namespace Zxw.Framework.NetCore.Repositories
         }
         public virtual int Update(T model, params string[] updateColumns)
         {
-            DbContext.Update(model, updateColumns);
+            DbContext.Update<T,TKey>(model, updateColumns);
             return DbContext.SaveChanges();
         }
 

@@ -28,6 +28,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
             var settings = MongoClientSettings.FromUrl(mongoUrl);
             var mongoClient = new MongoClient(settings);
             optionsBuilder.UseMongoDb(mongoClient);
+            base.OnConfiguring(optionsBuilder);
         }
     }
 }

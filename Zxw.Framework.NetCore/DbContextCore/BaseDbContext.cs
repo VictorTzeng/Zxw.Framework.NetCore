@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 using AspectCore.Extensions.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Z.EntityFramework.Plus;
-using Zxw.Framework.NetCore.Attributes;
-using Zxw.Framework.NetCore.Extensions;
+using Zxw.Framework.NetCore.DbLogProvider;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
@@ -46,6 +46,17 @@ namespace Zxw.Framework.NetCore.DbContextCore
             //if (string.IsNullOrEmpty(option.Value.ModelAssemblyName))
             //    throw new ArgumentNullException(nameof(option.Value.ModelAssemblyName));
             Option = option.Value;
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (Option.IsOutputSql)
+            {
+                var loggerFactory = new LoggerFactory();
+                loggerFactory.AddProvider(new EFLoggerProvider());
+                optionsBuilder.UseLoggerFactory(loggerFactory);
+            }
+            base.OnConfiguring(optionsBuilder);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -147,24 +158,9 @@ namespace Zxw.Framework.NetCore.DbContextCore
         /// <returns></returns>
         public virtual int Edit<T,TKey>(T entity) where T : BaseModel<TKey>
         {
-            var dbModel = Find<T>(entity.Id);
-            if (dbModel == null) return -1;
-            //Entry(model).CurrentValues.SetValues(entity);
-            var properties = typeof(T).GetProperties();
-            var changedProperties = new List<string>();
-            foreach (var property in properties)
-            {
-                var reflector = property.GetReflector();
-
-                var value = reflector.GetValue(entity);
-                var dbvalue = reflector.GetValue(dbModel);
-                if (value != dbvalue)
-                {
-                    changedProperties.Add(property.Name);
-                }
-            }
-
-            return Update(entity, changedProperties.ToArray());
+            var model = Find<T>(entity.Id);
+            Entry(model).CurrentValues.SetValues(entity);
+            return SaveChanges();
         }
 
         /// <summary>
@@ -238,13 +234,34 @@ namespace Zxw.Framework.NetCore.DbContextCore
         /// update data by columns.
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
         /// <param name="model"></param>
-        
         /// <param name="updateColumns"></param>
         /// <returns></returns>
-        public virtual int Update<T>(T model, params string[] updateColumns) where T : class
+        public virtual int Update<T,TKey>(T model, params string[] updateColumns) where T : BaseModel<TKey>
         {
-            if (updateColumns != null && updateColumns.Length > 0)
+            if (updateColumns == null || updateColumns.Length == 0)
+            {
+                var dbModel = Find<T>(model.Id);
+                if (dbModel == null) return -1;
+                //Entry(model).CurrentValues.SetValues(entity);
+                var properties = typeof(T).GetProperties();
+                var changedProperties = new List<string>();
+                foreach (var property in properties)
+                {
+                    var reflector = property.GetReflector();
+
+                    var value = reflector.GetValue(model);
+                    var dbvalue = reflector.GetValue(dbModel);
+                    if (value != dbvalue)
+                    {
+                        changedProperties.Add(property.Name);
+                    }
+                }
+
+                updateColumns = changedProperties.ToArray();
+            }
+            if (updateColumns.Length > 0)
             {
                 if (Entry(model).State == EntityState.Added ||
                     Entry(model).State == EntityState.Detached) Set<T>().Attach(model);

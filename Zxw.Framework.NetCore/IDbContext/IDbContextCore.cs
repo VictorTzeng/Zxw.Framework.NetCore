@@ -39,7 +39,7 @@ namespace Zxw.Framework.NetCore.IDbContext
         DbSet<T> GetDbSet<T>() where T : class;
         T GetSingleOrDefault<T>(Expression<Func<T, bool>> @where = null) where T : class;
         Task<T> GetSingleOrDefaultAsync<T>(Expression<Func<T, bool>> @where = null) where T : class;
-        int Update<T>(T model, params string[] updateColumns) where T : class;
+        int Update<T, TKey>(T model, params string[] updateColumns) where T : BaseModel<TKey>;
         int Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory) where T : class;
         Task<int> UpdateAsync<T>(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
             where T : class;
