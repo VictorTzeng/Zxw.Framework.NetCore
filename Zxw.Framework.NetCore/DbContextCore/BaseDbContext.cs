@@ -101,10 +101,9 @@ namespace Zxw.Framework.NetCore.DbContextCore
             return await (where == null ? Set<T>().CountAsync() : Set<T>().CountAsync(@where));
         }
 
-        public virtual int Delete<T, TKey>(TKey key) where T : class
+        public virtual int Delete<T>(object key) where T : class
         {
-            var entity = Find<T>(key);
-            Remove(entity);
+            Remove(key);
             return  SaveChanges();
         }
 
@@ -145,26 +144,27 @@ namespace Zxw.Framework.NetCore.DbContextCore
         /// <typeparam name="TKey"></typeparam>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public virtual int Edit<T,TKey>(T entity) where T : BaseModel<TKey>
+        public virtual int Edit<T>(T entity) where T : class 
         {
-            var dbModel = Find<T>(entity.Id);
-            if (dbModel == null) return -1;
-            //Entry(model).CurrentValues.SetValues(entity);
-            var properties = typeof(T).GetProperties();
-            var changedProperties = new List<string>();
-            foreach (var property in properties)
-            {
-                var reflector = property.GetReflector();
+            //var dbModel = Find<T, TKey>(entity.Id);
+            //if (dbModel == null) return -1;
+            ////Entry(model).CurrentValues.SetValues(entity);
+            //var properties = typeof(T).GetProperties();
+            //var changedProperties = new List<string>();
+            //foreach (var property in properties)
+            //{
+            //    var reflector = property.GetReflector();
 
-                var value = reflector.GetValue(entity);
-                var dbvalue = reflector.GetValue(dbModel);
-                if (value != dbvalue)
-                {
-                    changedProperties.Add(property.Name);
-                }
-            }
-
-            return Update(entity, changedProperties.ToArray());
+            //    var value = reflector.GetValue(entity);
+            //    var dbvalue = reflector.GetValue(dbModel);
+            //    if (value != dbvalue)
+            //    {
+            //        changedProperties.Add(property.Name);
+            //    }
+            //}
+            base.Update(entity);
+            return SaveChanges();
+            //return Update(entity, changedProperties.ToArray());
         }
 
         /// <summary>
@@ -199,12 +199,12 @@ namespace Zxw.Framework.NetCore.DbContextCore
             return await (@where == null ? Set<T>().AnyAsync() : Set<T>().AnyAsync(@where));
         }
 
-        public virtual T Find<T, TKey>(TKey key) where T : class
+        public virtual T Find<T>(object key) where T : class
         {
             return base.Find<T>(key);
         }
 
-        public virtual async Task<T> FindAsync<T, TKey>(TKey key) where T : class
+        public virtual async Task<T> FindAsync<T>(object key) where T : class
         {
             return await base.FindAsync<T>(key);
         }
@@ -293,7 +293,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
         /// <typeparam name="TKey"></typeparam>
         /// <param name="entities"></param>
         /// <param name="destinationTableName"></param>
-        public virtual void BulkInsert<T, TKey>(IList<T> entities, string destinationTableName = null) where T : BaseModel<TKey>
+        public virtual void BulkInsert<T>(IList<T> entities, string destinationTableName = null) where T : class 
         {
             if (!Database.IsSqlServer()&&!Database.IsMySql())
              throw new NotSupportedException("This method only supports for SQL Server or MySql.");

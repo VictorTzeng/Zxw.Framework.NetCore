@@ -31,7 +31,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
             base.OnConfiguring(optionsBuilder);
         }
 
-        public override void BulkInsert<T, TKey>(IList<T> entities, string destinationTableName = null)
+        public override void BulkInsert<T>(IList<T> entities, string destinationTableName = null)
         {
             if (entities == null || !entities.Any()) return;
             if (string.IsNullOrEmpty(destinationTableName))
@@ -39,10 +39,10 @@ namespace Zxw.Framework.NetCore.DbContextCore
                 var mappingTableName = typeof(T).GetCustomAttribute<TableAttribute>()?.Name;
                 destinationTableName = string.IsNullOrEmpty(mappingTableName) ? typeof(T).Name : mappingTableName;
             }
-            SqlBulkInsert<T, TKey>(entities, destinationTableName);
+            SqlBulkInsert<T>(entities, destinationTableName);
         }
 
-        private void SqlBulkInsert<T,TKey>(IList<T> entities, string destinationTableName = null) where T : BaseModel<TKey>
+        private void SqlBulkInsert<T>(IList<T> entities, string destinationTableName = null) where T : class 
         {
             using (var dt = entities.ToDataTable())
             {
@@ -60,7 +60,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
                                 BatchSize = entities.Count,
                                 DestinationTableName = dt.TableName,
                             };
-                            GenerateColumnMappings<T, TKey>(bulk.ColumnMappings);
+                            GenerateColumnMappings<T>(bulk.ColumnMappings);
                             bulk.WriteToServerAsync(dt);
                             tran.Commit();
                         }
@@ -75,8 +75,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
             }
         }
 
-        private void GenerateColumnMappings<T, TKey>(SqlBulkCopyColumnMappingCollection mappings)
-            where T : BaseModel<TKey>
+        private void GenerateColumnMappings<T>(SqlBulkCopyColumnMappingCollection mappings)
+            where T : class 
         {
             var properties = typeof(T).GetProperties();
             foreach (var property in properties)

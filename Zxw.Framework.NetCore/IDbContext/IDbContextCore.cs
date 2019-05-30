@@ -23,18 +23,18 @@ namespace Zxw.Framework.NetCore.IDbContext
         Task<int> AddRangeAsync<T>(ICollection<T> entities) where T : class;
         int Count<T>(Expression<Func<T, bool>> @where = null) where T : class;
         Task<int> CountAsync<T>(Expression<Func<T, bool>> @where = null) where T : class;
-        int Delete<T,TKey>(TKey key) where T : class;
+        int Delete<T>(object key) where T : class;
         bool EnsureCreated();
         Task<bool> EnsureCreatedAsync();
         int ExecuteSqlWithNonQuery(string sql, params object[] parameters);
         Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters);
-        int Edit<T, TKey>(T entity) where T : BaseModel<TKey>;
+        int Edit<T>(T entity) where T : class;
         int EditRange<T>(ICollection<T> entities) where T : class;
         bool Exist<T>(Expression<Func<T, bool>> @where = null) where T : class;
         IQueryable<T> FilterWithInclude<T>(Func<IQueryable<T>, IQueryable<T>> include, Expression<Func<T, bool>> where) where T : class;
         Task<bool> ExistAsync<T>(Expression<Func<T, bool>> @where = null) where T : class;
-        T Find<T,TKey>(TKey key) where T : class;
-        Task<T> FindAsync<T,TKey>(TKey key) where T : class;
+        T Find<T>(object key) where T : class;
+        Task<T> FindAsync<T>(object key) where T : class;
         IQueryable<T> Get<T>(Expression<Func<T, bool>> @where = null, bool asNoTracking = false) where T : class;
         DbSet<T> GetDbSet<T>() where T : class;
         T GetSingleOrDefault<T>(Expression<Func<T, bool>> @where = null) where T : class;
@@ -45,8 +45,8 @@ namespace Zxw.Framework.NetCore.IDbContext
             where T : class;
         int Delete<T>(Expression<Func<T, bool>> @where) where T : class;
         Task<int> DeleteAsync<T>(Expression<Func<T, bool>> @where) where T : class;
-        void BulkInsert<T, TKey>(IList<T> entities, string destinationTableName = null)
-            where T : BaseModel<TKey>;
+        void BulkInsert<T>(IList<T> entities, string destinationTableName = null)
+            where T : class ;
         List<TView> SqlQuery<T, TView>(string sql, params object[] parameters) 
             where T : class;
         PaginationResult SqlQueryByPagnation<T, TView>(string sql, string[] orderBys, int pageIndex, int pageSize, Action<TView> eachAction = null)

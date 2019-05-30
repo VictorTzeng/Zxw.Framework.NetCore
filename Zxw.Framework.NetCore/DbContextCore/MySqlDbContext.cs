@@ -33,7 +33,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
             base.OnConfiguring(optionsBuilder);
         }
 
-        public override void BulkInsert<T, TKey>(IList<T> entities, string destinationTableName = null)
+        public override void BulkInsert<T>(IList<T> entities, string destinationTableName = null)
         {
             if (entities == null || !entities.Any()) return;
             if (string.IsNullOrEmpty(destinationTableName))

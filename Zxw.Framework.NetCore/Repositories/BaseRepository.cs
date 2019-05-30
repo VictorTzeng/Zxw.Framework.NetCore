@@ -49,7 +49,7 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public virtual void BulkInsert(IList<T> entities, string destinationTableName = null)
         {
-            DbContext.BulkInsert<T, TKey>(entities, destinationTableName);
+            DbContext.BulkInsert<T>(entities, destinationTableName);
         }
 
         public int AddBySql(string sql)
@@ -68,7 +68,7 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public virtual int Edit(T entity)
         {
-            return DbContext.Edit<T,TKey>(entity);
+            return DbContext.Edit<T>(entity);
         }
 
         public virtual int EditRange(ICollection<T> entities)
@@ -118,7 +118,7 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public virtual int Delete(TKey key)
         {
-            return DbContext.Delete<T,TKey>(key);
+            return DbContext.Delete<T>(key);
         }
 
         public virtual int Delete(Expression<Func<T, bool>> @where)
@@ -180,7 +180,7 @@ namespace Zxw.Framework.NetCore.Repositories
         /// <returns></returns>
         public virtual async Task<T> GetSingleAsync(TKey key)
         {
-            return await DbContext.FindAsync<T,TKey>(key);
+            return await DbContext.FindAsync<T>(key);
         }
 
         /// <summary>
@@ -257,7 +257,6 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public void Dispose()
         {
-            DbContext?.Dispose();
         }
     }
 }
