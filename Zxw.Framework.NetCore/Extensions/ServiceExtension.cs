@@ -8,7 +8,10 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IDbContext;
@@ -350,6 +353,20 @@ namespace Zxw.Framework.NetCore.Extensions
                     TagName = tag
                 });
                 return context;
+            });
+        }
+
+        public static IMvcBuilder AddCustomController(this IMvcBuilder builder, string controllerAssemblyName,
+            Func<TypeInfo, bool> filter = null)
+        {
+            if (filter == null)
+                filter = m => true;
+            return builder.ConfigureApplicationPartManager(m =>
+            {
+                var feature = new ControllerFeature();
+                m.ApplicationParts.Add(new AssemblyPart(Assembly.LoadFile(AppDomain.CurrentDomain.BaseDirectory+controllerAssemblyName)));
+                m.PopulateFeature(feature);
+                builder.Services.AddSingleton(feature.Controllers.Where(filter).Select(t => t.AsType()).ToArray());
             });
         }
     }
