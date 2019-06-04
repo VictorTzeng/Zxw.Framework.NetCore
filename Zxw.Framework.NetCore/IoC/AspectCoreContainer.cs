@@ -25,6 +25,18 @@ namespace Zxw.Framework.NetCore.IoC
                 throw new ArgumentNullException(nameof(resolver), "调用此方法时必须先调用BuildServiceProvider！");
             return resolver.Resolve<T>();
         }
+        public static object Resolve(Type type)
+        {
+            if (resolver == null)
+                throw new ArgumentNullException(nameof(resolver), "调用此方法时必须先调用BuildServiceProvider！");
+            return resolver.Resolve(type);
+        }
+        public static object Resolve(string typeName)
+        {
+            if (resolver == null)
+                throw new ArgumentNullException(nameof(resolver), "调用此方法时必须先调用BuildServiceProvider！");
+            return resolver.Resolve(Type.GetType(typeName));
+        }
         public static List<T> ResolveServices<T>()
         {
             if (resolver == null)

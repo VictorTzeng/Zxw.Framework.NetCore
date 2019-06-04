@@ -4,14 +4,14 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Authors>victor.tzeng</Authors>
     <NeutralLanguage></NeutralLanguage>
-    <Version>2.1.4.60401-preview2-t007bc0fad</Version>
-    <AssemblyVersion>2.1.4.60401</AssemblyVersion>
-    <FileVersion>2.1.4.60401</FileVersion>
+    <Version>2.1.4.60402-preview2-t007bc0fad</Version>
+    <AssemblyVersion>2.1.4.60402</AssemblyVersion>
+    <FileVersion>2.1.4.60402</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Zxw.Framework.NetCore © victor.tzeng</Copyright>
     <PackageProjectUrl>https://github.com/VictorTzeng/Zxw.Framework.NetCore</PackageProjectUrl>
     <Description>基于EF Core的Code First模式的DotNetCore快速开发框架</Description>
-    <PackageReleaseNotes>代码生成器生成实体可指定符合条件的数据表</PackageReleaseNotes>
+    <PackageReleaseNotes>扩展AspectCoreContainer.Resolve方法</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
