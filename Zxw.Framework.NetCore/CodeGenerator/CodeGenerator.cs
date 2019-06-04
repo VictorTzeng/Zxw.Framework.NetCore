@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
@@ -195,7 +196,8 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         /// 根据数据表生成Model层、Controller层、IRepository层和Repository层代码
         /// </summary>
         /// <param name="ifExsitedCovered">是否覆盖已存在的同名文件</param>
-        public static void GenerateAllCodesFromDatabase(bool ifExsitedCovered = false)
+        /// <param name="selector"></param>
+        public static void GenerateAllCodesFromDatabase(bool ifExsitedCovered = false, Func<DbTable, bool> selector = null)
         {
             var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
             if(dbContext == null)
@@ -203,6 +205,9 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             var tables = dbContext.GetCurrentDatabaseTableList();
             if (tables != null && tables.Any())
             {
+                if (selector == null)
+                    selector = m => true;
+                tables = tables.Where(selector).ToList();
                 foreach (var table in tables)
                 {
                     if (table.Columns.Any(c => c.IsPrimaryKey))
