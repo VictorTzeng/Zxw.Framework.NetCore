@@ -4,7 +4,7 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Authors>victor.tzeng</Authors>
     <NeutralLanguage></NeutralLanguage>
-    <Version>2.1.4.60501-preview2-t007bc0fad</Version>
+    <Version>2.1.4.60501-rtm-1</Version>
     <AssemblyVersion>2.1.4.60501</AssemblyVersion>
     <FileVersion>2.1.4.60501</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -44,11 +44,11 @@
     <PackageReference Include="AspectCore.Extensions.Autofac" Version="1.2.0" />
     <PackageReference Include="AspectCore.Extensions.DependencyInjection" Version="1.2.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.4.0" />
-    <PackageReference Include="Blueshift.EntityFrameworkCore.MongoDB" Version="2.1.0-preview2-t007bc0fad" />
+    <PackageReference Include="Blueshift.EntityFrameworkCore.MongoDB-aleksamagicka" Version="2.2.0-rtm-1" />
     <PackageReference Include="Caching.CSRedis" Version="3.0.51" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.0" />
     <PackageReference Include="Citms.EntityFrameworkCore.Oracle" Version="1.0.8" />
-    <PackageReference Include="CSRedisCore" Version="3.0.59" />
+    <PackageReference Include="CSRedisCore" Version="3.0.60" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.1" />
     <PackageReference Include="Jil" Version="2.17.0" />
     <PackageReference Include="log4net" Version="2.0.8" />
