@@ -269,5 +269,10 @@ namespace Zxw.Framework.NetCore.Extensions
 
             return string.Concat(pascalCase);
         }
+
+        public static bool IsNullOrWhiteSpace(this string source)
+        {
+            return string.IsNullOrEmpty(source) || string.IsNullOrWhiteSpace(source);
+        }
     }
 }

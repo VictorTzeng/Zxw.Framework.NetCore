@@ -1297,5 +1297,11 @@ namespace Zxw.Framework.NetCore.Extensions
         {
             return source.BaseType == typeof(Task);
         }
+
+        public static bool In<T>(this T source, ICollection<T> target)
+        {
+            if (source == null || target == null) return false;
+            return target.Contains(source);
+        }
     }
 }
