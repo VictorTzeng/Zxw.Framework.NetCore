@@ -321,7 +321,7 @@ namespace Zxw.Framework.NetCore.Extensions
         public static IServiceProvider BuildAspectCoreServiceProvider(this IServiceCollection services,
             Action<IAspectConfiguration> configure = null)
         {
-            return services.BuildAspectCoreServiceContainer(configure).Build();
+            return AspectCoreContainer.BuildServiceProvider(services, configure);
         }
 
         public static IServiceCollection AddDbContextFactory(this IServiceCollection services,
