@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -355,7 +356,13 @@ namespace Zxw.Framework.NetCore.Extensions
                 return context;
             });
         }
-
+        /// <summary>
+        /// 添加自定义Controller。自定义controller项目对应的dll必须复制到程序运行目录
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="controllerAssemblyName">自定义controller文件的名称，比如：xxx.Controllers.dll</param>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         public static IMvcBuilder AddCustomController(this IMvcBuilder builder, string controllerAssemblyName,
             Func<TypeInfo, bool> filter = null)
         {
@@ -365,6 +372,28 @@ namespace Zxw.Framework.NetCore.Extensions
             {
                 var feature = new ControllerFeature();
                 m.ApplicationParts.Add(new AssemblyPart(Assembly.LoadFile(AppDomain.CurrentDomain.BaseDirectory+controllerAssemblyName)));
+                m.PopulateFeature(feature);
+                builder.Services.AddSingleton(feature.Controllers.Where(filter).Select(t => t.AsType()).ToArray());
+            });
+        }
+        /// <summary>
+        /// 添加自定义Controller
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="controllerAssemblyDir">Controller文件所在路径</param>
+        /// <param name="controllerAssemblyName">Controller文件名称，比如：xxx.Controllers.dll</param>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public static IMvcBuilder AddCustomController(this IMvcBuilder builder, string controllerAssemblyDir, string controllerAssemblyName,
+            Func<TypeInfo, bool> filter = null)
+        {
+            if (filter == null)
+                filter = m => true;
+            return builder.ConfigureApplicationPartManager(m =>
+            {
+                var feature = new ControllerFeature();
+                m.ApplicationParts.Add(
+                    new AssemblyPart(Assembly.LoadFile(Path.Combine(controllerAssemblyDir, controllerAssemblyName))));
                 m.PopulateFeature(feature);
                 builder.Services.AddSingleton(feature.Controllers.Where(filter).Select(t => t.AsType()).ToArray());
             });
