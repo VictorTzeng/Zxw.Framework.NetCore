@@ -12,6 +12,7 @@ using Npgsql;
 using Oracle.ManagedDataAccess.Client;
 using StackExchange.Redis.Extensions.Core.Extensions;
 using Zxw.Framework.NetCore.DbContextCore;
+using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.Models;
 
@@ -259,6 +260,64 @@ namespace Zxw.Framework.NetCore.Extensions
                 });
             });
             return tables;
+        }
+
+        /// <summary>
+        /// 执行SQL返回受影响的行数
+        /// </summary>
+        public static int ExecuteSqlNoQuery<T>(this IDbContextCore context, string sql, DbParameter[] sqlParams = null) where T : new()
+        {
+            return ExecuteNoQuery<T>(context, sql, sqlParams);
+        }
+        /// <summary>
+        /// 执行存储过程返回IEnumerable数据集
+        /// </summary>
+        public static IEnumerable<T> ExeccuteStoredProcedure<T>(this IDbContextCore context, string sql, DbParameter[] sqlParams = null) where T : new()
+        {
+            return Execute<T>(context, sql, CommandType.StoredProcedure, sqlParams);
+        }
+        /// <summary>
+        /// 执行sql返回IEnumerable数据集
+        /// </summary>
+        public static IEnumerable<T> ExecSqlReader<T>(this IDbContextCore context, string sql, DbParameter[] sqlParams = null) where T : new()
+        {
+            return Execute<T>(context, sql, CommandType.Text, sqlParams);
+        }
+        private static int ExecuteNoQuery<T>(this IDbContextCore context, string sql, DbParameter[] sqlParams) where T : new()
+        {
+            var db = context.GetDatabase();
+            var connection = db.GetDbConnection();
+            var cmd = connection.CreateCommand();
+            db.OpenConnection();
+            cmd.CommandText = sql;
+            cmd.CommandType = CommandType.Text;
+            if (sqlParams != null)
+            {
+                cmd.Parameters.AddRange(sqlParams);
+            }
+            var result = cmd.ExecuteNonQuery();
+            db.CloseConnection();
+            return result;
+        }
+        private static IEnumerable<T> Execute<T>(this IDbContextCore context, string sql, CommandType type, DbParameter[] sqlParams) where T : new()
+        {
+            var db = context.GetDatabase();
+            var connection = db.GetDbConnection();
+            var cmd = connection.CreateCommand();
+            db.OpenConnection();
+            cmd.CommandText = sql;
+            cmd.CommandType = type;
+            if (sqlParams != null)
+            {
+                cmd.Parameters.AddRange(sqlParams);
+            }
+            IEnumerable<T> result;
+            using (DbDataReader reader = cmd.ExecuteReader())
+            {
+                result = EntityMapper.MapToEntities<T>(reader);
+            }
+            db.CloseConnection();
+            return result;
         }
     }
 }
