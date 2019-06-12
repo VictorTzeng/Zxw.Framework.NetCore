@@ -272,14 +272,14 @@ namespace Zxw.Framework.NetCore.Extensions
         /// <summary>
         /// 执行存储过程返回IEnumerable数据集
         /// </summary>
-        public static IEnumerable<T> ExeccuteStoredProcedure<T>(this IDbContextCore context, string sql, DbParameter[] sqlParams = null) where T : new()
+        public static IEnumerable<T> ExecuteStoredProcedure<T>(this IDbContextCore context, string sql, DbParameter[] sqlParams = null) where T : new()
         {
             return Execute<T>(context, sql, CommandType.StoredProcedure, sqlParams);
         }
         /// <summary>
         /// 执行sql返回IEnumerable数据集
         /// </summary>
-        public static IEnumerable<T> ExecSqlReader<T>(this IDbContextCore context, string sql, DbParameter[] sqlParams = null) where T : new()
+        public static IEnumerable<T> ExecuteSqlReader<T>(this IDbContextCore context, string sql, DbParameter[] sqlParams = null) where T : new()
         {
             return Execute<T>(context, sql, CommandType.Text, sqlParams);
         }
@@ -312,7 +312,7 @@ namespace Zxw.Framework.NetCore.Extensions
                 cmd.Parameters.AddRange(sqlParams);
             }
             IEnumerable<T> result;
-            using (DbDataReader reader = cmd.ExecuteReader())
+            using (var reader = cmd.ExecuteReader())
             {
                 result = EntityMapper.MapToEntities<T>(reader);
             }
