@@ -306,7 +306,7 @@ namespace Zxw.Framework.UnitTest
             services.Configure<DbContextOption>(options =>
             {
                 options.ConnectionString =
-                    "Data Source=59.110.138.137;Initial Catalog=HTJC_BridgeMainDB;User ID=sa;password=cry.cap.fox-999;";
+                    "Data Source=127.0.0.1;Initial Catalog=testdb;User ID=sa;password=123456;";
                 //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
             });
             services.AddScoped<IDbContextCore, SqlServerDbContext>(); //注入EF上下文
