@@ -223,14 +223,14 @@ namespace Zxw.Framework.UnitTest
             services = RegisterSqlServerContext(services);
             services.Configure<CodeGenerateOption>(options =>
             {
-                options.ModelsNamespace = "Reach.AeroIOT.Models";
-                options.IRepositoriesNamespace = "Reach.AeroIOT.IRepositories";
-                options.RepositoriesNamespace = "Reach.AeroIOT.Repositories";
-                options.ControllersNamespace = "Reach.AeroIOT.Controllers";
-                options.OutputPath = "E:\\CodeGenerator\\Reach.AeroIOT";
+                options.ModelsNamespace = "AeroIotPlatform.Models.Bridge";
+                options.IRepositoriesNamespace = "AeroIotPlatform.IRepositories.Bridge";
+                options.RepositoriesNamespace = "AeroIotPlatform.Repositories.Bridge";
+                options.ControllersNamespace = "AeroIotPlatform.WebApi.Controllers";
+                options.IServicesNamespace = "AeroIotPlatform.IServices.Bridge";
+                options.ServicesNamespace = "AeroIotPlatform.Services.Bridge";
+                options.OutputPath = "E:\\CodeGenerator\\AeroIotPlatform\\Bridge";
             });
-            services.UseCsRedisClient(
-                "127.0.0.1:6379,abortConnect=false,connectRetry=3,connectTimeout=3000,defaultDatabase=1,syncTimeout=3000,version=3.2.100,responseTimeout=3000");
             services.AddOptions();
             return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
         }
@@ -306,7 +306,7 @@ namespace Zxw.Framework.UnitTest
             services.Configure<DbContextOption>(options =>
             {
                 options.ConnectionString =
-                    "Data Source=127.0.0.1;Initial Catalog=testdb;User ID=sa;password=123456;";
+                    "Data Source=59.110.138.137;Initial Catalog=HTJC_BridgeMainDB;User ID=sa;password=cry.cap.fox-999;";
                 //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
             });
             services.AddScoped<IDbContextCore, SqlServerDbContext>(); //注入EF上下文

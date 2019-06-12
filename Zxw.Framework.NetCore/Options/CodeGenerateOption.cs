@@ -7,5 +7,7 @@
         public string ControllersNamespace { get; set; }
         public string IRepositoriesNamespace { get; set; }
         public string RepositoriesNamespace { get; set; }
+        public string IServicesNamespace { get; set; }
+        public string ServicesNamespace { get; set; }
     }
 }

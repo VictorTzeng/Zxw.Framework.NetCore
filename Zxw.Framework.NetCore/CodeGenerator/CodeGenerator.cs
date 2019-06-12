@@ -94,6 +94,8 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             var keyTypeName = modelType.GetProperty("Id")?.PropertyType.Name;
             GenerateIRepository(modelTypeName, keyTypeName, ifExsitedCovered);
             GenerateRepository(modelTypeName, keyTypeName, ifExsitedCovered);
+            GenerateIService(modelTypeName, keyTypeName, ifExsitedCovered);
+            GenerateService(modelTypeName, keyTypeName, ifExsitedCovered);
             GenerateController(modelTypeName, keyTypeName, ifExsitedCovered);
         }
 
@@ -132,7 +134,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             {
                 Directory.CreateDirectory(iRepositoryPath);
             }
-            var fullPath = iRepositoryPath + Delimiter + "I" + modelTypeName + "Repository.cs";
+            var fullPath = iRepositoryPath + Delimiter + "I" + modelTypeName.ToPascalCase() + "Repository.cs";
             if (File.Exists(fullPath) && !ifExsitedCovered)
                 return;
             var content = ReadTemplate("IRepositoryTemplate.txt");
@@ -155,13 +157,59 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             {
                 Directory.CreateDirectory(repositoryPath);
             }
-            var fullPath = repositoryPath + Delimiter + modelTypeName + "Repository.cs";
+            var fullPath = repositoryPath + Delimiter + modelTypeName.ToPascalCase() + "Repository.cs";
             if (File.Exists(fullPath) && !ifExsitedCovered)
                 return;
             var content = ReadTemplate("RepositoryTemplate.txt");
             content = content.Replace("{ModelsNamespace}", options.Value.ModelsNamespace)
                 .Replace("{IRepositoriesNamespace}", options.Value.IRepositoriesNamespace)
                 .Replace("{RepositoriesNamespace}", options.Value.RepositoriesNamespace)
+                .Replace("{ModelTypeName}", modelTypeName)
+                .Replace("{KeyTypeName}", keyTypeName);
+            WriteAndSave(fullPath, content);
+        }
+        /// <summary>
+        /// 生成IRepository层代码文件
+        /// </summary>
+        /// <param name="modelTypeName"></param>
+        /// <param name="keyTypeName"></param>
+        /// <param name="ifExsitedCovered"></param>
+        private static void GenerateIService(string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
+        {
+            var iRepositoryPath = options.Value.OutputPath + Delimiter + "IServices";
+            if (!Directory.Exists(iRepositoryPath))
+            {
+                Directory.CreateDirectory(iRepositoryPath);
+            }
+            var fullPath = iRepositoryPath + Delimiter + "I" + modelTypeName.ToPascalCase() + "Service.cs";
+            if (File.Exists(fullPath) && !ifExsitedCovered)
+                return;
+            var content = ReadTemplate("IServiceTemplate.txt");
+            content = content.Replace("{ModelsNamespace}", options.Value.ModelsNamespace)
+                .Replace("{IRepositoriesNamespace}", options.Value.IRepositoriesNamespace)
+                .Replace("{ModelTypeName}", modelTypeName)
+                .Replace("{KeyTypeName}", keyTypeName);
+            WriteAndSave(fullPath, content);
+        }
+        /// <summary>
+        /// 生成Repository层代码文件
+        /// </summary>
+        /// <param name="modelTypeName"></param>
+        /// <param name="keyTypeName"></param>
+        /// <param name="ifExsitedCovered"></param>
+        private static void GenerateService(string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
+        {
+            var repositoryPath = options.Value.OutputPath + Delimiter + "Services";
+            if (!Directory.Exists(repositoryPath))
+            {
+                Directory.CreateDirectory(repositoryPath);
+            }
+            var fullPath = repositoryPath + Delimiter + modelTypeName.ToPascalCase() + "Service.cs";
+            if (File.Exists(fullPath) && !ifExsitedCovered)
+                return;
+            var content = ReadTemplate("ServiceTemplate.txt");
+            content = content.Replace("{ModelsNamespace}", options.Value.ModelsNamespace)
+                .Replace("{IRepositoriesNamespace}", options.Value.IRepositoriesNamespace)
                 .Replace("{ModelTypeName}", modelTypeName)
                 .Replace("{KeyTypeName}", keyTypeName);
             WriteAndSave(fullPath, content);
@@ -180,12 +228,12 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             {
                 Directory.CreateDirectory(controllerPath);
             }
-            var fullPath = controllerPath + Delimiter + modelTypeName + "Controller.cs";
+            var fullPath = controllerPath + Delimiter + modelTypeName.ToPascalCase() + "Controller.cs";
             if (File.Exists(fullPath) && !ifExsitedCovered)
                 return;
             var content = ReadTemplate("ControllerTemplate.txt");
             content = content.Replace("{ModelsNamespace}", options.Value.ModelsNamespace)
-                .Replace("{IRepositoriesNamespace}", options.Value.IRepositoriesNamespace)
+                .Replace("{IServicesNamespace}", options.Value.IServicesNamespace)
                 .Replace("{ControllersNamespace}", options.Value.ControllersNamespace)
                 .Replace("{ModelTypeName}", modelTypeName)
                 .Replace("{KeyTypeName}", keyTypeName);
@@ -216,6 +264,8 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                         GenerateEntity(table, ifExsitedCovered);
                         GenerateIRepository(table.TableName.ToPascalCase(), pkTypeName, ifExsitedCovered);
                         GenerateRepository(table.TableName.ToPascalCase(), pkTypeName, ifExsitedCovered);
+                        GenerateIService(table.TableName.ToPascalCase(), pkTypeName, ifExsitedCovered);
+                        GenerateService(table.TableName.ToPascalCase(), pkTypeName, ifExsitedCovered);
                         GenerateController(table.TableName.ToPascalCase(), pkTypeName, ifExsitedCovered);
                     }
                 }

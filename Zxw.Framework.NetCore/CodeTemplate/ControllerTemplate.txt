@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using {ModelsNamespace};
-using {IRepositoriesNamespace};
+using {IServicesNamespace};
 using Zxw.Framework.NetCore.Attributes;
 using System.Threading.Tasks;
 using Zxw.Framework.NetCore.Models;
@@ -13,11 +13,11 @@ namespace {ControllersNamespace}
 {
     public class {ModelTypeName}Controller : Controller
     {
-        private I{ModelTypeName}Repository {ModelTypeName}Repository;
+        private I{ModelTypeName}Service {ModelTypeName}Service;
         
-        public {ModelTypeName}Controller(I{ModelTypeName}Repository repository)
+        public {ModelTypeName}Controller(I{ModelTypeName}Service service)
         {
-            {ModelTypeName}Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            {ModelTypeName}Service = service ?? throw new ArgumentNullException(nameof(service));
         }
 
         #region Views
