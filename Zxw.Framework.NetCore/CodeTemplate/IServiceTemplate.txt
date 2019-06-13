@@ -2,7 +2,7 @@
 using Zxw.Framework.NetCore.IServices;
 using {ModelsNamespace};
 
-namespace {IServicsNamespace}
+namespace {IServicesNamespace}
 {
     public interface I{ModelTypeName}Service:IService<{ModelTypeName}, {KeyTypeName}>
     {
