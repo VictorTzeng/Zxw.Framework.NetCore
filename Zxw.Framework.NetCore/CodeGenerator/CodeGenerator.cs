@@ -187,6 +187,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             var content = ReadTemplate("IServiceTemplate.txt");
             content = content.Replace("{ModelsNamespace}", options.Value.ModelsNamespace)
                 .Replace("{IRepositoriesNamespace}", options.Value.IRepositoriesNamespace)
+                .Replace("{IServicesNamespace}", options.Value.IServicesNamespace)
                 .Replace("{ModelTypeName}", modelTypeName)
                 .Replace("{KeyTypeName}", keyTypeName);
             WriteAndSave(fullPath, content);
