@@ -30,14 +30,18 @@
 
   <ItemGroup>
     <None Remove="CodeTemplate\ControllerTemplate.txt" />
+    <None Remove="CodeTemplate\IServiceTemplate.txt" />
     <None Remove="CodeTemplate\ModelTemplate.txt" />
+    <None Remove="CodeTemplate\ServiceTemplate.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="CodeTemplate\ControllerTemplate.txt" />
     <EmbeddedResource Include="CodeTemplate\IRepositoryTemplate.txt" />
+    <EmbeddedResource Include="CodeTemplate\IServiceTemplate.txt" />
     <EmbeddedResource Include="CodeTemplate\ModelTemplate.txt" />
     <EmbeddedResource Include="CodeTemplate\RepositoryTemplate.txt" />
+    <EmbeddedResource Include="CodeTemplate\ServiceTemplate.txt" />
   </ItemGroup>
 
   <ItemGroup>
