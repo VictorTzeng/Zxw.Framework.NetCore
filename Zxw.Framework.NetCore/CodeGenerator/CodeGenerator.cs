@@ -28,7 +28,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
     /// 根据指定的实体域名空间生成Repositories和Services层的基础代码文件。
     /// </remarks>
     /// </summary>
-    public class CodeGenerator
+    public static class CodeGenerator
     {
         private static readonly string Delimiter = "\\";//分隔符，默认为windows下的\\分隔符
 
@@ -354,7 +354,42 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             return sb.ToString();
         }
 
+        public static void ToGenerateEntityFile(this DataTable dt, string className, string outputDir)
+        {
+            if (dt == null) throw new ArgumentNullException(nameof(dt));
+            var template = @"using System;
+using SqlSugar;
 
+namespace Admin.ViewModels
+{
+    public class {0}ViewModel
+    {
+        {1}
+    }
+}";
+            //var columnTemplate = "[SugarColumn(ColumnName = \"{0}\")]\r\npublic {1} {2} { get; set; }";
+            var columnBuilder = new StringBuilder();
+            foreach (DataColumn column in dt.Columns)
+            {
+                columnBuilder.AppendLine(
+                    $"[SugarColumn(ColumnName = \"{column.ColumnName}\")]\r\npublic {column.DataType.Name} {column.ColumnName.ToPascalCase()}" +
+                    "{ get; set; }");
+                columnBuilder.AppendLine();
+            }
+
+            var content = template.Replace("{0}", className).Replace("{1}", columnBuilder.ToString());
+
+            WriteAndSave($"{outputDir}\\{className}.cs", content);
+        }
+
+        public static void ToGenerateEntityFile(this DataSet ds, string outputDir)
+        {
+            if (ds == null) throw new ArgumentNullException(nameof(ds));
+            foreach (DataTable table in ds.Tables)
+            {
+                table.ToGenerateEntityFile(table.TableName, outputDir);
+            }
+        }
         /// <summary>
         /// 写文件
         /// </summary>
