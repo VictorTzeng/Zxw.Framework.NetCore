@@ -356,6 +356,16 @@ namespace Zxw.Framework.NetCore.Extensions
                 return context;
             });
         }
+
+        public static IServiceCollection AddDbContext<IT, T>(this ServiceCollection services, DbContextOption option) where IT:class,IDbContextCore where T:BaseDbContext,IT
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            return services.AddScoped<IT, T>(f =>
+            {
+                T context = (T) Activator.CreateInstance(typeof(T), option);
+                return context;
+            });
+        }
         /// <summary>
         /// 添加自定义Controller。自定义controller项目对应的dll必须复制到程序运行目录
         /// </summary>

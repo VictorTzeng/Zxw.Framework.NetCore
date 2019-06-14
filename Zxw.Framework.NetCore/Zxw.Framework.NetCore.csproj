@@ -4,14 +4,14 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Authors>victor.tzeng</Authors>
     <NeutralLanguage></NeutralLanguage>
-    <Version>2.1.4.61403-rtm-1</Version>
-    <AssemblyVersion>2.1.4.61403</AssemblyVersion>
-    <FileVersion>2.1.4.61403</FileVersion>
+    <Version>2.1.4.61404-rtm-1</Version>
+    <AssemblyVersion>2.1.4.61404</AssemblyVersion>
+    <FileVersion>2.1.4.61404</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Zxw.Framework.NetCore © victor.tzeng</Copyright>
     <PackageProjectUrl>https://github.com/VictorTzeng/Zxw.Framework.NetCore</PackageProjectUrl>
     <Description>基于EF Core的Code First模式的DotNetCore快速开发框架</Description>
-    <PackageReleaseNotes>支持数据库视图与实体的映射</PackageReleaseNotes>
+    <PackageReleaseNotes>扩展AddDbContext</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
