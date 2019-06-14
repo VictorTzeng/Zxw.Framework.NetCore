@@ -62,7 +62,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
             var types = assembly?.GetTypes();
             var list = types?.Where(t =>
                 t.IsClass && !t.IsGenericType && !t.IsAbstract &&
-                t.GetInterfaces().Any(m => m.IsAssignableFrom(typeof(BaseModel<>)))).ToList();
+                t.GetInterfaces().Any(m =>
+                    m.IsAssignableFrom(typeof(BaseModel<>)) || m.IsAssignableFrom(typeof(BaseViewModel)))).ToList();
             if (list != null && list.Any())
             {
                 list.ForEach(t =>
