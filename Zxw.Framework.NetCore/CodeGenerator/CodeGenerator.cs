@@ -357,7 +357,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         public static void ToGenerateViewModelFile(this DataTable dt, string className, string outputDir)
         {
             if (dt == null) throw new ArgumentNullException(nameof(dt));
-            var template = ReadTemplate("ModelTemplate.txt");
+            var template = ReadTemplate("ViewModelTemplate.txt");
             //var columnTemplate = "[SugarColumn(ColumnName = \"{0}\")]\r\npublic {1} {2} { get; set; }";
             var columnBuilder = new StringBuilder();
             foreach (DataColumn column in dt.Columns)
