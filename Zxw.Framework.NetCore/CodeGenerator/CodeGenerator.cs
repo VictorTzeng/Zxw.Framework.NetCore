@@ -354,40 +354,35 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             return sb.ToString();
         }
 
-        public static void ToGenerateEntityFile(this DataTable dt, string className, string outputDir)
+        public static void ToGenerateViewModelFile(this DataTable dt, string className, string outputDir)
         {
             if (dt == null) throw new ArgumentNullException(nameof(dt));
-            var template = @"using System;
-using SqlSugar;
-
-namespace Admin.ViewModels
-{
-    public class {0}ViewModel
-    {
-        {1}
-    }
-}";
+            var template = ReadTemplate("ModelTemplate.txt");
             //var columnTemplate = "[SugarColumn(ColumnName = \"{0}\")]\r\npublic {1} {2} { get; set; }";
             var columnBuilder = new StringBuilder();
             foreach (DataColumn column in dt.Columns)
             {
-                columnBuilder.AppendLine(
-                    $"[SugarColumn(ColumnName = \"{column.ColumnName}\")]\r\npublic {column.DataType.Name} {column.ColumnName.ToPascalCase()}" +
+                columnBuilder.AppendLine($"[Column(\"{column.ColumnName}\")]")
+                    .AppendLine(
+                    $"public {column.DataType.Name} {column.ColumnName.ToPascalCase()}" +
                     "{ get; set; }");
                 columnBuilder.AppendLine();
             }
 
-            var content = template.Replace("{0}", className).Replace("{1}", columnBuilder.ToString());
+            var content = template.Replace("{0}", options.Value.ViewModelsNamespace)
+                .Replace("{1}", dt.TableName)
+                .Replace("{2}", className)
+                .Replace("{3}", columnBuilder.ToString());
 
             WriteAndSave($"{outputDir}\\{className}.cs", content);
         }
 
-        public static void ToGenerateEntityFile(this DataSet ds, string outputDir)
+        public static void ToGenerateViewModelFile(this DataSet ds, string outputDir)
         {
             if (ds == null) throw new ArgumentNullException(nameof(ds));
             foreach (DataTable table in ds.Tables)
             {
-                table.ToGenerateEntityFile(table.TableName, outputDir);
+                table.ToGenerateViewModelFile(table.TableName, outputDir);
             }
         }
         /// <summary>
