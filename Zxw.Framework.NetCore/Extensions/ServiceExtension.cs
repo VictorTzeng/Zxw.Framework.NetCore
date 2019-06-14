@@ -342,7 +342,7 @@ namespace Zxw.Framework.NetCore.Extensions
             return provider.GetServices<IDbContextCore>().FirstOrDefault(m => m.Option.TagName == dbContextTagName);
         }
 
-        public static IServiceCollection AddDbContext<IT, T>(this ServiceCollection services, string tag,
+        public static IServiceCollection AddDbContext<IT, T>(this IServiceCollection services, string tag,
             string connectionString) where IT:class,IDbContextCore where T:BaseDbContext,IT
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -357,7 +357,7 @@ namespace Zxw.Framework.NetCore.Extensions
             });
         }
 
-        public static IServiceCollection AddDbContext<IT, T>(this ServiceCollection services, DbContextOption option) where IT:class,IDbContextCore where T:BaseDbContext,IT
+        public static IServiceCollection AddDbContext<IT, T>(this IServiceCollection services, DbContextOption option) where IT:class,IDbContextCore where T:BaseDbContext,IT
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
             return services.AddScoped<IT, T>(f =>
