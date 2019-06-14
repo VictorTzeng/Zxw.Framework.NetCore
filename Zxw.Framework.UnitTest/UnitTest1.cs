@@ -188,7 +188,6 @@ namespace Zxw.Framework.UnitTest
                 Age = 28,
                 Birthday = Convert.ToDateTime("1999-01-22"),
                 IsBitch = false,
-                UniqueId = Guid.NewGuid().ToString("N"),
                 UserName = "帝王蟹",
                 Wage = 100000000
             }) > 0);
