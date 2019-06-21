@@ -44,8 +44,9 @@ namespace Zxw.Framework.NetCore.Attributes
                 {
                     if (context.ServiceMethod.IsReturnTask())
                     {
-                        context.ReturnValue = Task.FromResult(JsonConvert.DeserializeObject(value,
-                            context.ServiceMethod.ReturnType.GenericTypeArguments[0]));
+                        dynamic result = JsonConvert.DeserializeObject(value,
+                            context.ServiceMethod.ReturnType.GenericTypeArguments[0]); 
+                        context.ReturnValue = Task.FromResult(result);
                     }
                     else
                     {
@@ -55,10 +56,10 @@ namespace Zxw.Framework.NetCore.Attributes
                 else
                 {
                     await context.Invoke(next);
-                    object returnValue = context.ReturnValue;
+                    dynamic returnValue = context.ReturnValue;
                     if (context.ServiceMethod.IsReturnTask())
                     {
-                        returnValue = returnValue.GetType().GetField("Result").GetValue(returnValue);
+                        returnValue = returnValue.Result;
                     }
                     await DistributedCacheManager.SetAsync(key, returnValue, Expiration);
                     //await next(context);
