@@ -3,13 +3,11 @@ using AspectCore.Extensions.DependencyInjection;
 using AspectCore.Injector;
 using CSRedis;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -346,25 +344,25 @@ namespace Zxw.Framework.NetCore.Extensions
             string connectionString) where IT:class,IDbContextCore where T:BaseDbContext,IT
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
-            return services.AddScoped<IT, T>(f =>
+            return services.AddDbContext<IT, T>(new DbContextOption()
             {
-                T context = (T) Activator.CreateInstance(typeof(T), new DbContextOption()
-                {
-                    ConnectionString = connectionString,
-                    TagName = tag
-                });
-                return context;
+                TagName = tag,
+                ConnectionString = connectionString
             });
         }
 
-        public static IServiceCollection AddDbContext<IT, T>(this IServiceCollection services, DbContextOption option) where IT:class,IDbContextCore where T:BaseDbContext,IT
+        public static IServiceCollection AddDbContext<IT, T>(this IServiceCollection services, DbContextOption option) where IT:IDbContextCore where T:BaseDbContext,IT
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
-            return services.AddScoped<IT, T>(f =>
+            if (option == null) throw new ArgumentNullException(nameof(option));
+            services.Configure<DbContextOption>(options =>
             {
-                T context = (T) Activator.CreateInstance(typeof(T), option);
-                return context;
+                options.IsOutputSql = option.IsOutputSql;
+                options.ConnectionString = option.ConnectionString;
+                options.ModelAssemblyName = option.ModelAssemblyName;
+                options.TagName = option.TagName;
             });
+            return services.AddDbContext<IT, T>();
         }
         /// <summary>
         /// 添加自定义Controller。自定义controller项目对应的dll必须复制到程序运行目录

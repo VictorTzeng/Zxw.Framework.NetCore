@@ -5,6 +5,8 @@ using AspectCore.Configuration;
 using AspectCore.Extensions.DependencyInjection;
 using AspectCore.Injector;
 using Microsoft.Extensions.DependencyInjection;
+using Zxw.Framework.NetCore.Extensions;
+using Zxw.Framework.NetCore.IDbContext;
 
 namespace Zxw.Framework.NetCore.IoC
 {
@@ -42,6 +44,20 @@ namespace Zxw.Framework.NetCore.IoC
             if (resolver == null)
                 throw new ArgumentNullException(nameof(resolver), "调用此方法时必须先调用BuildServiceProvider！");
             return resolver.GetServices<T>().ToList();
+        }
+        public static List<T> ResolveServices<T>(Func<T, bool> filter)
+        {
+            if (resolver == null)
+                throw new ArgumentNullException(nameof(resolver), "调用此方法时必须先调用BuildServiceProvider！");
+            if (filter == null) filter = m => true;
+            return ResolveServices<T>().Where(filter).ToList();
+        }
+
+        public static T GetDbContext<T>(string tagName) where T:IDbContextCore
+        {
+            if (resolver == null)
+                throw new ArgumentNullException(nameof(resolver), "调用此方法时必须先调用BuildServiceProvider！");
+            return (T) resolver.GetDbContext(tagName);
         }
     }
 }

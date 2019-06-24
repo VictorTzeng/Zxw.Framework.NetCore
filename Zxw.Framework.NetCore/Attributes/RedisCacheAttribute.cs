@@ -2,10 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AspectCore.DynamicProxy;
-using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Zxw.Framework.NetCore.Cache;
-using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Helpers;
 
 namespace Zxw.Framework.NetCore.Attributes

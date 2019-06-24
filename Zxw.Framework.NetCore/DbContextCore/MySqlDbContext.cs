@@ -5,14 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Scaffolding;
-using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.IDbContext;
-using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.DbContextCore

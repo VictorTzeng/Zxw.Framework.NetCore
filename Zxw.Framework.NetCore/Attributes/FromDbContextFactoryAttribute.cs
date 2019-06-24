@@ -3,11 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using AspectCore.DynamicProxy;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Extensions;
-using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.Attributes
 {
@@ -21,16 +17,7 @@ namespace Zxw.Framework.NetCore.Attributes
             DbContextTagName = tagName;
         }
     }
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
-    public class FromDbOptionAttribute : Attribute
-    {
-        public string TagName { get; set; }
 
-        public FromDbOptionAttribute(string tagName)
-        {
-            TagName = tagName;
-        }
-    }
 
     public class FromDbContextFactoryInterceptor : AbstractInterceptorAttribute
     {
@@ -46,27 +33,6 @@ namespace Zxw.Framework.NetCore.Attributes
                     var attribute = property.GetCustomAttribute<FromDbContextFactoryAttribute>();
                     var dbContext = context.ServiceProvider.GetDbContext(attribute.DbContextTagName);
                     property.SetValue(context.Implementation, dbContext);
-                }
-            }
-            return context.Invoke(next);
-        }
-    }
-
-    public class FromDbOptionInterceptor : AbstractInterceptorAttribute
-    {
-        public override Task Invoke(AspectContext context, AspectDelegate next)
-        {
-            var impType = context.Implementation.GetType();
-            var properties = impType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                .Where(p => p.IsDefined(typeof(FromDbOptionAttribute))).ToList();
-            if (properties.Any())
-            {
-                var options = context.ServiceProvider.GetServices<IOptions<DbContextOption>>().ToList();
-                foreach (var property in properties)
-                {
-                    var attribute = property.GetCustomAttribute<FromDbOptionAttribute>();
-                    var option = options.FirstOrDefault(m => m.Value.TagName == attribute.TagName);
-                    property.SetValue(context.Implementation, option);
                 }
             }
             return context.Invoke(next);

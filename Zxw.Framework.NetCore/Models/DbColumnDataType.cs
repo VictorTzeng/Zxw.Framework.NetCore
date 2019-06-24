@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Text;
-using MongoDB.Driver;
-using NpgsqlTypes;
+﻿using System.Collections.Generic;
 
 namespace Zxw.Framework.NetCore.Models
 {

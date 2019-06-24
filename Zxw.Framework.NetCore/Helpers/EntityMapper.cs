@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Zxw.Framework.NetCore.Helpers
 {

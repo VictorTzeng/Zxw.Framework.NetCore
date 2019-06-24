@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
-using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IoC;
 

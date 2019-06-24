@@ -6,13 +6,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Zxw.Framework.NetCore.Attributes;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.IDbContext
 {
-    [FromDbOptionInterceptor]
     public interface IDbContextCore:IDisposable
     {
         DbContextOption Option { get; }
