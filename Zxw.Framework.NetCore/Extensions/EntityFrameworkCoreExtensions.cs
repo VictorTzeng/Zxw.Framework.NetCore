@@ -28,9 +28,9 @@ namespace Zxw.Framework.NetCore.Extensions
             if (connection.State == ConnectionState.Closed)
                 connection.Open();
             var ds = new DataSet();
-            var dt = new DataTable();
             DbCommand cmd;
             DataAdapter da;
+            DataTable dt;
             if (db.IsSqlServer())
             {
                 cmd = new SqlCommand(sql, (SqlConnection) connection);
@@ -287,7 +287,8 @@ namespace Zxw.Framework.NetCore.Extensions
             var db = context.GetDatabase();
             var connection = db.GetDbConnection();
             var cmd = connection.CreateCommand();
-            db.OpenConnection();
+            if (connection.State == ConnectionState.Closed)
+                connection.Open();
             cmd.CommandText = sql;
             cmd.CommandType = CommandType.Text;
             if (sqlParams != null)
@@ -295,7 +296,7 @@ namespace Zxw.Framework.NetCore.Extensions
                 cmd.Parameters.AddRange(sqlParams);
             }
             var result = cmd.ExecuteNonQuery();
-            db.CloseConnection();
+            connection.Close();
             return result;
         }
         private static IEnumerable<T> Execute<T>(this IDbContextCore context, string sql, CommandType type, DbParameter[] sqlParams) where T : new()
@@ -303,7 +304,8 @@ namespace Zxw.Framework.NetCore.Extensions
             var db = context.GetDatabase();
             var connection = db.GetDbConnection();
             var cmd = connection.CreateCommand();
-            db.OpenConnection();
+            if (connection.State == ConnectionState.Closed)
+                connection.Open();
             cmd.CommandText = sql;
             cmd.CommandType = type;
             if (sqlParams != null)
@@ -315,7 +317,8 @@ namespace Zxw.Framework.NetCore.Extensions
             {
                 result = EntityMapper.MapToEntities<T>(reader);
             }
-            db.CloseConnection();
+
+            connection.Close();
             return result;
         }
     }
