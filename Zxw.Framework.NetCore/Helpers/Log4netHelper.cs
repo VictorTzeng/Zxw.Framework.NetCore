@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using Exceptionless;
+using Exceptionless.Logging;
 using log4net;
 using log4net.Config;
 using log4net.Repository;
+using Zxw.Framework.NetCore.Extensions;
 
 namespace Zxw.Framework.NetCore.Helpers
 {
@@ -17,13 +20,16 @@ namespace Zxw.Framework.NetCore.Helpers
     public class Log4NetHelper
     {
         private static ILoggerRepository _repository;
+        private static bool _bLog2Exceptionless = false;
+        private static ExceptionlessClient exceptionlessClient = null;
 
         /// <summary>
         /// 读取配置文件，并使其生效。如果未找到配置文件，则抛出异常
         /// </summary>
         /// <param name="repository"></param>
         /// <param name="configFilePath">配置文件全路径</param>
-        public static void SetConfig(ILoggerRepository repository, string configFilePath)
+        /// <param name="useExceptionless">是否启用Exceptionless</param>
+        public static void SetConfig(ILoggerRepository repository, string configFilePath, bool useExceptionless = false)
         {
             _repository = repository;
             var fileInfo = new FileInfo(configFilePath);
@@ -32,6 +38,12 @@ namespace Zxw.Framework.NetCore.Helpers
                 throw new Exception("未找到配置文件" + configFilePath);
             }
             XmlConfigurator.ConfigureAndWatch(_repository, fileInfo);
+
+            _bLog2Exceptionless = useExceptionless;
+            if (_bLog2Exceptionless)
+            {
+                exceptionlessClient = ExceptionlessClient.Default;
+            }
         }
 
         #region static void WriteError(Type t, Exception ex)
@@ -45,6 +57,7 @@ namespace Zxw.Framework.NetCore.Helpers
         {
             var log = LogManager.GetLogger(_repository.Name, t);
             log.Error("Error", ex);
+            WriteExceptionlessLog(ex.Source, ex.Message, LogLevel.Error);
         }
 
         #endregion static void WriteError(Type t, Exception ex)
@@ -64,6 +77,7 @@ namespace Zxw.Framework.NetCore.Helpers
             var methodBase = stackFrame.GetMethod();
             var message = "方法名称：" + methodBase.Name + "\r\n日志内容：" + msg;
             log.Error(message);
+            WriteExceptionlessLog(null, message, LogLevel.Error);
         }
 
         #endregion static void WriteError(Type t, string msg)
@@ -81,6 +95,8 @@ namespace Zxw.Framework.NetCore.Helpers
             var methodBase = stackFrame.GetMethod();
             var message = "方法名称：" + methodBase.Name + "\r\n日志内容：" + msg;
             log.Info(message);
+
+            WriteExceptionlessLog(null, message, LogLevel.Info);
         }
 
         /// <summary>
@@ -92,6 +108,7 @@ namespace Zxw.Framework.NetCore.Helpers
         {
             var log = LogManager.GetLogger(_repository.Name, t);
             log.Info("系统消息", exception);
+            WriteExceptionlessLog(exception.Source, exception.Message, LogLevel.Info);
         }
 
         /// <summary>
@@ -107,6 +124,7 @@ namespace Zxw.Framework.NetCore.Helpers
             var methodBase = stackFrame.GetMethod();
             var message = "方法名称：" + methodBase.Name + "\r\n日志内容：" + msg;
             log.Fatal(message);
+            WriteExceptionlessLog(null, message, LogLevel.Fatal);
         }
 
         /// <summary>
@@ -118,6 +136,7 @@ namespace Zxw.Framework.NetCore.Helpers
         {
             var log = LogManager.GetLogger(_repository.Name, t);
             log.Fatal("系统致命错误", exception);
+            WriteExceptionlessLog(exception.Source, exception.Message, LogLevel.Fatal);
         }
 
         /// <summary>
@@ -133,6 +152,7 @@ namespace Zxw.Framework.NetCore.Helpers
             var methodBase = stackFrame.GetMethod();
             var message = "方法名称：" + methodBase.Name + "\r\n日志内容：" + msg;
             log.Debug(message);
+            WriteExceptionlessLog(null, message, LogLevel.Debug);
         }
 
         /// <summary>
@@ -144,6 +164,7 @@ namespace Zxw.Framework.NetCore.Helpers
         {
             var log = LogManager.GetLogger(_repository.Name, t);
             log.Debug("系统调试信息", exception);
+            WriteExceptionlessLog(exception.Source, exception.Message, LogLevel.Debug);
         }
 
         /// <summary>
@@ -155,6 +176,7 @@ namespace Zxw.Framework.NetCore.Helpers
         {
             var log = LogManager.GetLogger(_repository.Name, t);
             log.Warn(msg);
+            WriteExceptionlessLog(null, msg, LogLevel.Warn);
         }
 
         /// <summary>
@@ -166,6 +188,15 @@ namespace Zxw.Framework.NetCore.Helpers
         {
             var log = LogManager.GetLogger(_repository.Name, t);
             log.Warn("系统警告信息", exception);
+            WriteExceptionlessLog(exception.Source, exception.Message, LogLevel.Warn);
+        }
+
+        private static void WriteExceptionlessLog(string source, string message, LogLevel logLevel, params string[] tags)
+        {
+            if (source.IsNullOrWhiteSpace())
+                exceptionlessClient?.CreateLog(message, logLevel).AddTags(tags).Submit();
+            else
+                exceptionlessClient?.CreateLog(source, message, logLevel).AddTags(tags).Submit();
         }
     }
 }

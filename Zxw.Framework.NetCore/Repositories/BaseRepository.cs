@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.IDbContext;
@@ -17,10 +16,10 @@ namespace Zxw.Framework.NetCore.Repositories
 
         protected DbSet<T> DbSet => DbContext.GetDbSet<T>();
 
-        protected BaseRepository([FromServices]IDbContextCore dbContext)
+        protected BaseRepository(IDbContextCore dbContext)
         {
             DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            DbContext.EnsureCreatedAsync();
+            DbContext.EnsureCreated();
         }
 
         #region Insert
@@ -255,6 +254,7 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public void Dispose()
         {
+            DbContext?.Dispose();
         }
     }
 }
