@@ -1,5 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Oracle.ManagedDataAccess.Client;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.Options;
 
@@ -19,5 +25,44 @@ namespace Zxw.Framework.NetCore.DbContextCore
             optionsBuilder.UseLazyLoadingProxies().UseOracle(Option.ConnectionString);
             base.OnConfiguring(optionsBuilder);
         }
+
+        public override DataTable GetDataTable(string sql, params DbParameter[] parameters)
+        {
+            return GetDataTables(sql, parameters).FirstOrDefault();
+        }
+
+        public override List<DataTable> GetDataTables(string sql, params DbParameter[] parameters)
+        {
+            var dts = new List<DataTable>();
+            using (var connection = Database.GetDbConnection())
+            {
+                if (connection.State != ConnectionState.Open)
+                    connection.Open();
+
+                using (var cmd = new OracleCommand(sql, (OracleConnection) connection))
+                {
+                    if (parameters != null && parameters.Length > 0)
+                    {
+                        cmd.Parameters.AddRange(parameters);
+                    }
+                    
+                    using (var da = new OracleDataAdapter(cmd))
+                    {
+                        using (var ds = new DataSet())
+                        {
+                            da.Fill(ds);
+                            foreach (DataTable table in ds.Tables)
+                            {
+                                dts.Add(table);
+                            }
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            return dts;
+        }
+
     }
 }

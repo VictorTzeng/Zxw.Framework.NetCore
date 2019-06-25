@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -315,5 +317,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
         {
             return await Set<T>().FromSql(sql, parameters).Cast<TView>().ToListAsync();
         }
+
+        public abstract DataTable GetDataTable(string sql, params DbParameter[] parameters);
+        public abstract List<DataTable> GetDataTables(string sql, params DbParameter[] parameters);
     }
 }

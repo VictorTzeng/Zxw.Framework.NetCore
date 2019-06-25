@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -66,6 +68,43 @@ namespace Zxw.Framework.NetCore.DbContextCore
                 conn.Close();
             }
             File.Delete(csvFileName);
+        }
+        public override DataTable GetDataTable(string sql, params DbParameter[] parameters)
+        {
+            return GetDataTables(sql, parameters).FirstOrDefault();
+        }
+
+        public override List<DataTable> GetDataTables(string sql, params DbParameter[] parameters)
+        {
+            var dts = new List<DataTable>();
+            using (var connection = Database.GetDbConnection())
+            {
+                if (connection.State != ConnectionState.Open)
+                    connection.Open();
+
+                using (var cmd = new MySqlCommand(sql, (MySqlConnection) connection))
+                {
+                    if (parameters != null && parameters.Length > 0)
+                    {
+                        cmd.Parameters.AddRange(parameters);
+                    }
+                    
+                    using (var da = new MySqlDataAdapter(cmd))
+                    {
+                        using (var ds = new DataSet())
+                        {
+                            da.Fill(ds);
+                            foreach (DataTable table in ds.Tables)
+                            {
+                                dts.Add(table);
+                            }
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            return dts;
         }
 
     }

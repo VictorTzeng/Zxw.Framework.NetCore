@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Options;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.IDbContext;
@@ -110,6 +112,44 @@ namespace Zxw.Framework.NetCore.DbContextCore
                 pageSize = pageSize,
                 total = total
             };
+        }
+
+        public override DataTable GetDataTable(string sql, params DbParameter[] parameters)
+        {
+            return GetDataTables(sql, parameters).FirstOrDefault();
+        }
+
+        public override List<DataTable> GetDataTables(string sql, params DbParameter[] parameters)
+        {
+            var dts = new List<DataTable>();
+            using (var connection = Database.GetDbConnection())
+            {
+                if (connection.State != ConnectionState.Open)
+                    connection.Open();
+
+                using (var cmd = new SqlCommand(sql, (SqlConnection) connection))
+                {
+                    if (parameters != null && parameters.Length > 0)
+                    {
+                        cmd.Parameters.AddRange(parameters);
+                    }
+                    
+                    using (var da = new SqlDataAdapter(cmd))
+                    {
+                        using (var ds = new DataSet())
+                        {
+                            da.Fill(ds);
+                            foreach (DataTable table in ds.Tables)
+                            {
+                                dts.Add(table);
+                            }
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            return dts;
         }
     }
 }

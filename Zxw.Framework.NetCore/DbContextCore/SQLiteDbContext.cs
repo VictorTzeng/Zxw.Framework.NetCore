@@ -1,4 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
+using System.Linq;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.Options;
@@ -20,5 +26,37 @@ namespace Zxw.Framework.NetCore.DbContextCore
             optionsBuilder.UseLazyLoadingProxies().UseSqlite(Option.ConnectionString);
             base.OnConfiguring(optionsBuilder);
         }
+
+        public override DataTable GetDataTable(string sql, params DbParameter[] parameters)
+        {
+            return GetDataTables(sql, parameters).FirstOrDefault();
+        }
+
+        public override List<DataTable> GetDataTables(string sql, params DbParameter[] parameters)
+        {
+            var dts = new List<DataTable>();
+            using (var connection = Database.GetDbConnection())
+            {
+                if (connection.State != ConnectionState.Open)
+                    connection.Open();
+
+                using (var cmd = new SqliteCommand(sql, (SqliteConnection) connection))
+                {
+                    if (parameters != null && parameters.Length > 0)
+                    {
+                        cmd.Parameters.AddRange(parameters);
+                    }
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        dts.Add(reader.GetSchemaTable());
+                    }
+                }
+                connection.Close();
+            }
+
+            return dts;
+        }
+
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
@@ -57,5 +59,8 @@ namespace Zxw.Framework.NetCore.IDbContext
         int SaveChanges(bool acceptAllChangesOnSuccess);
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
         Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,CancellationToken cancellationToken = default(CancellationToken));
+
+        DataTable GetDataTable(string sql, params DbParameter[] parameters);
+        List<DataTable> GetDataTables(string sql, params DbParameter[] parameters);
     }
 }
