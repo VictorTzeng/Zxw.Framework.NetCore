@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using Zxw.Framework.NetCore.Helpers;
 
 namespace Zxw.Framework.NetCore.DbLogProvider
 {
@@ -27,6 +28,8 @@ namespace Zxw.Framework.NetCore.DbLogProvider
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine(logContent);
                 Console.ResetColor();
+
+                Log4NetHelper.WriteInfo(GetType(), logContent);
             }
         }
 
