@@ -2,14 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Linq;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient;
-using Npgsql;
-using Oracle.ManagedDataAccess.Client;
 using StackExchange.Redis.Extensions.Core.Extensions;
 using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IDbContext;

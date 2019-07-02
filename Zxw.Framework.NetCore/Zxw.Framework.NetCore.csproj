@@ -74,6 +74,6 @@
     <PackageReference Include="StackExchange.Redis.Extensions.JilCore" Version="1.0.1" />
     <PackageReference Include="System.Reflection" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
-    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="2.0.2" />
+    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="2.0.3" />
   </ItemGroup>
 </Project>
