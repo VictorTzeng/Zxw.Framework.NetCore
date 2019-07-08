@@ -67,8 +67,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
             {
                 list.ForEach(t =>
                 {
-                    var dbContextType = t.GetCustomAttribute<DbContextAttribute>().ContextType;
-                    if (modelBuilder.Model.FindEntityType(t) == null && GetType()==dbContextType)
+                    var dbContextType = t.GetCustomAttributes<DbContextAttribute>().FirstOrDefault(x=>x.ContextType==GetType());
+                    if (modelBuilder.Model.FindEntityType(t) == null && null!=dbContextType)
                         modelBuilder.Model.AddEntityType(t);
                 });
             }
