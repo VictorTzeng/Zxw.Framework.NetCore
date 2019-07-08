@@ -58,7 +58,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
             if (string.IsNullOrEmpty(Option.ModelAssemblyName))
                 return;
             var assembly = Assembly.Load(Option.ModelAssemblyName);
-            var types = assembly?.GetTypes();
+            var types = assembly?.GetTypes().Where(c=>c.GetCustomAttributes<DbContextAttribute>().Any());
             var list = types?.Where(t =>
                 t.IsClass && !t.IsGenericType && !t.IsAbstract &&
                 t.GetInterfaces().Any(m =>
@@ -67,7 +67,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
             {
                 list.ForEach(t =>
                 {
-                    if (modelBuilder.Model.FindEntityType(t) == null)
+                    var dbContextType = t.GetCustomAttribute<DbContextAttribute>().ContextType;
+                    if (modelBuilder.Model.FindEntityType(t) == null && GetType()==dbContextType)
                         modelBuilder.Model.AddEntityType(t);
                 });
             }
