@@ -1,11 +1,11 @@
 # Zxw.Framework.NetCore
 基于EF Core的Code First模式的DotNetCore快速开发框架
 
-**Nuget [最新版本：2.1.3-preview2-t007bc0fad]**
+**Nuget [最新版本：2.2.0]**
 
-[Zxw.Framework.NetCore](https://www.nuget.org/packages/Zxw.Framework.NetCore/2.1.3-preview2-t007bc0fad) 
-* Install-Package Zxw.Framework.NetCore -Version 2.1.3-preview2-t007bc0fad
-* dotnet add package Zxw.Framework.NetCore --version 2.1.3-preview2-t007bc0fad
+[Zxw.Framework.NetCore](https://www.nuget.org/packages/Zxw.Framework.NetCore/2.2.0) 
+* Install-Package Zxw.Framework.NetCore -Version 2.2.0
+* dotnet add package Zxw.Framework.NetCore --version 2.2.0
 
 **开发环境**
 * VS2017 / VS Code
