@@ -33,32 +33,31 @@ namespace Zxw.Framework.NetCore.DbContextCore
         public override List<DataTable> GetDataTables(string sql, params DbParameter[] parameters)
         {
             var dts = new List<DataTable>();
-            using (var connection = Database.GetDbConnection())
-            {
-                if (connection.State != ConnectionState.Open)
-                    connection.Open();
+            //TODO： connection 不能dispose 或者 用using，否则下次获取connection会报错提示“the connectionstring property has not been initialized。”
+            var connection = Database.GetDbConnection();
+            if (connection.State != ConnectionState.Open)
+                connection.Open();
 
-                using (var cmd = new NpgsqlCommand(sql, (NpgsqlConnection) connection))
+            using (var cmd = new NpgsqlCommand(sql, (NpgsqlConnection) connection))
+            {
+                if (parameters != null && parameters.Length > 0)
                 {
-                    if (parameters != null && parameters.Length > 0)
+                    cmd.Parameters.AddRange(parameters);
+                }
+                
+                using (var da = new NpgsqlDataAdapter(cmd))
+                {
+                    using (var ds = new DataSet())
                     {
-                        cmd.Parameters.AddRange(parameters);
-                    }
-                    
-                    using (var da = new NpgsqlDataAdapter(cmd))
-                    {
-                        using (var ds = new DataSet())
+                        da.Fill(ds);
+                        foreach (DataTable table in ds.Tables)
                         {
-                            da.Fill(ds);
-                            foreach (DataTable table in ds.Tables)
-                            {
-                                dts.Add(table);
-                            }
+                            dts.Add(table);
                         }
                     }
                 }
-                connection.Close();
             }
+            connection.Close();
 
             return dts;
         }

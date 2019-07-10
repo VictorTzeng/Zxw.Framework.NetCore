@@ -179,6 +179,7 @@ namespace Zxw.Framework.NetCore.Extensions
             return tables;
         }
 
+
         /// <summary>
         /// 执行SQL返回受影响的行数
         /// </summary>
@@ -230,12 +231,9 @@ namespace Zxw.Framework.NetCore.Extensions
             {
                 cmd.Parameters.AddRange(sqlParams);
             }
-            IEnumerable<T> result;
-            using (var reader = cmd.ExecuteReader())
-            {
-                result = EntityMapper.MapToEntities<T>(reader);
-            }
 
+            var reader = cmd.ExecuteReader();
+            var result = reader.ToList<T>();
             connection.Close();
             return result;
         }

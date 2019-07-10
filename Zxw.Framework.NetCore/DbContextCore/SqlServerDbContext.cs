@@ -8,7 +8,6 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Options;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.IDbContext;
@@ -49,31 +48,29 @@ namespace Zxw.Framework.NetCore.DbContextCore
             using (var dt = entities.ToDataTable())
             {
                 dt.TableName = destinationTableName;
-                using (var conn = Database.GetDbConnection() as SqlConnection ?? new SqlConnection(Option.ConnectionString))
+                var conn = (SqlConnection)Database.GetDbConnection();
+                if (conn.State != ConnectionState.Open)
+                    conn.Open();
+                using (var tran = conn.BeginTransaction())
                 {
-                    if (conn.State != ConnectionState.Open)
-                        conn.Open();
-                    using (var tran = conn.BeginTransaction())
+                    try
                     {
-                        try
+                        var bulk = new SqlBulkCopy(conn, SqlBulkCopyOptions.Default, tran)
                         {
-                            var bulk = new SqlBulkCopy(conn, SqlBulkCopyOptions.Default, tran)
-                            {
-                                BatchSize = entities.Count,
-                                DestinationTableName = dt.TableName,
-                            };
-                            GenerateColumnMappings<T>(bulk.ColumnMappings);
-                            bulk.WriteToServerAsync(dt);
-                            tran.Commit();
-                        }
-                        catch (Exception)
-                        {
-                            tran.Rollback();
-                            throw;
-                        }                        
+                            BatchSize = entities.Count,
+                            DestinationTableName = dt.TableName,
+                        };
+                        GenerateColumnMappings<T>(bulk.ColumnMappings);
+                        bulk.WriteToServerAsync(dt);
+                        tran.Commit();
                     }
-                    conn.Close();
+                    catch (Exception)
+                    {
+                        tran.Rollback();
+                        throw;
+                    }                        
                 }
+                conn.Close();
             }
         }
 
@@ -122,32 +119,31 @@ namespace Zxw.Framework.NetCore.DbContextCore
         public override List<DataTable> GetDataTables(string sql, params DbParameter[] parameters)
         {
             var dts = new List<DataTable>();
-            using (var connection = Database.GetDbConnection())
-            {
-                if (connection.State != ConnectionState.Open)
-                    connection.Open();
+            //TODO： connection 不能dispose 或者 用using，否则下次获取connection会报错提示“the connectionstring property has not been initialized。”
+            var connection = Database.GetDbConnection();
+            if (connection.State != ConnectionState.Open)
+                connection.Open();
 
-                using (var cmd = new SqlCommand(sql, (SqlConnection) connection))
+            using (var cmd = new SqlCommand(sql, (SqlConnection) connection))
+            {
+                if (parameters != null && parameters.Length > 0)
                 {
-                    if (parameters != null && parameters.Length > 0)
+                    cmd.Parameters.AddRange(parameters);
+                }
+                
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    using (var ds = new DataSet())
                     {
-                        cmd.Parameters.AddRange(parameters);
-                    }
-                    
-                    using (var da = new SqlDataAdapter(cmd))
-                    {
-                        using (var ds = new DataSet())
+                        da.Fill(ds);
+                        foreach (DataTable table in ds.Tables)
                         {
-                            da.Fill(ds);
-                            foreach (DataTable table in ds.Tables)
-                            {
-                                dts.Add(table);
-                            }
+                            dts.Add(table);
                         }
                     }
                 }
-                connection.Close();
             }
+            connection.Close();
 
             return dts;
         }
