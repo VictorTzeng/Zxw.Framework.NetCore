@@ -4,14 +4,14 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Authors>victor.tzeng</Authors>
     <NeutralLanguage></NeutralLanguage>
-    <Version>2.2.1</Version>
-    <AssemblyVersion>2.2.1.0</AssemblyVersion>
-    <FileVersion>2.2.1.0</FileVersion>
+    <Version>2.2.2</Version>
+    <AssemblyVersion>2.2.2.0</AssemblyVersion>
+    <FileVersion>2.2.2.0</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Zxw.Framework.NetCore © victor.tzeng</Copyright>
     <PackageProjectUrl>https://github.com/VictorTzeng/Zxw.Framework.NetCore</PackageProjectUrl>
     <Description>基于EF Core的Code First模式的DotNetCore快速开发框架</Description>
-    <PackageReleaseNotes>修复多次GetDbConnection()数据库连接字符串丢失的bug</PackageReleaseNotes>
+    <PackageReleaseNotes>upgrade ef core to 2.2.6</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -60,20 +60,20 @@
     <PackageReference Include="Jil" Version="2.17.0" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.2.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="2.2.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.2.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="2.2.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.6" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.2.0" />
     <PackageReference Include="StackExchange.Redis.Extensions.JilCore" Version="1.0.1" />
     <PackageReference Include="System.Reflection" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
-    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="2.0.3" />
+    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="2.0.4" />
   </ItemGroup>
 </Project>
