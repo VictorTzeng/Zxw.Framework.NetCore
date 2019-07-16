@@ -217,12 +217,12 @@ namespace Zxw.Framework.NetCore.Repositories
         /// </summary>
         public virtual IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true, params Func<T, object>[] @orderby)
         {
-            var filter = Get(where).AsEnumerable();
+            var filter = Get(where);
             if (orderby != null)
             {
                 foreach (var func in orderby)
                 {
-                    filter = asc ? filter.OrderBy(func) : filter.OrderByDescending(func);
+                    filter = asc ? filter.OrderBy(func).AsQueryable() : filter.OrderByDescending(func).AsQueryable();
                 }
             }
             return filter.Skip(pageSize * (pageIndex - 1)).Take(pageSize);

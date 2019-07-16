@@ -53,8 +53,8 @@
     <PackageReference Include="Blueshift.EntityFrameworkCore.MongoDB-aleksamagicka" Version="2.2.0-rtm-1" />
     <PackageReference Include="Caching.CSRedis" Version="3.0.51" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.0" />
-    <PackageReference Include="Citms.EntityFrameworkCore.Oracle" Version="1.0.8" />
-    <PackageReference Include="CSRedisCore" Version="3.0.62" />
+    <PackageReference Include="Citms.EntityFrameworkCore.Oracle" Version="1.0.9" />
+    <PackageReference Include="CSRedisCore" Version="3.0.64" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.1" />
     <PackageReference Include="Exceptionless" Version="4.3.2027" />
     <PackageReference Include="Jil" Version="2.17.0" />

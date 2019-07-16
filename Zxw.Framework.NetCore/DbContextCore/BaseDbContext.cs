@@ -104,7 +104,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         public virtual int Delete<T>(object key) where T : class
         {
-            Remove(key);
+            var entity = Find<T>(key);
+            Remove(entity);
             return  SaveChanges();
         }
 
