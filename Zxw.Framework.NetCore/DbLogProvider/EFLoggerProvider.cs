@@ -4,10 +4,21 @@ using Zxw.Framework.NetCore.Helpers;
 
 namespace Zxw.Framework.NetCore.DbLogProvider
 {
-    public class EFLoggerProvider:ILoggerProvider
+public class EFLoggerFactory : ILoggerFactory
     {
-        public ILogger CreateLogger(string categoryName) => new EFLogger(categoryName);
-        public void Dispose() { }
+        public void AddProvider(ILoggerProvider provider)
+        {
+        }
+
+        public ILogger CreateLogger(string categoryName)
+        {
+            return new EFLogger(categoryName);//创建EFLogger类的实例
+        }
+
+        public void Dispose()
+        {
+
+        }
     }
 
     public class EFLogger : ILogger

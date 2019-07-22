@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Options;
 using Z.EntityFramework.Plus;
+using Zxw.Framework.NetCore.DbLogProvider;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
@@ -45,6 +46,16 @@ namespace Zxw.Framework.NetCore.DbContextCore
             //if (string.IsNullOrEmpty(option.Value.ModelAssemblyName))
             //    throw new ArgumentNullException(nameof(option.Value.ModelAssemblyName));
             Option = option.Value;
+        }
+
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if(Option.IsOutputSql)
+            {
+                optionsBuilder.UseLoggerFactory(new EFLoggerFactory());
+            }
+            base.OnConfiguring(optionsBuilder);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
