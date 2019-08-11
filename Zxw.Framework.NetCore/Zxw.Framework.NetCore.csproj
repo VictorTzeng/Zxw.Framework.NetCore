@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="CodeTemplate\ApiControllerTemplate.txt" />
     <None Remove="CodeTemplate\ControllerTemplate.txt" />
     <None Remove="CodeTemplate\IServiceTemplate.txt" />
     <None Remove="CodeTemplate\ModelTemplate.txt" />
@@ -37,6 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="CodeTemplate\ApiControllerTemplate.txt" />
     <EmbeddedResource Include="CodeTemplate\ControllerTemplate.txt" />
     <EmbeddedResource Include="CodeTemplate\IRepositoryTemplate.txt" />
     <EmbeddedResource Include="CodeTemplate\IServiceTemplate.txt" />

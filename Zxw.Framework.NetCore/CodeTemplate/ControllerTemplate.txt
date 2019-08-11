@@ -36,8 +36,8 @@ namespace {ControllersNamespace}
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
-                    var rows = {ModelTypeName}Repository.Get().ToList();
-                    return Json(ExcutedResult.SuccessResult(rows));
+                var rows = {ModelTypeName}Service.Get().ToList();
+                return Json(ExcutedResult.SuccessResult(rows));
             });
         }
 
@@ -46,8 +46,8 @@ namespace {ControllersNamespace}
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
-                var total = {ModelTypeName}Repository.Count(m => true);
-                var rows = {ModelTypeName}Repository.GetByPagination(m => true, pageSize, pageIndex, true,
+                var total = {ModelTypeName}Service.Count(m => true);
+                var rows = {ModelTypeName}Service.GetByPagination(m => true, pageSize, pageIndex, true,
                     m => m.Id).ToList();
                 return Json(PaginationResult.PagedResult(rows, total, pageSize, pageIndex));
             });
@@ -64,7 +64,7 @@ namespace {ControllersNamespace}
             {
                 if(!ModelState.IsValid)
                     return Json(ExcutedResult.FailedResult("数据验证失败"));
-                {ModelTypeName}Repository.AddAsync(model, false);
+                {ModelTypeName}Service.AddAsync(model, false);
                 return Json(ExcutedResult.SuccessResult());
             });
         }
@@ -80,7 +80,7 @@ namespace {ControllersNamespace}
             {
                 if (!ModelState.IsValid)
                     return Json(ExcutedResult.FailedResult("数据验证失败"));
-                {ModelTypeName}Repository.Edit(model, false);
+                {ModelTypeName}Service.Edit(model, false);
                 return Json(ExcutedResult.SuccessResult());
             });
         }
@@ -94,7 +94,7 @@ namespace {ControllersNamespace}
         {
             return Task.Factory.StartNew<IActionResult>(() =>
             {
-                {ModelTypeName}Repository.Delete(id, false);
+                {ModelTypeName}Service.Delete(id, false);
                 return Json(ExcutedResult.SuccessResult("成功删除一条数据。"));
             });
         }

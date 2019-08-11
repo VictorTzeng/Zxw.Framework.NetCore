@@ -51,7 +51,8 @@ namespace Zxw.Framework.UnitTest
         public void TestGenerateEntitiesForOracle()
         {
             BuildServiceForOracle();
-            CodeGenerator.GenerateAllCodesFromDatabase(true);
+            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            dbContext.GenerateAllCodesFromDatabase(true);
         }
 
         #endregion
@@ -89,7 +90,8 @@ namespace Zxw.Framework.UnitTest
         public void TestGenerateEntitiesForPostgreSql()
         {
             BuildServiceForPostgreSql();
-            CodeGenerator.GenerateAllCodesFromDatabase(true);
+            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            dbContext.GenerateAllCodesFromDatabase(true);
         }
 
         #endregion
@@ -123,7 +125,8 @@ namespace Zxw.Framework.UnitTest
         public void TestGenerateEntitiesForSqlServer()
         {
             BuildServiceForSqlServer();
-            CodeGenerator.GenerateAllCodesFromDatabase(true);
+            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            dbContext.GenerateAllCodesFromDatabase(true);
         }
 
         #endregion
@@ -157,7 +160,8 @@ namespace Zxw.Framework.UnitTest
         public void TestGenerateEntitiesForMySql()
         {
             BuildServiceFoMySql();
-            CodeGenerator.GenerateAllCodesFromDatabase(true);
+            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            dbContext.GenerateAllCodesFromDatabase(true);
         }
 
         #endregion

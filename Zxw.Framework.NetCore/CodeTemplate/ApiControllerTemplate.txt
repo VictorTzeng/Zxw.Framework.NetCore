@@ -1,0 +1,82 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using {ModelsNamespace};
+using {IServicesNamespace};
+using Zxw.Framework.NetCore.Attributes;
+using System.Threading.Tasks;
+using Zxw.Framework.NetCore.Models;
+using System.Linq;
+
+namespace {ControllersNamespace}
+{
+    [ApiController]
+	[Route("api/{controller}/{action}")]
+    public class {ModelTypeName}Controller : ControllerBase
+    {
+        private I{ModelTypeName}Service {ModelTypeName}Service;
+        
+        public {ModelTypeName}Controller(I{ModelTypeName}Service service)
+        {
+            {ModelTypeName}Service = service ?? throw new ArgumentNullException(nameof(service));
+        }
+
+        #region Methods
+
+        [HttpGet]
+        public async Task<ActionResult<ExcutedResult>> GetAll()
+        {
+            var rows = {ModelTypeName}Service.Get().Select(m=>new{}).ToList();
+            return await Task.FromResult(ExcutedResult.SuccessResult(rows));
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<ExcutedResult>> GetByPaged(int pageSize, int pageIndex)
+        {
+            var total = {ModelTypeName}Service.Count(m => true);
+            var rows = {ModelTypeName}Service.GetByPagination(m => true, pageSize, pageIndex, true,
+                m => m.Id).Select(m=>new{}).ToList();
+            return await Task.FromResult(PaginationResult.PagedResult(rows, total, pageSize, pageIndex));
+        }
+        /// <summary>
+        /// 新建
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ActionResult<ExcutedResult>> Create({ModelTypeName} model)
+        {
+            if(!ModelState.IsValid)
+                return await Task.FromResult(ExcutedResult.FailedResult("数据验证失败"));
+            {ModelTypeName}Service.AddAsync(model, false);
+            return await Task.FromResult(ExcutedResult.SuccessResult());
+        }
+        /// <summary>
+        /// 编辑
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ActionResult<ExcutedResult>> Edit({ModelTypeName} model)
+        {
+            if (!ModelState.IsValid)
+                return await Task.FromResult(ExcutedResult.FailedResult("数据验证失败"));
+            {ModelTypeName}Service.Edit(model, false);
+            return await Task.FromResult(ExcutedResult.SuccessResult());
+        }
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ActionResult<ExcutedResult>> Delete(int id)
+        {
+            {ModelTypeName}Service.Delete(id, false);
+            return await Task.FromResult(ExcutedResult.SuccessResult("成功删除一条数据。"));
+        }
+
+        #endregion
+	}
+}
