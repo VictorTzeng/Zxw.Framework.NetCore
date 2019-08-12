@@ -1,11 +1,11 @@
 # Zxw.Framework.NetCore
 基于EF Core的Code First模式的DotNetCore快速开发框架
 
-**Nuget [最新版本：2.2.0]**
+**Nuget [最新版本：2.2.2.2]**
 
-[Zxw.Framework.NetCore](https://www.nuget.org/packages/Zxw.Framework.NetCore/2.2.0) 
-* Install-Package Zxw.Framework.NetCore -Version 2.2.0
-* dotnet add package Zxw.Framework.NetCore --version 2.2.0
+[Zxw.Framework.NetCore](https://www.nuget.org/packages/Zxw.Framework.NetCore/2.2.2.2) 
+* Install-Package Zxw.Framework.NetCore -Version 2.2.2.2
+* dotnet add package Zxw.Framework.NetCore --version 2.2.2.2
 
 **开发环境**
 * VS2017 / VS Code
@@ -56,6 +56,29 @@
 
 # 更新日志
 
+**2019/08/11**
+* 1.重构代码生成器，分CodeFirst和DbFirst
+
+ a.启用代码生成器
+```
+
+//启用代码生成器
+services.UseCodeGenerator(new CodeGeneratorOption());
+
+```
+
+ b.使用代码生成器
+ 
+```
+
+//CodeFirst---根据model生成其他各层的代码
+dbContext.CodeFirst().GenerateAll(ifExsitedCovered:true);
+
+//DbFirst---根据现有数据表生成各层代码
+dbCOntext.DbFirst().GenerateAll(ifExsitedCovered:true);
+
+```
+* 2.添加对APIController的代码生成
 
 **2019/04/25**
 * 1.修改缓存拦截器默认key格式为：{namespace}{class}{method}{参数值hashcode}
