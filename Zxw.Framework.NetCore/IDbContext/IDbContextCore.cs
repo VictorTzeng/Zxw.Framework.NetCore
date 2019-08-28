@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
 
@@ -36,6 +37,7 @@ namespace Zxw.Framework.NetCore.IDbContext
         T Find<T>(object key) where T : class;
         Task<T> FindAsync<T>(object key) where T : class;
         IQueryable<T> Get<T>(Expression<Func<T, bool>> @where = null, bool asNoTracking = false) where T : class;
+        List<IEntityType> GetAllEntityTypes();
         DbSet<T> GetDbSet<T>() where T : class;
         T GetSingleOrDefault<T>(Expression<Func<T, bool>> @where = null) where T : class;
         Task<T> GetSingleOrDefaultAsync<T>(Expression<Func<T, bool>> @where = null) where T : class;

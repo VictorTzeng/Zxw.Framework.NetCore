@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
 using Z.EntityFramework.Plus;
 using Zxw.Framework.NetCore.DbLogProvider;
@@ -68,7 +69,9 @@ namespace Zxw.Framework.NetCore.DbContextCore
         private void MappingEntityTypes(ModelBuilder modelBuilder)
         {
             if (string.IsNullOrEmpty(Option.ModelAssemblyName))
+            {
                 return;
+            }
             var assembly = Assembly.Load(Option.ModelAssemblyName);
             var types = assembly?.GetTypes().Where(c=>c.GetCustomAttributes<DbContextAttribute>().Any());
             var list = types?.Where(t =>
@@ -106,12 +109,12 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         public virtual int Count<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return where == null ? Set<T>().Count() : Set<T>().Count(@where);
+            return where == null ? GetDbSet<T>().Count() : GetDbSet<T>().Count(@where);
         }
 
         public virtual async Task<int> CountAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return await (where == null ? Set<T>().CountAsync() : Set<T>().CountAsync(@where));
+            return await (where == null ? GetDbSet<T>().CountAsync() : GetDbSet<T>().CountAsync(@where));
         }
 
         public virtual int Delete<T>(object key) where T : class
@@ -190,13 +193,13 @@ namespace Zxw.Framework.NetCore.DbContextCore
         /// <returns></returns>
         public virtual int EditRange<T>(ICollection<T> entities) where T : class
         {
-            Set<T>().AttachRange(entities.ToArray());
+            GetDbSet<T>().AttachRange(entities.ToArray());
             return  SaveChanges();
         }
 
         public virtual bool Exist<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return @where == null ? Set<T>().Any() : Set<T>().Any(@where);
+            return @where == null ? GetDbSet<T>().Any() : GetDbSet<T>().Any(@where);
         }
 
         public virtual IQueryable<T> FilterWithInclude<T>(Func<IQueryable<T>, IQueryable<T>> include, Expression<Func<T, bool>> @where) where T : class
@@ -211,7 +214,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         public virtual async Task<bool> ExistAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return await (@where == null ? Set<T>().AnyAsync() : Set<T>().AnyAsync(@where));
+            return await (@where == null ? GetDbSet<T>().AnyAsync() : GetDbSet<T>().AnyAsync(@where));
         }
 
         public virtual T Find<T>(object key) where T : class
@@ -226,7 +229,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         public virtual IQueryable<T> Get<T>(Expression<Func<T, bool>> @where = null, bool asNoTracking = false) where T : class
         {
-            var query = Set<T>().AsQueryable();
+            var query = GetDbSet<T>().AsQueryable();
             if (where != null)
                 query = query.Where(where);
             if (asNoTracking)
@@ -234,19 +237,25 @@ namespace Zxw.Framework.NetCore.DbContextCore
             return query;
         }
 
+        public virtual List<IEntityType> GetAllEntityTypes()
+        {
+            return Model.GetEntityTypes().ToList();
+        }
         public virtual DbSet<T> GetDbSet<T>() where T : class
         {
-            return Set<T>();
+            if (Model.FindEntityType(typeof(T)) != null)
+                return Set<T>();
+            throw new Exception($"类型{typeof(T).Name}未在数据库上下文中注册，请先在DbContextOption设置ModelAssemblyName以将所有实体类型注册到数据库上下文中。");
         }
 
         public virtual T GetSingleOrDefault<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return where == null ? Set<T>().SingleOrDefault() : Set<T>().SingleOrDefault(where);
+            return where == null ? GetDbSet<T>().SingleOrDefault() : GetDbSet<T>().SingleOrDefault(where);
         }
 
         public virtual async Task<T> GetSingleOrDefaultAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return await (where == null ? Set<T>().SingleOrDefaultAsync() : Set<T>().SingleOrDefaultAsync(where));
+            return await (where == null ? GetDbSet<T>().SingleOrDefaultAsync() : GetDbSet<T>().SingleOrDefaultAsync(where));
         }
 
         /// <summary>
@@ -262,7 +271,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
             if (updateColumns != null && updateColumns.Length > 0)
             {
                 if (Entry(model).State == EntityState.Added ||
-                    Entry(model).State == EntityState.Detached) Set<T>().Attach(model);
+                    Entry(model).State == EntityState.Detached) GetDbSet<T>().Attach(model);
                 foreach (var propertyName in updateColumns)
                 {
                     Entry(model).Property(propertyName).IsModified = true;
@@ -277,12 +286,12 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         public virtual int Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
         {
-            return Set<T>().Where(where).Update(updateFactory);
+            return GetDbSet<T>().Where(where).Update(updateFactory);
         }
 
         public virtual async Task<int> UpdateAsync<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
         {
-            return await Set<T>().Where(where).UpdateAsync(updateFactory);
+            return await GetDbSet<T>().Where(where).UpdateAsync(updateFactory);
         }
 
         /// <summary>
@@ -293,12 +302,12 @@ namespace Zxw.Framework.NetCore.DbContextCore
         /// <returns></returns>
         public virtual int Delete<T>(Expression<Func<T, bool>> @where) where T : class
         {
-            return Set<T>().Where(@where).Delete();
+            return GetDbSet<T>().Where(@where).Delete();
         }
 
         public virtual async Task<int> DeleteAsync<T>(Expression<Func<T, bool>> @where) where T : class
         {
-            return await Set<T>().Where(@where).DeleteAsync();
+            return await GetDbSet<T>().Where(@where).DeleteAsync();
         }
 
         /// <summary>
@@ -317,7 +326,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
         public virtual List<TView> SqlQuery<T,TView>(string sql, params object[] parameters) 
             where T : class
         {
-            return Set<T>().FromSql(sql, parameters).Cast<TView>().ToList();
+            return GetDbSet<T>().FromSql(sql, parameters).Cast<TView>().ToList();
         }
 
         public virtual PaginationResult SqlQueryByPagnation<T, TView>(string sql, string[] orderBys, int pageIndex, int pageSize,
@@ -330,7 +339,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
             where T : class
             where TView : class
         {
-            return await Set<T>().FromSql(sql, parameters).Cast<TView>().ToListAsync();
+            return await GetDbSet<T>().FromSql(sql, parameters).Cast<TView>().ToListAsync();
         }
 
         public abstract DataTable GetDataTable(string sql, params DbParameter[] parameters);

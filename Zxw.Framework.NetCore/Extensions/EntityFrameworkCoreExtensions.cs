@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlTypes;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using StackExchange.Redis.Extensions.Core.Extensions;
 using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IDbContext;
+using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Models;
+using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.Extensions
 {
@@ -236,6 +242,43 @@ namespace Zxw.Framework.NetCore.Extensions
             var result = reader.ToList<T>();
             connection.Close();
             return result;
+        }
+
+        public static void ClearDatabase(this IDbContextCore context)
+        {
+            context.ClearDataTables();
+        }
+
+        public static void ClearDataTables(this IDbContextCore context, params string[] tables)
+        {
+            if (tables == null)
+            {
+                var tableList = new List<string>();
+                var types = context.GetAllEntityTypes();
+                if (types.Any())
+                {
+                    foreach (var type in types)
+                    {
+                        var tableName = type.ClrType.GetCustomAttribute<TableAttribute>()?.Name;
+                        if (tableName.IsNullOrWhiteSpace())
+                            tableName = type.ClrType.Name;
+                        tableList.Add(tableName);
+                    }
+                }
+                else
+                {
+                    tableList.AddRange(context.GetCurrentDatabaseTableList().Select(m=>m.TableName));
+                }
+
+                tables = tableList.ToArray();
+            }
+
+            var sql = new StringBuilder();
+            foreach (var table in tables)
+            {
+                sql.AppendLine($"delete from {table};");
+            }
+            context.ExecuteSqlWithNonQuery(sql.ToString());
         }
     }
 }
