@@ -52,6 +52,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                     config.RepositoriesNamespace = option.RepositoriesNamespace;
                     config.ServicesNamespace = option.ServicesNamespace;
                     config.ViewModelsNamespace = option.ViewModelsNamespace;
+                    config.IsPascalCase = option.IsPascalCase;
                 });
             services.AddSingleton<IDbFirst, DbFirst.DbFirst>();
             services.AddSingleton<ICodeFirst, CodeFirst.CodeFirst>();

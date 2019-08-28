@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Z.EntityFramework.Plus;
 using Zxw.Framework.NetCore.DbLogProvider;
 using Zxw.Framework.NetCore.IDbContext;
+using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
 
@@ -31,7 +32,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         protected BaseDbContext(DbContextOption option)
         {
-            Option = option ?? throw new ArgumentNullException(nameof(option));
+            Option = option ?? AspectCoreContainer.Resolve<IOptions<DbContextOption>>().Value;
         }
         /// <summary>
         /// 构造函数
@@ -176,6 +177,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
             //    }
             //}
             base.Update(entity);
+            base.Entry(entity).State = EntityState.Modified;
             return SaveChanges();
             //return Update(entity, changedProperties.ToArray());
         }
