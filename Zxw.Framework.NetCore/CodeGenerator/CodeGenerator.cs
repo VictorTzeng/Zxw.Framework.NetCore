@@ -292,23 +292,27 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             var tables = dbContext.GetCurrentDatabaseTableList();
             if (tables != null && tables.Any())
             {
-                if (selector == null)
-                    selector = m => true;
-                tables = tables.Where(selector).ToList();
-                foreach (var table in tables)
+                if (selector != null)
+                    tables = tables.Where(selector).ToList();
+                Generate(tables.ToList(), ifExsitedCovered);
+            }
+        }
+
+        public void Generate(List<DbTable> tables,bool ifExsitedCovered = false)
+        {
+            foreach (var table in tables)
+            {
+                if (table.Columns.Any(c => c.IsPrimaryKey))
                 {
-                    if (table.Columns.Any(c => c.IsPrimaryKey))
-                    {
-                        var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
-                        var tableName = Option.IsPascalCase ? table.TableName.ToPascalCase() : table.TableName;
-                        GenerateEntity(table, ifExsitedCovered);
-                        GenerateIRepository(tableName, pkTypeName, ifExsitedCovered);
-                        GenerateRepository(tableName, pkTypeName, ifExsitedCovered);
-                        GenerateIService(tableName, pkTypeName, ifExsitedCovered);
-                        GenerateService(tableName, pkTypeName, ifExsitedCovered);
-                        GenerateController(tableName, pkTypeName, ifExsitedCovered);
-                        GenerateApiController(tableName, pkTypeName, ifExsitedCovered);
-                    }
+                    var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
+                    var tableName = Option.IsPascalCase ? table.TableName.ToPascalCase() : table.TableName;
+                    GenerateEntity(table, ifExsitedCovered);
+                    GenerateIRepository(tableName, pkTypeName, ifExsitedCovered);
+                    GenerateRepository(tableName, pkTypeName, ifExsitedCovered);
+                    GenerateIService(tableName, pkTypeName, ifExsitedCovered);
+                    GenerateService(tableName, pkTypeName, ifExsitedCovered);
+                    GenerateController(tableName, pkTypeName, ifExsitedCovered);
+                    GenerateApiController(tableName, pkTypeName, ifExsitedCovered);
                 }
             }
         }

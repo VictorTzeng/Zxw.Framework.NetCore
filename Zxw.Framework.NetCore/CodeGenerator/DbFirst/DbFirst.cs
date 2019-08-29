@@ -37,12 +37,14 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
 
         public void GenerateAll(bool ifExsitedCovered = false)
         {
-            Instance.GenerateAllCodesFromDatabase(ifExsitedCovered);
+            Instance.Generate(AllTables,ifExsitedCovered);
         }
 
         public IDbFirst Generate(Func<DbTable, bool> selector, bool ifExsitedCovered = false)
         {
-            Instance.GenerateAllCodesFromDatabase(ifExsitedCovered, selector);
+            if (selector == null)
+                selector = m => true;
+            Instance.Generate(AllTables.Where(selector).ToList(), ifExsitedCovered);
             return this;
         }
 
@@ -77,7 +79,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
                 if (table.Columns.Any(c => c.IsPrimaryKey))
                 {
                     var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
-                    Instance.GenerateIRepository(table.TableName.ToPascalCase(), pkTypeName, ifExsitedCovered);
+                    Instance.GenerateIRepository(table.TableName, pkTypeName, ifExsitedCovered);
                 }
             }
 
@@ -92,7 +94,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
                 if (table.Columns.Any(c => c.IsPrimaryKey))
                 {
                     var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
-                    Instance.GenerateRepository(table.TableName.ToPascalCase(), pkTypeName, ifExsitedCovered);
+                    Instance.GenerateRepository(table.TableName, pkTypeName, ifExsitedCovered);
                 }
             }
 
@@ -107,7 +109,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
                 if (table.Columns.Any(c => c.IsPrimaryKey))
                 {
                     var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
-                    Instance.GenerateIService(table.TableName.ToPascalCase(), pkTypeName, ifExsitedCovered);
+                    Instance.GenerateIService(table.TableName, pkTypeName, ifExsitedCovered);
                 }
             }
 
@@ -122,7 +124,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
                 if (table.Columns.Any(c => c.IsPrimaryKey))
                 {
                     var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
-                    Instance.GenerateService(table.TableName.ToPascalCase(), pkTypeName, ifExsitedCovered);
+                    Instance.GenerateService(table.TableName, pkTypeName, ifExsitedCovered);
                 }
             }
 
@@ -137,7 +139,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
                 if (table.Columns.Any(c => c.IsPrimaryKey))
                 {
                     var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
-                    Instance.GenerateController(table.TableName.ToPascalCase(), pkTypeName, ifExsitedCovered);
+                    Instance.GenerateController(table.TableName, pkTypeName, ifExsitedCovered);
                 }
             }
 
@@ -152,7 +154,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
                 if (table.Columns.Any(c => c.IsPrimaryKey))
                 {
                     var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
-                    Instance.GenerateApiController(table.TableName.ToPascalCase(), pkTypeName, ifExsitedCovered);
+                    Instance.GenerateApiController(table.TableName, pkTypeName, ifExsitedCovered);
                 }
             }
 

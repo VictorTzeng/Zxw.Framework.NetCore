@@ -11,9 +11,10 @@ namespace Zxw.Framework.NetCore.CodeGenerator.CodeFirst
     internal sealed class CodeFirst:ICodeFirst
     {
         private CodeGenerator Instance { get; set; }
-        public CodeFirst()
+        public CodeFirst(IOptions<CodeGenerateOption> option)
         {
-            Instance = new CodeGenerator(AspectCoreContainer.Resolve<IOptions<CodeGenerateOption>>().Value);
+            if (option == null) throw new ArgumentNullException(nameof(option));
+            Instance = new CodeGenerator(option.Value);
         }
 
         public void GenerateAll(bool ifExsitedCovered = false)

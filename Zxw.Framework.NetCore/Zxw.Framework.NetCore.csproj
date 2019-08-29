@@ -4,14 +4,14 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Authors>victor.tzeng</Authors>
     <NeutralLanguage></NeutralLanguage>
-    <Version>2.2.2.3</Version>
-    <AssemblyVersion>2.2.2.3</AssemblyVersion>
-    <FileVersion>2.2.2.3</FileVersion>
+    <Version>2.2.2.4</Version>
+    <AssemblyVersion>2.2.2.4</AssemblyVersion>
+    <FileVersion>2.2.2.4</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Zxw.Framework.NetCore © victor.tzeng</Copyright>
     <PackageProjectUrl>https://github.com/VictorTzeng/Zxw.Framework.NetCore</PackageProjectUrl>
     <Description>基于EF Core的Code First模式的DotNetCore快速开发框架</Description>
-    <PackageReleaseNotes>修复代码生成器根据DataTable生成对应实体代码的bug</PackageReleaseNotes>
+    <PackageReleaseNotes>bugs fixed</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
