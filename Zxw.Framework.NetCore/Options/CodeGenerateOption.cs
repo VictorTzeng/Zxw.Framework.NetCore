@@ -11,5 +11,6 @@
         public virtual string IServicesNamespace { get; set; }
         public virtual string ServicesNamespace { get; set; }
         public bool IsPascalCase { get; set; } = true;
+        public bool GenerateApiController { get; set; }= false;
     }
 }

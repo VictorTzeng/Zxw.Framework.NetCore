@@ -19,9 +19,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator.CodeFirst
 
         public void GenerateAll(bool ifExsitedCovered = false)
         {
-            var option = AspectCoreContainer.Resolve<IOptions<CodeGenerateOption>>().Value;
-            if (option == null) throw new Exception("请先注入CodeGenerateOption");
-            Instance = new CodeGenerator(option);
+            Instance.Generate(ifExsitedCovered);
         }
 
         public ICodeFirst GenerateSingle<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>

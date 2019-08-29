@@ -311,8 +311,14 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                     GenerateRepository(tableName, pkTypeName, ifExsitedCovered);
                     GenerateIService(tableName, pkTypeName, ifExsitedCovered);
                     GenerateService(tableName, pkTypeName, ifExsitedCovered);
-                    GenerateController(tableName, pkTypeName, ifExsitedCovered);
-                    GenerateApiController(tableName, pkTypeName, ifExsitedCovered);
+                    if (!Option.GenerateApiController)
+                    {
+                        GenerateController(tableName, pkTypeName, ifExsitedCovered);
+                    }
+                    else
+                    {
+                        GenerateApiController(tableName, pkTypeName, ifExsitedCovered);
+                    }
                 }
             }
         }
