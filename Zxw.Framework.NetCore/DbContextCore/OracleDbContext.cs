@@ -22,7 +22,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseLazyLoadingProxies().UseOracle(Option.ConnectionString);
+            optionsBuilder.UseOracle(Option.ConnectionString);
             base.OnConfiguring(optionsBuilder);
         }
 

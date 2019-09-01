@@ -20,7 +20,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseLazyLoadingProxies().UseInMemoryDatabase(Option.ConnectionString);
+            optionsBuilder.UseInMemoryDatabase(Option.ConnectionString);
             base.OnConfiguring(optionsBuilder);
         }
 
