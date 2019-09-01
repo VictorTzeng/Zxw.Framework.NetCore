@@ -10,7 +10,7 @@ using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.NetCore.Repositories
 {
-    public abstract class BaseRepository<T, TKey>:IRepository<T, TKey> where T : BaseModel<TKey>
+    public abstract class BaseRepository<T, TKey>:IRepository<T, TKey> where T : class,IBaseModel<TKey>
     {
         protected readonly IDbContextCore DbContext;
 

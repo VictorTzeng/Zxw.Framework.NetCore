@@ -35,58 +35,43 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
             Instance = new CodeGenerator(option.Value);
         }
 
-        public void GenerateAll(bool ifExsitedCovered = false)
+        public void GenerateAll(bool ifExistCovered = false)
         {
-            Instance.Generate(AllTables,ifExsitedCovered);
+            Instance.Generate(AllTables,ifExistCovered);
         }
 
-        public IDbFirst Generate(Func<DbTable, bool> selector, bool ifExsitedCovered = false)
+        public IDbFirst Generate(Func<DbTable, bool> selector, bool ifExistCovered = false)
         {
             if (selector == null)
                 selector = m => true;
-            Instance.Generate(AllTables.Where(selector).ToList(), ifExsitedCovered);
+            Instance.Generate(AllTables.Where(selector).ToList(), ifExistCovered);
             return this;
         }
 
-        public IDbFirst GenerateEntity(Func<DbTable, bool> selector, bool ifExsitedCovered = false)
+        public IDbFirst GenerateEntity(Func<DbTable, bool> selector, bool ifExistCovered = false)
         {
             var tables = AllTables.Where(selector).ToList();
             foreach (var table in tables)
             {
-                Instance.GenerateEntity(table, ifExsitedCovered);                
+                Instance.GenerateEntity(table, ifExistCovered);                
             }
             return this;
         }
 
-        public IDbFirst GenerateSingle(Func<DbTable, bool> selector, bool ifExsitedCovered = false)
+        public IDbFirst GenerateSingle(Func<DbTable, bool> selector, bool ifExistCovered = false)
         {
-            GenerateEntity(selector, ifExsitedCovered);
-            GenerateIRepository(selector, ifExsitedCovered);
-            GenerateRepository(selector, ifExsitedCovered);
-            GenerateIService(selector, ifExsitedCovered);
-            GenerateService(selector, ifExsitedCovered);
-            GenerateController(selector, ifExsitedCovered);
-            GenerateApiController(selector, ifExsitedCovered);
+            GenerateEntity(selector, ifExistCovered);
+            GenerateIRepository(selector, ifExistCovered);
+            GenerateRepository(selector, ifExistCovered);
+            GenerateIService(selector, ifExistCovered);
+            GenerateService(selector, ifExistCovered);
+            GenerateController(selector, ifExistCovered);
+            GenerateApiController(selector, ifExistCovered);
 
             return this;
         }
 
-        public IDbFirst GenerateIRepository(Func<DbTable, bool> selector, bool ifExsitedCovered = false)
-        {
-            var tables = AllTables.Where(selector).ToList();
-            foreach (var table in tables)
-            {
-                if (table.Columns.Any(c => c.IsPrimaryKey))
-                {
-                    var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
-                    Instance.GenerateIRepository(table.TableName, pkTypeName, ifExsitedCovered);
-                }
-            }
-
-            return this;
-        }
-
-        public IDbFirst GenerateRepository(Func<DbTable, bool> selector, bool ifExsitedCovered = false)
+        public IDbFirst GenerateIRepository(Func<DbTable, bool> selector, bool ifExistCovered = false)
         {
             var tables = AllTables.Where(selector).ToList();
             foreach (var table in tables)
@@ -94,14 +79,14 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
                 if (table.Columns.Any(c => c.IsPrimaryKey))
                 {
                     var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
-                    Instance.GenerateRepository(table.TableName, pkTypeName, ifExsitedCovered);
+                    Instance.GenerateIRepository(table.TableName, pkTypeName, ifExistCovered);
                 }
             }
 
             return this;
         }
 
-        public IDbFirst GenerateIService(Func<DbTable, bool> selector, bool ifExsitedCovered = false)
+        public IDbFirst GenerateRepository(Func<DbTable, bool> selector, bool ifExistCovered = false)
         {
             var tables = AllTables.Where(selector).ToList();
             foreach (var table in tables)
@@ -109,14 +94,14 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
                 if (table.Columns.Any(c => c.IsPrimaryKey))
                 {
                     var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
-                    Instance.GenerateIService(table.TableName, pkTypeName, ifExsitedCovered);
+                    Instance.GenerateRepository(table.TableName, pkTypeName, ifExistCovered);
                 }
             }
 
             return this;
         }
 
-        public IDbFirst GenerateService(Func<DbTable, bool> selector, bool ifExsitedCovered = false)
+        public IDbFirst GenerateIService(Func<DbTable, bool> selector, bool ifExistCovered = false)
         {
             var tables = AllTables.Where(selector).ToList();
             foreach (var table in tables)
@@ -124,14 +109,14 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
                 if (table.Columns.Any(c => c.IsPrimaryKey))
                 {
                     var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
-                    Instance.GenerateService(table.TableName, pkTypeName, ifExsitedCovered);
+                    Instance.GenerateIService(table.TableName, pkTypeName, ifExistCovered);
                 }
             }
 
             return this;
         }
 
-        public IDbFirst GenerateController(Func<DbTable, bool> selector, bool ifExsitedCovered = false)
+        public IDbFirst GenerateService(Func<DbTable, bool> selector, bool ifExistCovered = false)
         {
             var tables = AllTables.Where(selector).ToList();
             foreach (var table in tables)
@@ -139,14 +124,14 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
                 if (table.Columns.Any(c => c.IsPrimaryKey))
                 {
                     var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
-                    Instance.GenerateController(table.TableName, pkTypeName, ifExsitedCovered);
+                    Instance.GenerateService(table.TableName, pkTypeName, ifExistCovered);
                 }
             }
 
             return this;
         }
 
-        public IDbFirst GenerateApiController(Func<DbTable, bool> selector, bool ifExsitedCovered = false)
+        public IDbFirst GenerateController(Func<DbTable, bool> selector, bool ifExistCovered = false)
         {
             var tables = AllTables.Where(selector).ToList();
             foreach (var table in tables)
@@ -154,30 +139,45 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
                 if (table.Columns.Any(c => c.IsPrimaryKey))
                 {
                     var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
-                    Instance.GenerateApiController(table.TableName, pkTypeName, ifExsitedCovered);
+                    Instance.GenerateController(table.TableName, pkTypeName, ifExistCovered);
                 }
             }
 
             return this;
         }
 
-        public IDbFirst GenerateViewModel(string viewName, bool ifExsitedCovered = false)
+        public IDbFirst GenerateApiController(Func<DbTable, bool> selector, bool ifExistCovered = false)
+        {
+            var tables = AllTables.Where(selector).ToList();
+            foreach (var table in tables)
+            {
+                if (table.Columns.Any(c => c.IsPrimaryKey))
+                {
+                    var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
+                    Instance.GenerateApiController(table.TableName, pkTypeName, ifExistCovered);
+                }
+            }
+
+            return this;
+        }
+
+        public IDbFirst GenerateViewModel(string viewName, bool ifExistCovered = false)
         {
             var sql = $"select top 1 * from {viewName}";
             var dt = DbContext.GetDataTable(sql);
-            GenerateViewModel(dt, viewName, ifExsitedCovered);
+            GenerateViewModel(dt, viewName, ifExistCovered);
             return this;
         }
 
-        public IDbFirst GenerateViewModel(DataTable dt, string className, bool ifExsitedCovered = false)
+        public IDbFirst GenerateViewModel(DataTable dt, string className, bool ifExistCovered = false)
         {
-            Instance.GenerateViewModel(dt, className, ifExsitedCovered);
+            Instance.GenerateViewModel(dt, className, ifExistCovered);
             return this;
         }
 
-        public IDbFirst GenerateViewModel(DataSet ds, bool ifExsitedCovered = false)
+        public IDbFirst GenerateViewModel(DataSet ds, bool ifExistCovered = false)
         {
-            Instance.GenerateViewModel(ds, ifExsitedCovered);
+            Instance.GenerateViewModel(ds, ifExistCovered);
             return this;
         }
     }

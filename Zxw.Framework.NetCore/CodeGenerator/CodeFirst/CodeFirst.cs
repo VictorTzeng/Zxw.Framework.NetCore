@@ -17,50 +17,50 @@ namespace Zxw.Framework.NetCore.CodeGenerator.CodeFirst
             Instance = new CodeGenerator(option.Value);
         }
 
-        public void GenerateAll(bool ifExsitedCovered = false)
+        public void GenerateAll(bool ifExistCovered = false)
         {
-            Instance.Generate(ifExsitedCovered);
+            Instance.Generate(ifExistCovered);
         }
 
-        public ICodeFirst GenerateSingle<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>
+        public ICodeFirst GenerateSingle<T, TKey>(bool ifExistCovered = false) where T : IBaseModel<TKey>
         {
-            Instance.GenerateSingle<T, TKey>(ifExsitedCovered);
+            Instance.GenerateSingle<T, TKey>(ifExistCovered);
             return this;
         }
 
-        public ICodeFirst GenerateIRepository<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>
+        public ICodeFirst GenerateIRepository<T, TKey>(bool ifExistCovered = false) where T : IBaseModel<TKey>
         {
-            Instance.GenerateIRepository<T, TKey>(ifExsitedCovered);
+            Instance.GenerateIRepository<T, TKey>(ifExistCovered);
             return this;
         }
 
-        public ICodeFirst GenerateRepository<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>
+        public ICodeFirst GenerateRepository<T, TKey>(bool ifExistCovered = false) where T : IBaseModel<TKey>
         {
-            Instance.GenerateRepository<T, TKey>(ifExsitedCovered);
+            Instance.GenerateRepository<T, TKey>(ifExistCovered);
             return this;
         }
 
-        public ICodeFirst GenerateIService<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>
+        public ICodeFirst GenerateIService<T, TKey>(bool ifExistCovered = false) where T : IBaseModel<TKey>
         {
-            Instance.GenerateIService<T, TKey>(ifExsitedCovered);
+            Instance.GenerateIService<T, TKey>(ifExistCovered);
             return this;
         }
 
-        public ICodeFirst GenerateService<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>
+        public ICodeFirst GenerateService<T, TKey>(bool ifExistCovered = false) where T : IBaseModel<TKey>
         {
-            Instance.GenerateService<T, TKey>(ifExsitedCovered);
+            Instance.GenerateService<T, TKey>(ifExistCovered);
             return this;
         }
 
-        public ICodeFirst GenerateController<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>
+        public ICodeFirst GenerateController<T, TKey>(bool ifExistCovered = false) where T : IBaseModel<TKey>
         {
-            Instance.GenerateController<T, TKey>(ifExsitedCovered);
+            Instance.GenerateController<T, TKey>(ifExistCovered);
             return this;
         }
 
-        public ICodeFirst GenerateApiController<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>
+        public ICodeFirst GenerateApiController<T, TKey>(bool ifExistCovered = false) where T : IBaseModel<TKey>
         {
-            Instance.GenerateApiController<T, TKey>(ifExsitedCovered);
+            Instance.GenerateApiController<T, TKey>(ifExistCovered);
             return this;
         }
     }

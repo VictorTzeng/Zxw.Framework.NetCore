@@ -11,19 +11,19 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
     public interface IDbFirst
     {
         IDbContextCore DbContext { get; set; }
-        void GenerateAll(bool ifExsitedCovered = false);
-        IDbFirst Generate(Func<DbTable, bool> selector, bool ifExsitedCovered = false);
-        IDbFirst GenerateEntity(Func<DbTable, bool> selector, bool ifExsitedCovered = false);
-        IDbFirst GenerateSingle(Func<DbTable, bool> selector, bool ifExsitedCovered = false);
-        IDbFirst GenerateIRepository(Func<DbTable, bool> selector, bool ifExsitedCovered = false);
-        IDbFirst GenerateRepository(Func<DbTable, bool> selector, bool ifExsitedCovered = false);
-        IDbFirst GenerateIService(Func<DbTable, bool> selector, bool ifExsitedCovered = false);
-        IDbFirst GenerateService(Func<DbTable, bool> selector, bool ifExsitedCovered = false);
-        IDbFirst GenerateController(Func<DbTable, bool> selector, bool ifExsitedCovered = false);
-        IDbFirst GenerateApiController(Func<DbTable, bool> selector, bool ifExsitedCovered = false);
-        IDbFirst GenerateViewModel(string viewName, bool ifExsitedCovered = false);
-        IDbFirst GenerateViewModel(DataTable dt, string className, bool ifExsitedCovered = false);
-        IDbFirst GenerateViewModel(DataSet ds, bool ifExsitedCovered = false);
+        void GenerateAll(bool ifExistCovered = false);
+        IDbFirst Generate(Func<DbTable, bool> selector, bool ifExistCovered = false);
+        IDbFirst GenerateEntity(Func<DbTable, bool> selector, bool ifExistCovered = false);
+        IDbFirst GenerateSingle(Func<DbTable, bool> selector, bool ifExistCovered = false);
+        IDbFirst GenerateIRepository(Func<DbTable, bool> selector, bool ifExistCovered = false);
+        IDbFirst GenerateRepository(Func<DbTable, bool> selector, bool ifExistCovered = false);
+        IDbFirst GenerateIService(Func<DbTable, bool> selector, bool ifExistCovered = false);
+        IDbFirst GenerateService(Func<DbTable, bool> selector, bool ifExistCovered = false);
+        IDbFirst GenerateController(Func<DbTable, bool> selector, bool ifExistCovered = false);
+        IDbFirst GenerateApiController(Func<DbTable, bool> selector, bool ifExistCovered = false);
+        IDbFirst GenerateViewModel(string viewName, bool ifExistCovered = false);
+        IDbFirst GenerateViewModel(DataTable dt, string className, bool ifExistCovered = false);
+        IDbFirst GenerateViewModel(DataSet ds, bool ifExistCovered = false);
     }
 
     public static class DbFirstExtensions

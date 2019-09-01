@@ -7,7 +7,7 @@ using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.NetCore.Services
 {
-    public interface IService<T,TKey> where T:BaseModel<TKey>
+    public interface IService<T,TKey> where T:IBaseModel<TKey>
     {
         #region Insert
 

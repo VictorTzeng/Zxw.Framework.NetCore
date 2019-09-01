@@ -8,7 +8,7 @@ using Zxw.Framework.NetCore.Repositories;
 
 namespace Zxw.Framework.NetCore.Services
 {
-    public abstract class BaseService<T,TKey>:IService<T,TKey> where T:BaseModel<TKey>
+    public abstract class BaseService<T,TKey>:IService<T,TKey> where T:class,IBaseModel<TKey>
     {
         public IRepository<T,TKey> Repository { get; set; }
 

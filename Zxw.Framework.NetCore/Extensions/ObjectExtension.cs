@@ -1303,5 +1303,16 @@ namespace Zxw.Framework.NetCore.Extensions
             if (source == null || target == null) return false;
             return target.Contains(source);
         }
+
+        public static bool IsImplement(this Type entityType, Type interfaceType)
+        {
+            return entityType.GetTypeInfo().GetInterfaces().Any(t =>
+                t.GetTypeInfo().IsGenericType && t.GetGenericTypeDefinition() == interfaceType);
+        }
+
+        public static bool IsSubClassOf(this Type entityType, Type superType)
+        {
+            return entityType.GetTypeInfo().IsSubclassOf(superType);
+        }
     }
 }

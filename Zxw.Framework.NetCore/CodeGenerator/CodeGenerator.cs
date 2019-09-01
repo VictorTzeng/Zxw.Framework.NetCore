@@ -44,22 +44,18 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         /// <summary>
         /// 生成指定的实体域名空间下各实体对应Repositories和Services层的基础代码文件
         /// </summary>
-        /// <param name="ifExsitedCovered">如果目标文件存在，是否覆盖。默认为false</param>
-        public  void Generate(bool ifExsitedCovered = false)
+        /// <param name="ifExistCovered">如果目标文件存在，是否覆盖。默认为false</param>
+        public  void Generate(bool ifExistCovered = false)
         {
             var assembly = Assembly.Load(Option.ModelsNamespace);
             var types = assembly?.GetTypes();
             var list = types?.Where(t =>
-                t.IsClass && !t.IsGenericType && !t.IsAbstract && !t.IsNested);
+                t.IsImplement(typeof(IBaseModel<>)));
             if (list != null)
             {
                 foreach (var type in list)
                 {
-                    var baseType = typeof(BaseModel<>).MakeGenericType(new[]{ type.BaseType?.GenericTypeArguments[0] });
-                    if (type.IsSubclassOf(baseType))
-                    {
-                        GenerateSingle(type, ifExsitedCovered);
-                    }
+                    GenerateSingle(type, ifExistCovered);
                 }
             }
         }
@@ -69,27 +65,27 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         /// </summary>
         /// <typeparam name="T">实体类型（必须实现IBaseModel接口）</typeparam>
         /// <typeparam name="TKey">实体主键类型</typeparam>
-        /// <param name="ifExsitedCovered">如果目标文件存在，是否覆盖。默认为false</param>
-        public  void GenerateSingle<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>
+        /// <param name="ifExistCovered">如果目标文件存在，是否覆盖。默认为false</param>
+        public  void GenerateSingle<T, TKey>(bool ifExistCovered = false) where T : IBaseModel<TKey>
         {
-            GenerateSingle(typeof(T), ifExsitedCovered);
+            GenerateSingle(typeof(T), ifExistCovered);
         }
 
         /// <summary>
         /// 生成指定的实体对应IServices和Services层的基础代码文件
         /// </summary>
         /// <param name="modelType">实体类型（必须实现IBaseModel接口）</param>
-        /// <param name="ifExsitedCovered">如果目标文件存在，是否覆盖。默认为false</param>
-        public  void GenerateSingle(Type modelType, bool ifExsitedCovered = false)
+        /// <param name="ifExistCovered">如果目标文件存在，是否覆盖。默认为false</param>
+        public  void GenerateSingle(Type modelType, bool ifExistCovered = false)
         {
             var modelTypeName = modelType.Name;
             var keyTypeName = modelType.GetProperty("Id")?.PropertyType.Name;
-            GenerateIRepository(modelTypeName, keyTypeName, ifExsitedCovered);
-            GenerateRepository(modelTypeName, keyTypeName, ifExsitedCovered);
-            GenerateIService(modelTypeName, keyTypeName, ifExsitedCovered);
-            GenerateService(modelTypeName, keyTypeName, ifExsitedCovered);
-            GenerateController(modelTypeName, keyTypeName, ifExsitedCovered);
-            GenerateApiController(modelTypeName, keyTypeName, ifExsitedCovered);
+            GenerateIRepository(modelTypeName, keyTypeName, ifExistCovered);
+            GenerateRepository(modelTypeName, keyTypeName, ifExistCovered);
+            GenerateIService(modelTypeName, keyTypeName, ifExistCovered);
+            GenerateService(modelTypeName, keyTypeName, ifExistCovered);
+            GenerateController(modelTypeName, keyTypeName, ifExistCovered);
+            GenerateApiController(modelTypeName, keyTypeName, ifExistCovered);
         }
 
         /// <summary>
@@ -119,8 +115,8 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         /// </summary>
         /// <param name="modelTypeName"></param>
         /// <param name="keyTypeName"></param>
-        /// <param name="ifExsitedCovered"></param>
-        public  void GenerateIRepository(string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
+        /// <param name="ifExistCovered"></param>
+        public  void GenerateIRepository(string modelTypeName, string keyTypeName, bool ifExistCovered = false)
         {
             var iRepositoryPath = Option.OutputPath + Delimiter + "IRepositories";
             if (!Directory.Exists(iRepositoryPath))
@@ -128,7 +124,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 Directory.CreateDirectory(iRepositoryPath);
             }
             var fullPath = iRepositoryPath + Delimiter + "I" + modelTypeName + "Repository.cs";
-            if (File.Exists(fullPath) && !ifExsitedCovered)
+            if (File.Exists(fullPath) && !ifExistCovered)
                 return;
             var content = ReadTemplate("IRepositoryTemplate.txt");
             content = content.Replace("{ModelsNamespace}", Option.ModelsNamespace)
@@ -138,16 +134,15 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             WriteAndSave(fullPath, content);
         }
 
-        public  void GenerateIRepository<TEntity, TKey>(bool ifExsitedCovered = false)
-            where TEntity : BaseModel<TKey>
-            => GenerateIRepository(typeof(TEntity).Name, typeof(TKey).Name, ifExsitedCovered);
+        public  void GenerateIRepository<TEntity, TKey>(bool ifExistCovered = false)
+            => GenerateIRepository(typeof(TEntity).Name, typeof(TKey).Name, ifExistCovered);
         /// <summary>
         /// 生成Repository层代码文件
         /// </summary>
         /// <param name="modelTypeName"></param>
         /// <param name="keyTypeName"></param>
-        /// <param name="ifExsitedCovered"></param>
-        public  void GenerateRepository(string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
+        /// <param name="ifExistCovered"></param>
+        public  void GenerateRepository(string modelTypeName, string keyTypeName, bool ifExistCovered = false)
         {
             var repositoryPath = Option.OutputPath + Delimiter + "Repositories";
             if (!Directory.Exists(repositoryPath))
@@ -155,7 +150,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 Directory.CreateDirectory(repositoryPath);
             }
             var fullPath = repositoryPath + Delimiter + modelTypeName + "Repository.cs";
-            if (File.Exists(fullPath) && !ifExsitedCovered)
+            if (File.Exists(fullPath) && !ifExistCovered)
                 return;
             var content = ReadTemplate("RepositoryTemplate.txt");
             content = content.Replace("{ModelsNamespace}", Option.ModelsNamespace)
@@ -165,15 +160,15 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 .Replace("{KeyTypeName}", keyTypeName);
             WriteAndSave(fullPath, content);
         }
-        public  void GenerateRepository<TEntity, TKey>(bool ifExsitedCovered = false)
-        => GenerateRepository(typeof(TEntity).Name, typeof(TKey).Name, ifExsitedCovered);
+        public  void GenerateRepository<TEntity, TKey>(bool ifExistCovered = false)
+        => GenerateRepository(typeof(TEntity).Name, typeof(TKey).Name, ifExistCovered);
         /// <summary>
         /// 生成IRepository层代码文件
         /// </summary>
         /// <param name="modelTypeName"></param>
         /// <param name="keyTypeName"></param>
-        /// <param name="ifExsitedCovered"></param>
-        public  void GenerateIService(string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
+        /// <param name="ifExistCovered"></param>
+        public  void GenerateIService(string modelTypeName, string keyTypeName, bool ifExistCovered = false)
         {
             var iRepositoryPath = Option.OutputPath + Delimiter + "IServices";
             if (!Directory.Exists(iRepositoryPath))
@@ -181,7 +176,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 Directory.CreateDirectory(iRepositoryPath);
             }
             var fullPath = iRepositoryPath + Delimiter + "I" + modelTypeName + "Service.cs";
-            if (File.Exists(fullPath) && !ifExsitedCovered)
+            if (File.Exists(fullPath) && !ifExistCovered)
                 return;
             var content = ReadTemplate("IServiceTemplate.txt");
             content = content.Replace("{ModelsNamespace}", Option.ModelsNamespace)
@@ -192,15 +187,15 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             WriteAndSave(fullPath, content);
         }
 
-        public  void GenerateIService<TEntity, TKey>(bool ifExsitedCovered = false)
-            => GenerateIService(typeof(TEntity).Name, typeof(TKey).Name, ifExsitedCovered);
+        public  void GenerateIService<TEntity, TKey>(bool ifExistCovered = false)
+            => GenerateIService(typeof(TEntity).Name, typeof(TKey).Name, ifExistCovered);
         /// <summary>
         /// 生成Repository层代码文件
         /// </summary>
         /// <param name="modelTypeName"></param>
         /// <param name="keyTypeName"></param>
-        /// <param name="ifExsitedCovered"></param>
-        public  void GenerateService(string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
+        /// <param name="ifExistCovered"></param>
+        public  void GenerateService(string modelTypeName, string keyTypeName, bool ifExistCovered = false)
         {
             var repositoryPath = Option.OutputPath + Delimiter + "Services";
             if (!Directory.Exists(repositoryPath))
@@ -208,7 +203,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 Directory.CreateDirectory(repositoryPath);
             }
             var fullPath = repositoryPath + Delimiter + modelTypeName + "Service.cs";
-            if (File.Exists(fullPath) && !ifExsitedCovered)
+            if (File.Exists(fullPath) && !ifExistCovered)
                 return;
             var content = ReadTemplate("ServiceTemplate.txt");
             content = content.Replace("{ModelsNamespace}", Option.ModelsNamespace)
@@ -219,16 +214,16 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 .Replace("{KeyTypeName}", keyTypeName);
             WriteAndSave(fullPath, content);
         }
-        public  void GenerateService<TEntity, TKey>(bool ifExsitedCovered = false)
-            => GenerateService(typeof(TEntity).Name, typeof(TKey).Name, ifExsitedCovered);
+        public  void GenerateService<TEntity, TKey>(bool ifExistCovered = false)
+            => GenerateService(typeof(TEntity).Name, typeof(TKey).Name, ifExistCovered);
 
         /// <summary>
         /// 生成Controller层代码文件
         /// </summary>
         /// <param name="modelTypeName"></param>
         /// <param name="keyTypeName"></param>
-        /// <param name="ifExsitedCovered"></param>
-        public  void GenerateController(string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
+        /// <param name="ifExistCovered"></param>
+        public  void GenerateController(string modelTypeName, string keyTypeName, bool ifExistCovered = false)
         {
             var controllerPath = Option.OutputPath + Delimiter + "Controllers";
             if (!Directory.Exists(controllerPath))
@@ -236,7 +231,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 Directory.CreateDirectory(controllerPath);
             }
             var fullPath = controllerPath + Delimiter + modelTypeName + "Controller.cs";
-            if (File.Exists(fullPath) && !ifExsitedCovered)
+            if (File.Exists(fullPath) && !ifExistCovered)
                 return;
             var content = ReadTemplate("ControllerTemplate.txt");
             content = content.Replace("{ModelsNamespace}", Option.ModelsNamespace)
@@ -246,15 +241,15 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 .Replace("{KeyTypeName}", keyTypeName);
             WriteAndSave(fullPath, content);
         }
-        public  void GenerateController<TEntity, TKey>(bool ifExsitedCovered = false)
-            => GenerateController(typeof(TEntity).Name, typeof(TKey).Name, ifExsitedCovered);
+        public  void GenerateController<TEntity, TKey>(bool ifExistCovered = false)
+            => GenerateController(typeof(TEntity).Name, typeof(TKey).Name, ifExistCovered);
         /// <summary>
         /// 生成Controller层代码文件
         /// </summary>
         /// <param name="modelTypeName"></param>
         /// <param name="keyTypeName"></param>
-        /// <param name="ifExsitedCovered"></param>
-        public  void GenerateApiController(string modelTypeName, string keyTypeName, bool ifExsitedCovered = false)
+        /// <param name="ifExistCovered"></param>
+        public  void GenerateApiController(string modelTypeName, string keyTypeName, bool ifExistCovered = false)
         {
             var controllerPath = Option.OutputPath + Delimiter + "Controllers";
             if (!Directory.Exists(controllerPath))
@@ -262,7 +257,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 Directory.CreateDirectory(controllerPath);
             }
             var fullPath = controllerPath + Delimiter + modelTypeName + "Controller.cs";
-            if (File.Exists(fullPath) && !ifExsitedCovered)
+            if (File.Exists(fullPath) && !ifExistCovered)
                 return;
             var content = ReadTemplate("ApiControllerTemplate.txt");
             content = content.Replace("{ModelsNamespace}", Option.ModelsNamespace)
@@ -272,33 +267,33 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 .Replace("{KeyTypeName}", keyTypeName);
             WriteAndSave(fullPath, content);
         }
-        public  void GenerateApiController<TEntity, TKey>(bool ifExsitedCovered = false)
-            => GenerateApiController(typeof(TEntity).Name, typeof(TKey).Name, ifExsitedCovered);
+        public  void GenerateApiController<TEntity, TKey>(bool ifExistCovered = false)
+            => GenerateApiController(typeof(TEntity).Name, typeof(TKey).Name, ifExistCovered);
 
         /// <summary>
         /// 根据数据表生成Model层、Controller层、IRepository层和Repository层代码
         /// </summary>
-        /// <param name="ifExsitedCovered">是否覆盖已存在的同名文件</param>
+        /// <param name="ifExistCovered">是否覆盖已存在的同名文件</param>
         /// <param name="selector"></param>
-        public  void GenerateAllCodesFromDatabase(bool ifExsitedCovered = false, Func<DbTable, bool> selector = null)
+        public  void GenerateAllCodesFromDatabase(bool ifExistCovered = false, Func<DbTable, bool> selector = null)
         {
             var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
             if(dbContext == null)
                 throw new Exception("未能获取到数据库上下文，请先注册数据库上下文。");
-            GenerateAllCodesFromDatabase(dbContext, ifExsitedCovered, selector);
+            GenerateAllCodesFromDatabase(dbContext, ifExistCovered, selector);
         }
-        public void GenerateAllCodesFromDatabase(IDbContextCore dbContext,bool ifExsitedCovered = false, Func<DbTable, bool> selector = null)
+        public void GenerateAllCodesFromDatabase(IDbContextCore dbContext,bool ifExistCovered = false, Func<DbTable, bool> selector = null)
         {
             var tables = dbContext.GetCurrentDatabaseTableList();
             if (tables != null && tables.Any())
             {
                 if (selector != null)
                     tables = tables.Where(selector).ToList();
-                Generate(tables.ToList(), ifExsitedCovered);
+                Generate(tables.ToList(), ifExistCovered);
             }
         }
 
-        public void Generate(List<DbTable> tables,bool ifExsitedCovered = false)
+        public void Generate(List<DbTable> tables,bool ifExistCovered = false)
         {
             foreach (var table in tables)
             {
@@ -306,24 +301,24 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 {
                     var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
                     var tableName = Option.IsPascalCase ? table.TableName.ToPascalCase() : table.TableName;
-                    GenerateEntity(table, ifExsitedCovered);
-                    GenerateIRepository(tableName, pkTypeName, ifExsitedCovered);
-                    GenerateRepository(tableName, pkTypeName, ifExsitedCovered);
-                    GenerateIService(tableName, pkTypeName, ifExsitedCovered);
-                    GenerateService(tableName, pkTypeName, ifExsitedCovered);
+                    GenerateEntity(table, ifExistCovered);
+                    GenerateIRepository(tableName, pkTypeName, ifExistCovered);
+                    GenerateRepository(tableName, pkTypeName, ifExistCovered);
+                    GenerateIService(tableName, pkTypeName, ifExistCovered);
+                    GenerateService(tableName, pkTypeName, ifExistCovered);
                     if (!Option.GenerateApiController)
                     {
-                        GenerateController(tableName, pkTypeName, ifExsitedCovered);
+                        GenerateController(tableName, pkTypeName, ifExistCovered);
                     }
                     else
                     {
-                        GenerateApiController(tableName, pkTypeName, ifExsitedCovered);
+                        GenerateApiController(tableName, pkTypeName, ifExistCovered);
                     }
                 }
             }
         }
 
-        public void GenerateEntity(DbTable table, bool ifExsitedCovered = false)
+        public void GenerateEntity(DbTable table, bool ifExistCovered = false)
         {
             var modelPath = Option.OutputPath + Delimiter + "Models";
             if (!Directory.Exists(modelPath))
@@ -336,7 +331,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 tableName = tableName.ToPascalCase();
 
             var fullPath = modelPath + Delimiter + tableName + ".cs";
-            if (File.Exists(fullPath) && !ifExsitedCovered)
+            if (File.Exists(fullPath) && !ifExistCovered)
                 return;
 
             var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
@@ -433,7 +428,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             }
         }
 
-        public void GenerateViewModel(DataTable dt, string className, bool ifExsitedCovered = true)
+        public void GenerateViewModel(DataTable dt, string className, bool ifExistCovered = true)
         {
             if (dt == null) throw new ArgumentNullException(nameof(dt));
             var template = ReadTemplate("ViewModelTemplate.txt");
@@ -459,18 +454,18 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             if (!Directory.Exists(modelPath))
                 Directory.CreateDirectory(modelPath);
             var fullPath = modelPath + Delimiter + dt.TableName + ".cs";
-            if (File.Exists(fullPath) && !ifExsitedCovered)
+            if (File.Exists(fullPath) && !ifExistCovered)
                 return;
 
             WriteAndSave(fullPath, content);
         }
 
-        public void GenerateViewModel(DataSet ds, bool ifExsitedCovered = false)
+        public void GenerateViewModel(DataSet ds, bool ifExistCovered = false)
         {
             if (ds == null) throw new ArgumentNullException(nameof(ds));
             foreach (DataTable table in ds.Tables)
             {
-                GenerateViewModel(table, table.TableName, ifExsitedCovered);
+                GenerateViewModel(table, table.TableName, ifExistCovered);
             }
         }
     }

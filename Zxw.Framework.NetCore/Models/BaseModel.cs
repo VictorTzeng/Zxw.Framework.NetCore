@@ -6,12 +6,17 @@ namespace Zxw.Framework.NetCore.Models
     {
         
     }
+
+    public interface IBaseModel<TKey> : IAggregateRoot
+    {
+        TKey Id { get; set; }
+    }
     /// <summary>
     /// 所有数据表实体类都必须继承此类
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     [Serializable]
-    public abstract class BaseModel<TKey>: IAggregateRoot
+    public abstract class BaseModel<TKey>: IBaseModel<TKey>
     {
         public abstract TKey Id { get; set; }
     }

@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
 using Z.EntityFramework.Plus;
 using Zxw.Framework.NetCore.DbLogProvider;
+using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Models;
@@ -79,9 +80,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
             var assembly = Assembly.Load(Option.ModelAssemblyName);
             var types = assembly?.GetTypes().Where(c=>c.GetCustomAttributes<DbContextAttribute>().Any());
             var list = types?.Where(t =>
-                t.IsClass && !t.IsGenericType && !t.IsAbstract &&
-                t.GetInterfaces().Any(m =>
-                    m.IsAssignableFrom(typeof(BaseModel<>)) || m.IsAssignableFrom(typeof(BaseViewModel)))).ToList();
+                t.IsImplement(typeof(IBaseModel<>))||t.IsSubclassOf(typeof(BaseViewModel))).ToList();
             if (list != null && list.Any())
             {
                 list.ForEach(t =>

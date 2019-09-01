@@ -32,10 +32,10 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             }
         }
 
-        public static void GenerateAllCodesFromDatabase(this IDbContextCore dbContext, bool ifExsitedCovered = false,
+        public static void GenerateAllCodesFromDatabase(this IDbContextCore dbContext, bool ifExistCovered = false,
             Func<DbTable, bool> selector = null)
         {
-            dbContext.DbFirst().Generate(selector, ifExsitedCovered);
+            dbContext.DbFirst().Generate(selector, ifExistCovered);
         }
 
         public static void UseCodeGenerator(this IServiceCollection services, CodeGenerateOption option)

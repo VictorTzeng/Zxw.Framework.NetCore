@@ -9,14 +9,14 @@ namespace Zxw.Framework.NetCore.CodeGenerator.CodeFirst
 {
     public interface ICodeFirst
     {
-        void GenerateAll(bool ifExsitedCovered = false);
-        ICodeFirst GenerateSingle<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>;
-        ICodeFirst GenerateIRepository<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>;
-        ICodeFirst GenerateRepository<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>;
-        ICodeFirst GenerateIService<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>;
-        ICodeFirst GenerateService<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>;
-        ICodeFirst GenerateController<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>;
-        ICodeFirst GenerateApiController<T, TKey>(bool ifExsitedCovered = false) where T : BaseModel<TKey>;
+        void GenerateAll(bool ifExistCovered = false);
+        ICodeFirst GenerateSingle<T, TKey>(bool ifExistCovered = false) where T : IBaseModel<TKey>;
+        ICodeFirst GenerateIRepository<T, TKey>(bool ifExistCovered = false) where T : IBaseModel<TKey>;
+        ICodeFirst GenerateRepository<T, TKey>(bool ifExistCovered = false) where T : IBaseModel<TKey>;
+        ICodeFirst GenerateIService<T, TKey>(bool ifExistCovered = false) where T : IBaseModel<TKey>;
+        ICodeFirst GenerateService<T, TKey>(bool ifExistCovered = false) where T : IBaseModel<TKey>;
+        ICodeFirst GenerateController<T, TKey>(bool ifExistCovered = false) where T : IBaseModel<TKey>;
+        ICodeFirst GenerateApiController<T, TKey>(bool ifExistCovered = false) where T : IBaseModel<TKey>;
     }
 
     public static class CodeFirstExtensions
