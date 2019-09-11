@@ -11,6 +11,8 @@ namespace Zxw.Framework.NetCore.Models
         /// </summary>
         public string TableName { get; set; }
 
+        public string Alias { get; set; }
+
         /// <summary>
         /// 表说明
         /// </summary>
