@@ -18,6 +18,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
         {
         }
 
+        public InMemoryDbContext(DbContextOptions options) : base(options){}
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseInMemoryDatabase(Option.ConnectionString);

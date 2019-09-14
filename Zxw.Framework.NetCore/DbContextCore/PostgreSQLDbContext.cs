@@ -19,6 +19,9 @@ namespace Zxw.Framework.NetCore.DbContextCore
         public PostgreSQLDbContext(IOptions<DbContextOption> option) : base(option)
         {
         }
+
+        public PostgreSQLDbContext(DbContextOptions options) : base(options){}
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseNpgsql(Option.ConnectionString);

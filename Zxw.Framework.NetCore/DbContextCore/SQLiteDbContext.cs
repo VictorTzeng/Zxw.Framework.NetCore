@@ -21,6 +21,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
         {
         }
 
+        public SQLiteDbContext(DbContextOptions options) : base(options){}
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite(Option.ConnectionString);

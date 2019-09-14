@@ -25,6 +25,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
         {
         }
 
+        public MySqlDbContext(DbContextOptions options) : base(options){}
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseMySql(Option.ConnectionString);

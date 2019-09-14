@@ -21,6 +21,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
         {
         }
 
+        public MongoDbContext(DbContextOptions options) : base(options){}
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //var mongoUrl = new MongoUrl(Option.ConnectionString);

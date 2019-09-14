@@ -51,6 +51,11 @@ namespace Zxw.Framework.NetCore.DbContextCore
             Option = option.Value;
         }
 
+        protected BaseDbContext(DbContextOptions options):base(options)
+        {
+            Option = AspectCoreContainer.Resolve<IOptions<DbContextOption>>().Value;
+        }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -20,6 +20,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
         public OracleDbContext(IOptions<DbContextOption> option) : base(option)
         {
         }
+
+        public OracleDbContext(DbContextOptions options) : base(options){}
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseOracle(Option.ConnectionString);
