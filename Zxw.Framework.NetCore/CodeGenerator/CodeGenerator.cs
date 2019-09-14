@@ -453,7 +453,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             var modelPath = Option.OutputPath + Delimiter + "ViewModels";
             if (!Directory.Exists(modelPath))
                 Directory.CreateDirectory(modelPath);
-            var fullPath = modelPath + Delimiter + dt.TableName + ".cs";
+            var fullPath = modelPath + Delimiter + className + ".cs";
             if (File.Exists(fullPath) && !ifExistCovered)
                 return;
 
