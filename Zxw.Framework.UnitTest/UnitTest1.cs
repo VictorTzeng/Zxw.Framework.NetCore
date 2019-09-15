@@ -176,7 +176,7 @@ namespace Zxw.Framework.UnitTest
             RedisHelper.Set("test_cache_key", JsonConvertor.Serialize(dbContext.GetCurrentDatabaseTableList()),
                 10 * 60);
             Thread.Sleep(2000);
-            var content = DistributedCacheManager.Get("test_cache_key");
+            var content = RedisCacheManager.Get("test_cache_key");
             Assert.IsNotNull(content);
         }
         

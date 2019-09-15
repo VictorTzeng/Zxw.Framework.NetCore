@@ -64,8 +64,10 @@ namespace Zxw.Framework.NetCore.DbContextCore
                 optionsBuilder.UseLoggerFactory(new EFLoggerFactory());
             }
 
-            optionsBuilder.UseLazyLoadingProxies()
-                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            optionsBuilder
+                //.UseLazyLoadingProxies() /* 开启后AOP缓存会报错 */
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+                ;
 
             base.OnConfiguring(optionsBuilder);
         }

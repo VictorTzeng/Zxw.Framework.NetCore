@@ -14,6 +14,7 @@ namespace Zxw.Framework.NetCore.Attributes
     /// 在方法上标记此属性后，通过该方法取得的数据将被缓存。在缓存有效时间范围内，往后通过此方法取得的数据都是从缓存中取出的。
     /// </para>
     /// </summary>
+    [Obsolete("已过时的AOP缓存拦截，请使用CachedAttribute。")]
     [AttributeUsage(AttributeTargets.Method)]
     public class RedisCacheAttribute : AbstractInterceptorAttribute
     {
@@ -37,7 +38,7 @@ namespace Zxw.Framework.NetCore.Attributes
                 var key = string.IsNullOrEmpty(CacheKey)
                     ? new CacheKey(context.ServiceMethod, parameters, context.Parameters).GetRedisCacheKey()
                     : CacheKey;
-                var value =  await DistributedCacheManager.GetAsync(key);
+                var value =  await RedisCacheManager.GetAsync(key);
                 if (value != null)
                 {
                     if (context.ServiceMethod.IsReturnTask())
@@ -59,7 +60,7 @@ namespace Zxw.Framework.NetCore.Attributes
                     {
                         returnValue = returnValue.Result;
                     }
-                    await DistributedCacheManager.SetAsync(key, returnValue, Expiration);
+                    await RedisCacheManager.SetAsync(key, returnValue, Expiration);
                     //await next(context);
                 }
             }

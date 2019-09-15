@@ -12,6 +12,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.EntityFrameworkCore;
+using Zxw.Framework.NetCore.Cache;
 using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IDbContext;
@@ -294,6 +295,7 @@ namespace Zxw.Framework.NetCore.Extensions
             RedisHelper.Initialization(redisClient);
             //注册mvc分布式缓存
             services.AddSingleton<IDistributedCache>(new Microsoft.Extensions.Caching.Redis.CSRedisCache(RedisHelper.Instance));
+            services.AddSingleton<IDistributedCacheManager, DistributedCacheManager>();
             return services;
         }
         public static IServiceProvider BuildAutofacServiceProvider(this IServiceCollection services)

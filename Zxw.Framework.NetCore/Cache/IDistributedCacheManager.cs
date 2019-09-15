@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Zxw.Framework.NetCore.Cache2
+namespace Zxw.Framework.NetCore.Cache
 {
     public interface IDistributedCacheManager
     {
@@ -11,6 +11,8 @@ namespace Zxw.Framework.NetCore.Cache2
         Task SetAsync(string key, object value, int expiredSeconds);
         object Get(string key);
         Task<object> GetAsync(string key);
+        object Get(string key, Type type);
+        Task<object> GetAsync(string key, Type type);
         T Get<T>(string key);
         Task<T> GetAsync<T>(string key);
         object Get(string key, Func<object> func);
