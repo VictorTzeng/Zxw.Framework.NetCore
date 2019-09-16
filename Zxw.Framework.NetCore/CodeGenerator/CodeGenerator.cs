@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Castle.Core.Internal;
 using Microsoft.Extensions.Options;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.IDbContext;
@@ -300,19 +301,20 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                 if (table.Columns.Any(c => c.IsPrimaryKey))
                 {
                     var pkTypeName = table.Columns.First(m => m.IsPrimaryKey).CSharpType;
-                    var tableName = Option.IsPascalCase ? table.TableName.ToPascalCase() : table.TableName;
+                    var tableName = table.TableName;
+                    var className = table.Alias.IsNullOrEmpty() ? tableName : table.Alias;
                     GenerateEntity(table, ifExistCovered);
-                    GenerateIRepository(tableName, pkTypeName, ifExistCovered);
-                    GenerateRepository(tableName, pkTypeName, ifExistCovered);
-                    GenerateIService(tableName, pkTypeName, ifExistCovered);
-                    GenerateService(tableName, pkTypeName, ifExistCovered);
+                    GenerateIRepository(className, pkTypeName, ifExistCovered);
+                    GenerateRepository(className, pkTypeName, ifExistCovered);
+                    GenerateIService(className, pkTypeName, ifExistCovered);
+                    GenerateService(className, pkTypeName, ifExistCovered);
                     if (!Option.GenerateApiController)
                     {
-                        GenerateController(tableName, pkTypeName, ifExistCovered);
+                        GenerateController(className, pkTypeName, ifExistCovered);
                     }
                     else
                     {
-                        GenerateApiController(tableName, pkTypeName, ifExistCovered);
+                        GenerateApiController(className, pkTypeName, ifExistCovered);
                     }
                 }
             }
@@ -327,8 +329,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             }
 
             var tableName = table.TableName;
-            if (Option.IsPascalCase)
-                tableName = tableName.ToPascalCase();
+            var className = table.Alias.IsNullOrEmpty() ? tableName : table.Alias;
 
             var fullPath = modelPath + Delimiter + tableName + ".cs";
             if (File.Exists(fullPath) && !ifExistCovered)
@@ -346,7 +347,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             content = content.Replace("{ModelsNamespace}", Option.ModelsNamespace)
                 .Replace("{Comment}", table.TableComment)
                 .Replace("{TableName}", tableName)
-                .Replace("{ModelName}", tableName)
+                .Replace("{ModelName}", className)
                 .Replace("{KeyTypeName}", pkTypeName)
                 .Replace("{ModelProperties}", sb.ToString());
             WriteAndSave(fullPath, content);
