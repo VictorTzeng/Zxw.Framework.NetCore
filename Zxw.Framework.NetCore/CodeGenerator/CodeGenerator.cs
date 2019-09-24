@@ -111,6 +111,17 @@ namespace Zxw.Framework.NetCore.CodeGenerator
             return content;
         }
 
+
+        public string ReadFile(string fileFullName)
+        {
+            return File.ReadAllText(fileFullName);
+        }
+
+        public string ReadFile(string fileType, string fileName)
+        {
+            var fileFullName = Option.OutputPath + Delimiter + fileType + Delimiter + fileName;
+            return ReadFile(fileFullName);
+        }
         /// <summary>
         /// 生成IRepository层代码文件
         /// </summary>
@@ -399,7 +410,10 @@ namespace Zxw.Framework.NetCore.CodeGenerator
                     colType = colType + "?";
                 }
 
-                sb.AppendLine($"\t\tpublic {colType} {(Option.IsPascalCase?column.ColName.ToPascalCase():column.ColName)} " + "{get;set;}");
+                var colName = column.ColName;
+                if (!column.Alias.IsNullOrEmpty()) colName = column.Alias;
+                if (Option.IsPascalCase) colName = colName.ToPascalCase();
+                sb.AppendLine($"\t\tpublic {colType} {colName} " + "{get;set;}");
             }
 
             return sb.ToString();

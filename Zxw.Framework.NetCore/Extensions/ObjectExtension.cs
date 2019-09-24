@@ -150,9 +150,9 @@ namespace Zxw.Framework.NetCore.Extensions
         {    
             // 定义集合    
             IList<T> ts = new List<T>(); 
-     
-            // 获得此模型的类型   
-            Type type = typeof(T);      
+
+            if(dt == null || dt.Rows.Count == 0)return ts;     
+
             string tempName = "";      
       
             foreach (DataRow dr in dt.Rows)      
@@ -1448,6 +1448,11 @@ namespace Zxw.Framework.NetCore.Extensions
         public static T ToObject<T>(this byte[] source)
         {
             return (T) source.ToObject();
+        }
+
+        public static string Join(this IEnumerable<object> source, string separator)
+        {
+            return string.Join(separator, source);
         }
     }
 }

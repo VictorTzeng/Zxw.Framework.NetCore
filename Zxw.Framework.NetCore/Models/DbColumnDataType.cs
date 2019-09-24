@@ -123,6 +123,7 @@ namespace Zxw.Framework.NetCore.Models
             new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "DATE, TIMESTAMP, TimeStampLTZ,TimeStampTZ,TIMESTAMP(0),TIMESTAMP(1),TIMESTAMP(2),TIMESTAMP(3),TIMESTAMP(4),TIMESTAMP(5),TIMESTAMP(6),TIMESTAMP(7),TIMESTAMP(8),TIMESTAMP(9)", CSharpType ="DateTime"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "IntervalDS,INTERVAL DAY TO SECOND", CSharpType ="TimeSpan"},
             new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "NUMBER", CSharpType ="Decimal"},
+            new DbColumnDataType(){ DatabaseType = DatabaseType.Oracle, ColumnTypes = "ANYDATA", CSharpType ="Object"},
 
             #endregion
         };

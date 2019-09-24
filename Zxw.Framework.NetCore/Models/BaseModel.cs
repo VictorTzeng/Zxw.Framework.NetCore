@@ -6,7 +6,7 @@ namespace Zxw.Framework.NetCore.Models
     {
         
     }
-
+    
     public interface IBaseModel<TKey> : IAggregateRoot
     {
         TKey Id { get; set; }

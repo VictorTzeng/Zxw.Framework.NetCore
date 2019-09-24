@@ -25,10 +25,12 @@ namespace Zxw.Framework.NetCore.Models
     [Serializable]
     public class DbTableColumn
     {
+        public string TableName{get;set;}
         /// <summary>
         /// 字段名
         /// </summary>
         public string ColName { get; set; }
+        public string Alias { get; set; }
         /// <summary>
         /// 是否自增
         /// </summary>
