@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Options;
 using Z.EntityFramework.Plus;
+using Zxw.Framework.NetCore.Attributes;
 using Zxw.Framework.NetCore.DbLogProvider;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.IDbContext;
@@ -93,8 +95,21 @@ namespace Zxw.Framework.NetCore.DbContextCore
                 list.ForEach(t =>
                 {
                     var dbContextType = t.GetCustomAttributes<DbContextAttribute>().FirstOrDefault(x=>x.ContextType==GetType());
-                    if (modelBuilder.Model.FindEntityType(t) == null && null!=dbContextType)
+                    if (modelBuilder.Model.FindEntityType(t) == null && null != dbContextType)
+                    {                        
                         modelBuilder.Model.AddEntityType(t);
+                    }
+                    else
+                    {
+                        var attr = t.GetCustomAttributes<ShardingTableAttribute>().FirstOrDefault();
+                        if (attr!=null)
+                        {
+                            if (modelBuilder.Model.FindEntityType(t).Relational() is Microsoft.EntityFrameworkCore.Metadata.RelationalEntityTypeAnnotations relational)
+                            {
+
+                            }
+                        }
+                    }
                 });
             }
         }
@@ -152,14 +167,14 @@ namespace Zxw.Framework.NetCore.DbContextCore
         /// <returns></returns>
         public virtual int ExecuteSqlWithNonQuery(string sql, params object[] parameters)
         {
-            return Database.ExecuteSqlCommand(sql,
+            return Database.ExecuteSqlRaw(sql,
                 CancellationToken.None,
                 parameters);
         }
 
         public virtual async Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters)
         {
-            return await Database.ExecuteSqlCommandAsync(sql,
+            return await Database.ExecuteSqlRawAsync(sql,
                 CancellationToken.None,
                 parameters);
         }
@@ -336,7 +351,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
         public virtual List<TView> SqlQuery<T,TView>(string sql, params object[] parameters) 
             where T : class
         {
-            return GetDbSet<T>().FromSql(sql, parameters).Cast<TView>().ToList();
+            return GetDbSet<T>().FromSqlRaw(sql, parameters).Cast<TView>().ToList();
         }
 
         public virtual PaginationResult SqlQueryByPagnation<T, TView>(string sql, string[] orderBys, int pageIndex, int pageSize,
@@ -349,7 +364,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
             where T : class
             where TView : class
         {
-            return await GetDbSet<T>().FromSql(sql, parameters).Cast<TView>().ToListAsync();
+            return await GetDbSet<T>().FromSqlRaw(sql, parameters).Cast<TView>().ToListAsync();
         }
 
         public abstract DataTable GetDataTable(string sql, params DbParameter[] parameters);

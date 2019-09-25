@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using MongoDB.Bson;
+using Zxw.Framework.NetCore.Attributes;
 using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.UnitTest.TestModels
 {
+    [ShardingTable("Mongo",splitter:"_","yyyyMMdd")]
     public class MongoModel:BaseModel<ObjectId>
     {
         [Key]
