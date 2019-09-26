@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Zxw.Framework.NetCore.Options;
+using Zxw.Framework.NetCore.IoC;
 
 namespace Zxw.Framework.NetCore.DbContextCore
 {
@@ -11,21 +8,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
     {
         public T CreateDbContext(string[] args)
         {
-            throw new NotImplementedException();
-        }
-
-        public T CreateDbContext(string connectionString)
-        {
-            var newContext =
-                (T) Activator.CreateInstance(typeof(T),
-                    new DbContextOption()
-                    {
-                        ConnectionString = connectionString, 
-                        TagName = typeof(T).Name
-                    });
-            return newContext;
-        }
-
-        public T CreateDbContext(DbContextOption option) => (T) Activator.CreateInstance(typeof(T), option);
+            return AspectCoreContainer.Resolve<T>();
+        }        
     }
 }

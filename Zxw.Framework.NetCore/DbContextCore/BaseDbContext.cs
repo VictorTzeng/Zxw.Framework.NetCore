@@ -95,20 +95,17 @@ namespace Zxw.Framework.NetCore.DbContextCore
                 list.ForEach(t =>
                 {
                     var dbContextType = t.GetCustomAttributes<DbContextAttribute>().FirstOrDefault(x=>x.ContextType==GetType());
-                    if (modelBuilder.Model.FindEntityType(t) == null && null != dbContextType)
+                    var entityType = modelBuilder.Model.FindEntityType(t);
+                    if (entityType == null && null != dbContextType)
                     {                        
                         modelBuilder.Model.AddEntityType(t);
                     }
-                    else
-                    {
-                        var attr = t.GetCustomAttributes<ShardingTableAttribute>().FirstOrDefault();
-                        if (attr!=null)
-                        {
-                            if (modelBuilder.Model.FindEntityType(t).Relational() is Microsoft.EntityFrameworkCore.Metadata.RelationalEntityTypeAnnotations relational)
-                            {
 
-                            }
-                        }
+                    entityType = modelBuilder.Model.FindEntityType(t);
+                    var attr = t.GetCustomAttributes<ShardingTableAttribute>().FirstOrDefault();
+                    if (attr!=null && entityType!=null)
+                    {
+                        modelBuilder.Model.FindEntityType(t).SetTableName($"{t.Name}{attr.Splitter}{DateTime.Now.ToString(attr.Suffix)}");
                     }
                 });
             }
