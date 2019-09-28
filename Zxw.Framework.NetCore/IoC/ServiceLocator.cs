@@ -1,51 +1,23 @@
 ﻿using System;
+using AspectCore.Injector;
 using Autofac;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Zxw.Framework.NetCore.IoC
 {
-    public class ServiceLocator
+    public static class ServiceLocator
     {
-        public static IContainer Current { get; set; }
+        public static IServiceProvider Current { get; set; }
 
-        public static T GetService<T>()
+        public static T Resolve<T>()
         {
-            return Current.Resolve<T>();
+            return (T)Current.GetService(typeof(T));
         }
 
-        public static bool IsRegistered<T>()
+        public static void BuildServiceLocator(this IServiceCollection services, ServiceProviderOptions options = null)
         {
-            return Current.IsRegistered<T>();
-        }
-
-        public static bool IsRegistered<T>(string key)
-        {
-            return Current.IsRegisteredWithKey<T>(key);
-        }
-
-        public static bool IsRegistered(Type type)
-        {
-            return Current.IsRegistered(type);
-        }
-
-        public static bool IsRegisteredWithKey(string key, Type type)
-        {
-            return Current.IsRegisteredWithKey(key, type);
-        }
-
-        public static T GetService<T>(string key)
-        {
-
-            return Current.ResolveKeyed<T>(key);
-        }
-
-        public static object GetService(Type type)
-        {
-            return Current.Resolve(type);
-        }
-
-        public static object GetService(string key, Type type)
-        {
-            return Current.ResolveKeyed(key, type);
+            options ??= new ServiceProviderOptions();
+            Current = services.BuildServiceProvider(options);
         }
     }
 }

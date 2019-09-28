@@ -28,7 +28,7 @@ namespace Zxw.Framework.UnitTest
         public void TestGetDataTableForOracle()
         {
             BuildServiceForOracle();
-            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var dbContext = ServiceLocator.Resolve<IDbContextCore>();
             var dt1 = dbContext.GetCurrentDatabaseAllTables();
             Assert.IsNotNull(dt1);
             foreach (DataRow row in dt1.Rows)
@@ -42,7 +42,7 @@ namespace Zxw.Framework.UnitTest
         public void TestGetDataTableListForOracle()
         {
             BuildServiceForOracle();
-            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var dbContext = ServiceLocator.Resolve<IDbContextCore>();
             var tables = dbContext.GetCurrentDatabaseTableList();
             Assert.IsNotNull(tables);
         }
@@ -51,7 +51,7 @@ namespace Zxw.Framework.UnitTest
         public void TestGenerateEntitiesForOracle()
         {
             BuildServiceForOracle();
-            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var dbContext = ServiceLocator.Resolve<IDbContextCore>();
             dbContext.GenerateAllCodesFromDatabase(true);
         }
 
@@ -63,11 +63,11 @@ namespace Zxw.Framework.UnitTest
         public void TestGetDataTableForPostgreSql()
         {
             BuildServiceForPostgreSql();
-            var test = AspectCoreContainer.Resolve<IMongoRepository>();
+            var test = ServiceLocator.Resolve<IMongoRepository>();
 
             test.Run();
 
-            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var dbContext = ServiceLocator.Resolve<IDbContextCore>();
             var dt1 = dbContext.GetCurrentDatabaseAllTables();
             Assert.IsNotNull(dt1);
             foreach (DataRow row in dt1.Rows)
@@ -81,7 +81,7 @@ namespace Zxw.Framework.UnitTest
         public void TestGetDataTableListForPostgreSql()
         {
             BuildServiceForPostgreSql();
-            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var dbContext = ServiceLocator.Resolve<IDbContextCore>();
             var tables = dbContext.GetCurrentDatabaseTableList();
             Assert.IsNotNull(tables);
         }
@@ -90,7 +90,7 @@ namespace Zxw.Framework.UnitTest
         public void TestGenerateEntitiesForPostgreSql()
         {
             BuildServiceForPostgreSql();
-            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var dbContext = ServiceLocator.Resolve<IDbContextCore>();
             dbContext.GenerateAllCodesFromDatabase(true);
         }
 
@@ -102,7 +102,7 @@ namespace Zxw.Framework.UnitTest
         public void TestGetDataTableForSqlServer()
         {
             BuildServiceForSqlServer();
-            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var dbContext = ServiceLocator.Resolve<IDbContextCore>();
             var dt1 = dbContext.GetCurrentDatabaseAllTables();
             Assert.IsNotNull(dt1);
             foreach (DataRow row in dt1.Rows)
@@ -116,7 +116,7 @@ namespace Zxw.Framework.UnitTest
         public void TestGetDataTableListForSqlServer()
         {
             BuildServiceForSqlServer();
-            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var dbContext = ServiceLocator.Resolve<IDbContextCore>();
             var tables = dbContext.GetCurrentDatabaseTableList();
             Assert.IsNotNull(tables);
         }
@@ -125,7 +125,7 @@ namespace Zxw.Framework.UnitTest
         public void TestGenerateEntitiesForSqlServer()
         {
             BuildServiceForSqlServer();
-            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var dbContext = ServiceLocator.Resolve<IDbContextCore>();
             dbContext.GenerateAllCodesFromDatabase(true);
         }
 
@@ -137,7 +137,7 @@ namespace Zxw.Framework.UnitTest
         public void TestGetDataTableForMySql()
         {
             BuildServiceFoMySql();
-            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var dbContext = ServiceLocator.Resolve<IDbContextCore>();
             var dt1 = dbContext.GetCurrentDatabaseAllTables();
             Assert.IsNotNull(dt1);
             foreach (DataRow row in dt1.Rows)
@@ -151,7 +151,7 @@ namespace Zxw.Framework.UnitTest
         public void TestGetDataTableListForMySql()
         {
             BuildServiceFoMySql();
-            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var dbContext = ServiceLocator.Resolve<IDbContextCore>();
             var tables = dbContext.GetCurrentDatabaseTableList();
             Assert.IsNotNull(tables);
         }
@@ -160,7 +160,7 @@ namespace Zxw.Framework.UnitTest
         public void TestGenerateEntitiesForMySql()
         {
             BuildServiceFoMySql();
-            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var dbContext = ServiceLocator.Resolve<IDbContextCore>();
             dbContext.GenerateAllCodesFromDatabase(true);
         }
 
@@ -172,7 +172,7 @@ namespace Zxw.Framework.UnitTest
         public void TestCsRedisClient()
         {
             BuildServiceForSqlServer();
-            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var dbContext = ServiceLocator.Resolve<IDbContextCore>();
             RedisHelper.Set("test_cache_key", JsonConvertor.Serialize(dbContext.GetCurrentDatabaseTableList()),
                 10 * 60);
             Thread.Sleep(2000);
@@ -186,7 +186,7 @@ namespace Zxw.Framework.UnitTest
         public void TestForMongoDb()
         {
             BuildServiceForMongoDB();
-            var context = AspectCoreContainer.Resolve<IDbContextCore>();
+            var context = ServiceLocator.Resolve<IDbContextCore>();
             Assert.IsTrue(context.Add(new MongoModel()
             {
                 Age = 28,
@@ -200,7 +200,7 @@ namespace Zxw.Framework.UnitTest
 
         #region public methods
 
-        public IServiceProvider BuildServiceForPostgreSql()
+        public void BuildServiceForPostgreSql()
         {
             IServiceCollection services = new ServiceCollection();
             //在这里注册EF上下文
@@ -215,10 +215,10 @@ namespace Zxw.Framework.UnitTest
             });
             services.AddOptions();
             
-            return AspectCoreContainer.BuildServiceProvider(services, configure=>configure.Interceptors.AddTyped<FromDbContextFactoryInterceptor>()); //接入AspectCore.Injector
+            services.BuildServiceLocator(); 
         }
 
-        public IServiceProvider BuildServiceForSqlServer()
+        public void BuildServiceForSqlServer()
         {
             IServiceCollection services = new ServiceCollection();
 
@@ -235,10 +235,10 @@ namespace Zxw.Framework.UnitTest
                 options.OutputPath = "E:\\CodeGenerator\\AeroIotPlatform\\Bridge";
             });
             services.AddOptions();
-            return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
+            services.BuildServiceLocator(); 
         }
 
-        public IServiceProvider BuildServiceFoMySql()
+        public void BuildServiceFoMySql()
         {
             IServiceCollection services = new ServiceCollection();
 
@@ -253,10 +253,10 @@ namespace Zxw.Framework.UnitTest
                 options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
             });
             services.AddOptions();
-            return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
+            services.BuildServiceLocator(); 
         }
 
-        public IServiceProvider BuildServiceForSqLite()
+        public void BuildServiceForSqLite()
         {
             IServiceCollection services = new ServiceCollection();
 
@@ -271,18 +271,18 @@ namespace Zxw.Framework.UnitTest
                 options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
             });
             services.AddOptions();
-            return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
+            services.BuildServiceLocator(); 
         }
-        public IServiceProvider BuildServiceForMongoDB()
+        public void BuildServiceForMongoDB()
         {
             IServiceCollection services = new ServiceCollection();
 
             //在这里注册EF上下文
             services = RegisterMongoDbContext(services);
             services.AddOptions();
-            return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
+            services.BuildServiceLocator(); 
         }
-        public IServiceProvider BuildServiceForOracle()
+        public void BuildServiceForOracle()
         {
             IServiceCollection services = new ServiceCollection();
 
@@ -297,7 +297,7 @@ namespace Zxw.Framework.UnitTest
             //在这里注册EF上下文
             services = RegisterOracleDbContext(services);
             services.AddOptions();
-            return AspectCoreContainer.BuildServiceProvider(services); //接入AspectCore.Injector
+            services.BuildServiceLocator(); 
         }
         /// <summary>
          /// 注册SQLServer上下文
@@ -309,7 +309,7 @@ namespace Zxw.Framework.UnitTest
             services.Configure<DbContextOption>(options =>
             {
                 options.ConnectionString =
-                    "Data Source=127.0.0.1;Initial Catalog=testdb;User ID=sa;password=123456;";
+                    "initial catalog=NetCoreDemo;data source=127.0.0.1;password=admin123!@#;User id=sa;MultipleActiveResultSets=True;";
                 //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
             });
             services.AddScoped<IDbContextCore, SqlServerDbContext>(); //注入EF上下文

@@ -19,7 +19,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
     {
         public static void ToGenerateViewModelFile(this DataTable dt, string className)
         {
-            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var dbContext = ServiceLocator.Resolve<IDbContextCore>();
             dbContext.DbFirst().GenerateViewModel(dt, className);
         }
 

@@ -5,6 +5,6 @@ namespace Zxw.Framework.NetCore.Cache
 {
     public class MemoryCacheManager
     {
-        public static IMemoryCache GetInstance() => AspectCoreContainer.Resolve<IMemoryCache>();
+        public static IMemoryCache GetInstance() => ServiceLocator.Resolve<IMemoryCache>();
     }
 }

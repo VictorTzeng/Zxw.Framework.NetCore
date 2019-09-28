@@ -307,8 +307,7 @@ namespace Zxw.Framework.NetCore.Extensions
         {
             if(services==null)throw new ArgumentNullException(nameof(services));
             services.ConfigureDynamicProxy(configure);
-            services.AddAspectCoreContainer();
-            return AutofacContainer.Build(services, configure);
+            return ServiceLocator.Current = AutofacContainer.Build(services, configure);
         }
 
         public static IServiceContainer BuildAspectCoreServiceContainer(this IServiceCollection services,
@@ -316,14 +315,13 @@ namespace Zxw.Framework.NetCore.Extensions
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
             services.ConfigureDynamicProxy(configure);
-            services.AddAspectCoreContainer();
             return services.ToServiceContainer();
         }
 
         public static IServiceProvider BuildAspectCoreServiceProvider(this IServiceCollection services,
             Action<IAspectConfiguration> configure = null)
         {
-            return AspectCoreContainer.BuildServiceProvider(services, configure);
+            return ServiceLocator.Current = AspectCoreContainer.BuildServiceProvider(services, configure);
         }
 
         public static IServiceCollection AddDbContextFactory(this IServiceCollection services,

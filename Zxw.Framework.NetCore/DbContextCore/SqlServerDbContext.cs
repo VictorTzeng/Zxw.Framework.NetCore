@@ -18,18 +18,18 @@ namespace Zxw.Framework.NetCore.DbContextCore
 {
     public class SqlServerDbContext:BaseDbContext, ISqlServerDbContext
     {
-        public SqlServerDbContext(DbContextOption option) : base(option)
-        {
+        //public SqlServerDbContext(DbContextOption option) : base(option)
+        //{
 
-        }
+        //}
         public SqlServerDbContext(IOptions<DbContextOption> option) : base(option)
         {
         }
 
-        public SqlServerDbContext(DbContextOptions options) : base(options)
-        {
+        //public SqlServerDbContext(DbContextOptions options) : base(options)
+        //{
 
-        }
+        //}
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

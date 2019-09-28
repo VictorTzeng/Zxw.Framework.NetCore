@@ -8,7 +8,7 @@ namespace Zxw.Framework.NetCore.Cache
 {
     public class RedisCacheManager
     {
-        private static IDistributedCache Instance => AspectCoreContainer.Resolve<IDistributedCache>();
+        private static IDistributedCache Instance => ServiceLocator.Resolve<IDistributedCache>();
 
         public static string Get(string key)
         {

@@ -16,6 +16,7 @@ using Z.EntityFramework.Plus;
 using Zxw.Framework.NetCore.Attributes;
 using Zxw.Framework.NetCore.DbLogProvider;
 using Zxw.Framework.NetCore.Extensions;
+using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Models;
@@ -36,7 +37,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         protected BaseDbContext(DbContextOption option)
         {
-            Option = option ?? AspectCoreContainer.Resolve<IOptions<DbContextOption>>().Value;
+            Option = option ?? ServiceLocator.Resolve<IOptions<DbContextOption>>().Value;
         }
         /// <summary>
         /// 构造函数
@@ -55,7 +56,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         protected BaseDbContext(DbContextOptions options):base(options)
         {
-            Option = AspectCoreContainer.Resolve<IOptions<DbContextOption>>().Value;
+            Option = ServiceLocator.Resolve<IOptions<DbContextOption>>().Value;
         }
 
 

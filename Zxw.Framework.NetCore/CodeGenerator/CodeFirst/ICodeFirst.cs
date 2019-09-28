@@ -23,7 +23,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator.CodeFirst
     {
         public static ICodeFirst CodeFirst(this IDbContextCore dbContext)
         {
-            var codeFirst = AspectCoreContainer.Resolve<ICodeFirst>();
+            var codeFirst = ServiceLocator.Resolve<ICodeFirst>();
             if (codeFirst == null)
                 throw new Exception("请先在Startup.cs文件的ConfigureServices方法中调用UseCodeGenerator方法以注册。");
             return codeFirst;

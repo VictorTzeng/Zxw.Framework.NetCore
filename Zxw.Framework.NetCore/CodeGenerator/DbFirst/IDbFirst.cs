@@ -30,7 +30,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
     {
         public static IDbFirst DbFirst(this IDbContextCore dbContext)
         {
-            var dbFirst = AspectCoreContainer.Resolve<IDbFirst>();
+            var dbFirst = ServiceLocator.Resolve<IDbFirst>();
             if(dbFirst == null)
                 throw new Exception("请先在Startup.cs文件的ConfigureServices方法中调用UseCodeGenerator方法以注册。");
             dbFirst.DbContext = dbContext;

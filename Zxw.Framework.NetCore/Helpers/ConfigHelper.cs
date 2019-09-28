@@ -5,7 +5,7 @@ namespace Zxw.Framework.NetCore.Helpers
 {
     public class ConfigHelper
     {
-        private static IConfiguration configuration = AspectCoreContainer.Resolve<IConfiguration>();
+        private static IConfiguration configuration = ServiceLocator.Resolve<IConfiguration>();
 
         public static IConfigurationSection GetSection(string key)
         {

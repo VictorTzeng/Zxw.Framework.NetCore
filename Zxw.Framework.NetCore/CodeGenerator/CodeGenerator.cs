@@ -31,7 +31,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         public CodeGenerator(CodeGenerateOption option)
         {
             Option = option;
-            //Options = AspectCoreContainer.Resolve<IOptions<CodeGenerateOption>>().Value;
+            //Options = ServiceLocator.Resolve<IOptions<CodeGenerateOption>>().Value;
             //if (Options == null)
             //{
             //    throw new ArgumentNullException(nameof(Options));
@@ -289,7 +289,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator
         /// <param name="selector"></param>
         public  void GenerateAllCodesFromDatabase(bool ifExistCovered = false, Func<DbTable, bool> selector = null)
         {
-            var dbContext = AspectCoreContainer.Resolve<IDbContextCore>();
+            var dbContext = ServiceLocator.Resolve<IDbContextCore>();
             if(dbContext == null)
                 throw new Exception("未能获取到数据库上下文，请先注册数据库上下文。");
             GenerateAllCodesFromDatabase(dbContext, ifExistCovered, selector);

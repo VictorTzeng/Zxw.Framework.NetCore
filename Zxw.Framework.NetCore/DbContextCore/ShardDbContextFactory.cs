@@ -8,7 +8,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
     {
         public T CreateDbContext(string[] args)
         {
-            return AspectCoreContainer.Resolve<T>();
+            return ServiceLocator.Resolve<T>();
         }        
     }
 }
