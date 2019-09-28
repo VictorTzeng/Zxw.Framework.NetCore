@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Zxw.Framework.NetCore.CodeGenerator.CodeFirst;
 using Zxw.Framework.NetCore.CodeGenerator.DbFirst;
-using Zxw.Framework.NetCore.Extensions;
-using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Models;

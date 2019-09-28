@@ -215,7 +215,7 @@ namespace Zxw.Framework.UnitTest
             });
             services.AddOptions();
             
-            services.BuildServiceLocator(); 
+            services.BuildAspectCoreServiceProvider(); 
         }
 
         public void BuildServiceForSqlServer()
@@ -224,18 +224,19 @@ namespace Zxw.Framework.UnitTest
 
             //在这里注册EF上下文
             services = RegisterSqlServerContext(services);
-            services.Configure<CodeGenerateOption>(options =>
-            {
-                options.ModelsNamespace = "AeroIotPlatform.Models.Bridge";
-                options.IRepositoriesNamespace = "AeroIotPlatform.IRepositories.Bridge";
-                options.RepositoriesNamespace = "AeroIotPlatform.Repositories.Bridge";
-                options.ControllersNamespace = "AeroIotPlatform.WebApi.Controllers";
-                options.IServicesNamespace = "AeroIotPlatform.IServices.Bridge";
-                options.ServicesNamespace = "AeroIotPlatform.Services.Bridge";
-                options.OutputPath = "E:\\CodeGenerator\\AeroIotPlatform\\Bridge";
-            });
+
             services.AddOptions();
-            services.BuildServiceLocator(); 
+            services.UseCodeGenerator(new CodeGenerateOption()
+            {
+                ModelsNamespace = "AeroIotPlatform.Models.Bridge",
+                IRepositoriesNamespace = "AeroIotPlatform.IRepositories.Bridge",
+                RepositoriesNamespace = "AeroIotPlatform.Repositories.Bridge",
+                ControllersNamespace = "AeroIotPlatform.WebApi.Controllers",
+                IServicesNamespace = "AeroIotPlatform.IServices.Bridge",
+                ServicesNamespace = "AeroIotPlatform.Services.Bridge",
+                OutputPath = "D:\\CodeGenerator\\AeroIotPlatform\\Bridge"
+            });
+            services.BuildAspectCoreServiceProvider(); 
         }
 
         public void BuildServiceFoMySql()
@@ -253,7 +254,7 @@ namespace Zxw.Framework.UnitTest
                 options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
             });
             services.AddOptions();
-            services.BuildServiceLocator(); 
+            services.BuildAspectCoreServiceProvider(); 
         }
 
         public void BuildServiceForSqLite()
@@ -271,7 +272,7 @@ namespace Zxw.Framework.UnitTest
                 options.ControllersNamespace = "Zxw.Framework.Website.Controllers";
             });
             services.AddOptions();
-            services.BuildServiceLocator(); 
+            services.BuildAspectCoreServiceProvider(); 
         }
         public void BuildServiceForMongoDB()
         {
@@ -280,7 +281,7 @@ namespace Zxw.Framework.UnitTest
             //在这里注册EF上下文
             services = RegisterMongoDbContext(services);
             services.AddOptions();
-            services.BuildServiceLocator(); 
+            services.BuildAspectCoreServiceProvider(); 
         }
         public void BuildServiceForOracle()
         {
@@ -297,7 +298,7 @@ namespace Zxw.Framework.UnitTest
             //在这里注册EF上下文
             services = RegisterOracleDbContext(services);
             services.AddOptions();
-            services.BuildServiceLocator(); 
+            services.BuildAspectCoreServiceProvider(); 
         }
         /// <summary>
          /// 注册SQLServer上下文

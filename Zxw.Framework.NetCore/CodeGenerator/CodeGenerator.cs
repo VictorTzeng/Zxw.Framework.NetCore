@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Castle.Core.Internal;
-using Microsoft.Extensions.Options;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.IoC;

@@ -3,19 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlTypes;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using StackExchange.Redis.Extensions.Core.Extensions;
-using Zxw.Framework.NetCore.CodeGenerator;
 using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IDbContext;
-using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Models;
-using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.Extensions
 {

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Data;
-using Zxw.Framework.NetCore.CodeGenerator.CodeFirst;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Models;
-using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
 {

@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using Microsoft.Extensions.Options;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.IDbContext;
-using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
 

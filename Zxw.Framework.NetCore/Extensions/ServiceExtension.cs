@@ -11,7 +11,6 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.EntityFrameworkCore;
 using Zxw.Framework.NetCore.Cache;
 using Zxw.Framework.NetCore.DbContextCore;
 using Zxw.Framework.NetCore.Helpers;
@@ -301,7 +300,7 @@ namespace Zxw.Framework.NetCore.Extensions
         public static IServiceProvider BuildAutofacServiceProvider(this IServiceCollection services)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
-            return AutofacContainer.Build(services);
+            return ServiceLocator.Current = AutofacContainer.Build(services);
         }
         public static IServiceProvider BuildAspectCoreWithAutofacServiceProvider(this IServiceCollection services, Action<IAspectConfiguration> configure = null)
         {
