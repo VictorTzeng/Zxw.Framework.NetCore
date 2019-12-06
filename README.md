@@ -1,15 +1,15 @@
 # Zxw.Framework.NetCore
 基于EF Core的Code First模式的DotNetCore快速开发框架
 
-**Nuget [最新版本：3.0.0]**
+**Nuget [最新版本：3.1.0]**
 
-[Zxw.Framework.NetCore](https://www.nuget.org/packages/Zxw.Framework.NetCore/3.0.0) 
-* Install-Package Zxw.Framework.NetCore -Version 3.0.0
-* dotnet add package Zxw.Framework.NetCore --version 3.0.0
+[Zxw.Framework.NetCore](https://www.nuget.org/packages/Zxw.Framework.NetCore/3.1.0) 
+* Install-Package Zxw.Framework.NetCore -Version 3.1.0
+* dotnet add package Zxw.Framework.NetCore --version 3.1.0
 
 **开发环境**
 * VS2019 / VS Code
-* .net core 3.0
+* .net core 3.1.100
 
 **支持的数据库**
 * SQL Server
