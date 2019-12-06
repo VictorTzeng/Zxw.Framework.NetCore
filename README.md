@@ -1,4 +1,6 @@
 # Zxw.Framework.NetCore
+[![Build Status](https://dev.azure.com/v-xiaze0473/v-xiaze/_apis/build/status/VictorTzeng.Zxw.Framework.NetCore?branchName=master)](https://dev.azure.com/v-xiaze0473/v-xiaze/_build/latest?definitionId=1&branchName=master)
+
 基于EF Core的Code First模式的DotNetCore快速开发框架
 
 **Nuget [最新版本：3.1.0]**
