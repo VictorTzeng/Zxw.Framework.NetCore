@@ -15,11 +15,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Middlewares\**" />
     <Compile Remove="nupkgs\**" />
-    <EmbeddedResource Remove="Middlewares\**" />
     <EmbeddedResource Remove="nupkgs\**" />
-    <None Remove="Middlewares\**" />
     <None Remove="nupkgs\**" />
   </ItemGroup>
 

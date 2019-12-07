@@ -26,7 +26,6 @@ namespace Zxw.Framework.NetCore.DbContextCore
     {
         public DbContextOption Option { get; }
         public DatabaseFacade GetDatabase() => Database;
-
         public new virtual int Add<T>(T entity) where T : class
         {
             base.Add(entity);
@@ -130,17 +129,20 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         public virtual int Count<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return where == null ? GetDbSet<T>().Count() : GetDbSet<T>().Count(@where);
+            return CountByCompileQuery(where);
+            //return where == null ? GetDbSet<T>().Count() : GetDbSet<T>().Count(@where);
         }
 
         public virtual async Task<int> CountAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return await (where == null ? GetDbSet<T>().CountAsync() : GetDbSet<T>().CountAsync(@where));
+            return await CountByCompileQueryAsync(where);
+            //return await (where == null ? GetDbSet<T>().CountAsync() : GetDbSet<T>().CountAsync(@where));
         }
 
-        public virtual int Delete<T>(object key) where T : class
+        public virtual int Delete<T,TKey>(TKey key) where T : BaseModel<TKey>
         {
-            var entity = Find<T>(key);
+            //var entity = Find<T>(key);
+            var entity = GetByCompileQuery<T, TKey>(key);
             Remove(entity);
             return  SaveChanges();
         }
@@ -220,7 +222,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         public virtual bool Exist<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return @where == null ? GetDbSet<T>().Any() : GetDbSet<T>().Any(@where);
+            //return @where == null ? GetDbSet<T>().Any() : GetDbSet<T>().Any(@where);
+            return CountByCompileQuery(where) > 0;
         }
 
         public virtual IQueryable<T> FilterWithInclude<T>(Func<IQueryable<T>, IQueryable<T>> include, Expression<Func<T, bool>> @where) where T : class
@@ -235,17 +238,27 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         public virtual async Task<bool> ExistAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return await (@where == null ? GetDbSet<T>().AnyAsync() : GetDbSet<T>().AnyAsync(@where));
+            return await CountByCompileQueryAsync(where) > 0;
         }
 
         public virtual T Find<T>(object key) where T : class
         {
             return base.Find<T>(key);
         }
+        public virtual T Find<T,TKey>(TKey key) where T : BaseModel<TKey>
+        {
+            //return base.Find<T>(key);
+            return GetByCompileQuery<T, TKey>(key);
+        }
 
         public virtual async Task<T> FindAsync<T>(object key) where T : class
         {
             return await base.FindAsync<T>(key);
+        }
+        public virtual async Task<T> FindAsync<T,TKey>(TKey key) where T : BaseModel<TKey>
+        {
+            //return await base.FindAsync<T>(key);
+            return await GetByCompileQueryAsync<T, TKey>(key);
         }
 
         public virtual IQueryable<T> Get<T>(Expression<Func<T, bool>> @where = null, bool asNoTracking = false) where T : class
@@ -271,12 +284,14 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         public virtual T GetSingleOrDefault<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return where == null ? GetDbSet<T>().SingleOrDefault() : GetDbSet<T>().SingleOrDefault(where);
+            //return where == null ? GetDbSet<T>().SingleOrDefault() : GetDbSet<T>().SingleOrDefault(where);
+            return FirstOrDefaultByCompileQuery<T>(where);
         }
 
         public virtual async Task<T> GetSingleOrDefaultAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return await (where == null ? GetDbSet<T>().SingleOrDefaultAsync() : GetDbSet<T>().SingleOrDefaultAsync(where));
+            //return await (where == null ? GetDbSet<T>().SingleOrDefaultAsync() : GetDbSet<T>().SingleOrDefaultAsync(where));
+            return await FirstOrDefaultByCompileQueryAsync<T>(where);
         }
 
         /// <summary>
@@ -284,7 +299,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="model"></param>
-        
+
         /// <param name="updateColumns"></param>
         /// <returns></returns>
         public virtual int Update<T>(T model, params string[] updateColumns) where T : class
@@ -365,5 +380,55 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         public abstract DataTable GetDataTable(string sql, params DbParameter[] parameters);
         public abstract List<DataTable> GetDataTables(string sql, params DbParameter[] parameters);
+        public T GetByCompileQuery<T, TKey>(TKey id) where T : BaseModel<TKey>
+        {
+            return EF.CompileQuery((DbContext context, TKey id) => context.Set<T>().Find(id))(this, id);
+        }
+        public Task<T> GetByCompileQueryAsync<T, TKey>(TKey id) where T : BaseModel<TKey>
+        {
+            return EF.CompileAsyncQuery((DbContext context, TKey id) => context.Set<T>().Find(id))(this, id);
+        }
+
+        public IList<T> GetByCompileQuery<T>(Expression<Func<T, bool>> filter) where T : class
+        {
+            if (filter == null) filter = m => true;
+            return EF.CompileQuery((DbContext context) => context.Set<T>().AsNoTracking().Where(filter).ToList())(this);
+        }
+        public Task<List<T>> GetByCompileQueryAsync<T>(Expression<Func<T, bool>> filter) where T : class
+        {
+            if (filter == null) filter = m => true;
+            return EF.CompileAsyncQuery((DbContext context) => context.Set<T>().AsNoTracking().Where(filter).ToList())(this);
+        }
+
+        public T FirstOrDefaultByCompileQuery<T>(Expression<Func<T, bool>> filter) where T : class
+        {
+            if (filter == null) filter = m => true;
+            return EF.CompileQuery((DbContext context) => context.Set<T>().AsNoTracking().FirstOrDefault(filter))(this);
+        }
+        public Task<T> FirstOrDefaultByCompileQueryAsync<T>(Expression<Func<T, bool>> filter) where T : class
+        {
+            if (filter == null) filter = m => true;
+            return EF.CompileAsyncQuery((DbContext context) => context.Set<T>().AsNoTracking().FirstOrDefault(filter))(this);
+        }
+        public T FirstOrDefaultWithTrackingByCompileQuery<T>(Expression<Func<T, bool>> filter) where T : class
+        {
+            if (filter == null) filter = m => true;
+            return EF.CompileQuery((DbContext context) => context.Set<T>().FirstOrDefault(filter))(this);
+        }
+        public Task<T> FirstOrDefaultWithTrackingByCompileQueryAsync<T>(Expression<Func<T, bool>> filter) where T : class
+        {
+            if (filter == null) filter = m => true;
+            return EF.CompileAsyncQuery((DbContext context) => context.Set<T>().FirstOrDefault(filter))(this);
+        }
+        public int CountByCompileQuery<T>(Expression<Func<T, bool>> filter) where T:class
+        {
+            if (filter == null) filter = m => true;
+            return EF.CompileQuery((DbContext context) => context.Set<T>().Count(filter))(this);
+        }
+        public Task<int> CountByCompileQueryAsync<T>(Expression<Func<T, bool>> filter) where T : class
+        {
+            if (filter == null) filter = m => true;
+            return EF.CompileAsyncQuery((DbContext context) => context.Set<T>().Count(filter))(this);
+        }
     }
 }

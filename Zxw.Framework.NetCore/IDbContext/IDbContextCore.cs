@@ -24,7 +24,7 @@ namespace Zxw.Framework.NetCore.IDbContext
         Task<int> AddRangeAsync<T>(ICollection<T> entities) where T : class;
         int Count<T>(Expression<Func<T, bool>> @where = null) where T : class;
         Task<int> CountAsync<T>(Expression<Func<T, bool>> @where = null) where T : class;
-        int Delete<T>(object key) where T : class;
+        int Delete<T,TKey>(TKey key) where T : BaseModel<TKey>;
         bool EnsureCreated();
         Task<bool> EnsureCreatedAsync();
         int ExecuteSqlWithNonQuery(string sql, params object[] parameters);
@@ -35,7 +35,9 @@ namespace Zxw.Framework.NetCore.IDbContext
         IQueryable<T> FilterWithInclude<T>(Func<IQueryable<T>, IQueryable<T>> include, Expression<Func<T, bool>> where) where T : class;
         Task<bool> ExistAsync<T>(Expression<Func<T, bool>> @where = null) where T : class;
         T Find<T>(object key) where T : class;
+        T Find<T,TKey>(TKey key) where T : BaseModel<TKey>;
         Task<T> FindAsync<T>(object key) where T : class;
+        Task<T> FindAsync<T,TKey>(TKey key) where T : BaseModel<TKey>;
         IQueryable<T> Get<T>(Expression<Func<T, bool>> @where = null, bool asNoTracking = false) where T : class;
         List<IEntityType> GetAllEntityTypes();
         DbSet<T> GetDbSet<T>() where T : class;
@@ -64,5 +66,15 @@ namespace Zxw.Framework.NetCore.IDbContext
 
         DataTable GetDataTable(string sql, params DbParameter[] parameters);
         List<DataTable> GetDataTables(string sql, params DbParameter[] parameters);
+        T GetByCompileQuery<T,TKey>(TKey id) where T : BaseModel<TKey>;
+        Task<T> GetByCompileQueryAsync<T, TKey>(TKey id) where T : BaseModel<TKey>;
+        IList<T> GetByCompileQuery<T>(Expression<Func<T, bool>> filter) where T : class;
+        Task<List<T>> GetByCompileQueryAsync<T>(Expression<Func<T, bool>> filter) where T : class;
+        T FirstOrDefaultByCompileQuery<T>(Expression<Func<T, bool>> filter) where T : class;
+        Task<T> FirstOrDefaultByCompileQueryAsync<T>(Expression<Func<T, bool>> filter) where T : class;
+        T FirstOrDefaultWithTrackingByCompileQuery<T>(Expression<Func<T, bool>> filter) where T : class;
+        Task<T> FirstOrDefaultWithTrackingByCompileQueryAsync<T>(Expression<Func<T, bool>> filter) where T : class;
+        int CountByCompileQuery<T>(Expression<Func<T, bool>> filter) where T : class;
+        Task<int> CountByCompileQueryAsync<T>(Expression<Func<T, bool>> filter) where T : class;
     }
 }

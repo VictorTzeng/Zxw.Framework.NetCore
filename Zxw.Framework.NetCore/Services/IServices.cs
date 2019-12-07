@@ -49,7 +49,7 @@ namespace Zxw.Framework.NetCore.Services
         Task<T> GetSingleAsync(TKey key);
         T GetSingleOrDefault(Expression<Func<T, bool>> @where = null);
         Task<T> GetSingleOrDefaultAsync(Expression<Func<T, bool>> @where = null);
-        IQueryable<T> Get(Expression<Func<T, bool>> @where = null);
+        IList<T> Get(Expression<Func<T, bool>> @where = null);
         Task<List<T>> GetAsync(Expression<Func<T, bool>> @where = null);
         IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true,
             params Func<T, object>[] @orderby);

@@ -10,7 +10,7 @@ using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.NetCore.Repositories
 {
-    public abstract class BaseRepository<T, TKey>:IRepository<T, TKey> where T : class,IBaseModel<TKey>
+    public abstract class BaseRepository<T, TKey>:IRepository<T, TKey> where T : BaseModel<TKey>
     {
         protected readonly IDbContextCore DbContext;
 
@@ -115,7 +115,7 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public virtual int Delete(TKey key)
         {
-            return DbContext.Delete<T>(key);
+            return DbContext.Delete<T,TKey>(key);
         }
 
         public virtual int Delete(Expression<Func<T, bool>> @where)
@@ -161,7 +161,7 @@ namespace Zxw.Framework.NetCore.Repositories
         /// <returns></returns>
         public virtual T GetSingle(TKey key)
         {
-            return DbSet.Find(key);
+            return DbContext.Find<T, TKey>(key);
         }
 
         public T GetSingle(TKey key, Func<IQueryable<T>, IQueryable<T>> includeFunc)
@@ -177,7 +177,7 @@ namespace Zxw.Framework.NetCore.Repositories
         /// <returns></returns>
         public virtual async Task<T> GetSingleAsync(TKey key)
         {
-            return await DbContext.FindAsync<T>(key);
+            return await DbContext.FindAsync<T, TKey>(key);
         }
 
         /// <summary>
@@ -199,9 +199,9 @@ namespace Zxw.Framework.NetCore.Repositories
         /// <summary>
         /// 获取实体列表。建议：如需使用Include和ThenInclude请重载此方法。
         /// </summary>
-        public virtual IQueryable<T> Get(Expression<Func<T, bool>> @where = null)
+        public virtual IList<T> Get(Expression<Func<T, bool>> @where = null)
         {
-            return (@where != null ? DbSet.Where(@where).AsNoTracking() : DbSet.AsNoTracking());
+            return DbContext.GetByCompileQuery(where);
         }
 
         /// <summary>
@@ -209,7 +209,7 @@ namespace Zxw.Framework.NetCore.Repositories
         /// </summary>
         public virtual async Task<List<T>> GetAsync(Expression<Func<T, bool>> @where = null)
         {
-            return await DbSet.Where(where).ToListAsync();
+            return await DbContext.GetByCompileQueryAsync(where);
         }
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace Zxw.Framework.NetCore.Repositories
         /// </summary>
         public virtual IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true, params Func<T, object>[] @orderby)
         {
-            var filter = Get(where);
+            var filter = DbContext.Get(where);
             if (orderby != null)
             {
                 foreach (var func in orderby)

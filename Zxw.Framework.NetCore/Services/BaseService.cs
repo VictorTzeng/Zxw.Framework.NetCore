@@ -132,7 +132,7 @@ namespace Zxw.Framework.NetCore.Services
             return await Repository.GetSingleOrDefaultAsync(where);
         }
 
-        public virtual IQueryable<T> Get(Expression<Func<T, bool>> @where = null)
+        public virtual IList<T> Get(Expression<Func<T, bool>> @where = null)
         {
             return Repository.Get(where);
         }
