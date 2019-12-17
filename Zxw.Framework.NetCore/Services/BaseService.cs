@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Zxw.Framework.NetCore.Models;
@@ -11,7 +10,6 @@ namespace Zxw.Framework.NetCore.Services
     public abstract class BaseService<T,TKey>:IService<T,TKey> where T:class,IBaseModel<TKey>
     {
         public IRepository<T,TKey> Repository { get; set; }
-
         protected BaseService(IRepository<T,TKey> repository)
         {
             Repository = repository;
@@ -145,6 +143,11 @@ namespace Zxw.Framework.NetCore.Services
         public virtual IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true, params Func<T, object>[] @orderby)
         {
             return Repository.GetByPagination(where, pageSize, pageIndex, asc, orderby);
+        }
+
+        public void Dispose()
+        {
+            Repository?.Dispose();
         }
     }
 }

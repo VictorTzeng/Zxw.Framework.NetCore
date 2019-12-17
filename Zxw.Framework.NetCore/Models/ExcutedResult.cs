@@ -8,11 +8,14 @@
 
         public object rows { get; set; }
 
-        public ExcutedResult(bool success, string msg, object rows)
+        public int? code { get; set; }
+
+        public ExcutedResult(bool success, string msg, object rows, int? code = null)
         {
             this.success = success;
             this.msg = msg;
             this.rows = rows;
+            this.code = code;
         }
         public static ExcutedResult SuccessResult(string msg = null)
         {
@@ -23,9 +26,9 @@
             return new ExcutedResult(true, null, rows);
         }
 
-        public static ExcutedResult FailedResult(string msg)
+        public static ExcutedResult FailedResult(string msg, int? code = null)
         {
-            return new ExcutedResult(false, msg, null);
+            return new ExcutedResult(false, msg, null, code);
         }
     }
 

@@ -129,20 +129,20 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         public virtual int Count<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return CountByCompileQuery(where);
-            //return where == null ? GetDbSet<T>().Count() : GetDbSet<T>().Count(@where);
+            //return CountByCompileQuery(where);
+            return where == null ? GetDbSet<T>().Count() : GetDbSet<T>().Count(@where);
         }
 
         public virtual async Task<int> CountAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return await CountByCompileQueryAsync(where);
-            //return await (where == null ? GetDbSet<T>().CountAsync() : GetDbSet<T>().CountAsync(@where));
+            //return await CountByCompileQueryAsync(where);
+            return await (where == null ? GetDbSet<T>().CountAsync() : GetDbSet<T>().CountAsync(@where));
         }
 
         public virtual int Delete<T,TKey>(TKey key) where T : BaseModel<TKey>
         {
-            //var entity = Find<T>(key);
-            var entity = GetByCompileQuery<T, TKey>(key);
+            var entity = Find<T>(key);
+            //var entity = GetByCompileQuery<T, TKey>(key);
             Remove(entity);
             return  SaveChanges();
         }
@@ -222,8 +222,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         public virtual bool Exist<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            //return @where == null ? GetDbSet<T>().Any() : GetDbSet<T>().Any(@where);
-            return CountByCompileQuery(where) > 0;
+            return @where == null ? GetDbSet<T>().Any() : GetDbSet<T>().Any(@where);
+            //return CountByCompileQuery(where) > 0;
         }
 
         public virtual IQueryable<T> FilterWithInclude<T>(Func<IQueryable<T>, IQueryable<T>> include, Expression<Func<T, bool>> @where) where T : class
@@ -238,7 +238,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         public virtual async Task<bool> ExistAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            return await CountByCompileQueryAsync(where) > 0;
+            return await Task.FromResult(Exist(where));
+            //return await CountByCompileQueryAsync(where) > 0;
         }
 
         public virtual T Find<T>(object key) where T : class
@@ -247,8 +248,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
         }
         public virtual T Find<T,TKey>(TKey key) where T : BaseModel<TKey>
         {
-            //return base.Find<T>(key);
-            return GetByCompileQuery<T, TKey>(key);
+            return base.Find<T>(key);
+            //return GetByCompileQuery<T, TKey>(key);
         }
 
         public virtual async Task<T> FindAsync<T>(object key) where T : class
@@ -257,8 +258,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
         }
         public virtual async Task<T> FindAsync<T,TKey>(TKey key) where T : BaseModel<TKey>
         {
-            //return await base.FindAsync<T>(key);
-            return await GetByCompileQueryAsync<T, TKey>(key);
+            return await base.FindAsync<T>(key);
+            //return await GetByCompileQueryAsync<T, TKey>(key);
         }
 
         public virtual IQueryable<T> Get<T>(Expression<Func<T, bool>> @where = null, bool asNoTracking = false) where T : class
@@ -284,14 +285,14 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         public virtual T GetSingleOrDefault<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            //return where == null ? GetDbSet<T>().SingleOrDefault() : GetDbSet<T>().SingleOrDefault(where);
-            return FirstOrDefaultByCompileQuery<T>(where);
+            return where == null ? GetDbSet<T>().SingleOrDefault() : GetDbSet<T>().SingleOrDefault(where);
+            //return FirstOrDefaultByCompileQuery<T>(where);
         }
 
         public virtual async Task<T> GetSingleOrDefaultAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
-            //return await (where == null ? GetDbSet<T>().SingleOrDefaultAsync() : GetDbSet<T>().SingleOrDefaultAsync(where));
-            return await FirstOrDefaultByCompileQueryAsync<T>(where);
+            return await (where == null ? GetDbSet<T>().SingleOrDefaultAsync() : GetDbSet<T>().SingleOrDefaultAsync(where));
+            //return await FirstOrDefaultByCompileQueryAsync<T>(where);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AspectCore.Extensions.Reflection;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -1312,7 +1313,7 @@ namespace Zxw.Framework.NetCore.Extensions
 
         public static bool IsImplement(this Type entityType, Type interfaceType)
         {
-            return entityType.IsClass && !entityType.IsAbstract && entityType.GetTypeInfo().GetInterfaces().Any(t =>
+            return /*entityType.IsClass && !entityType.IsAbstract &&*/ entityType.GetTypeInfo().GetInterfaces().Any(t =>
                 t.GetTypeInfo().IsGenericType && t.GetGenericTypeDefinition() == interfaceType);
         }
 

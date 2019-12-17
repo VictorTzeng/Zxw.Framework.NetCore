@@ -9,12 +9,13 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.IDbContext
 {
-    public interface IDbContextCore:IDisposable
+    public interface IDbContextCore: ITransientDependency, IDisposable
     {
         DbContextOption Option { get; }
         DatabaseFacade GetDatabase();

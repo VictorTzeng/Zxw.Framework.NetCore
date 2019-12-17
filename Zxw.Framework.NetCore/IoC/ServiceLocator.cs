@@ -1,9 +1,4 @@
 ﻿using System;
-using AspectCore.Extensions.DependencyInjection;
-using AspectCore.Injector;
-using Autofac;
-using Microsoft.Extensions.DependencyInjection;
-using Zxw.Framework.NetCore.Extensions;
 
 namespace Zxw.Framework.NetCore.IoC
 {

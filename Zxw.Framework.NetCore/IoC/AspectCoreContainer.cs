@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using AspectCore.Configuration;
+using AspectCore.DependencyInjection;
 using AspectCore.Extensions.DependencyInjection;
-using AspectCore.Injector;
 using Microsoft.Extensions.DependencyInjection;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.IDbContext;
+using LightInject;
 
 namespace Zxw.Framework.NetCore.IoC
 {
@@ -17,8 +18,8 @@ namespace Zxw.Framework.NetCore.IoC
         {
             if(services==null)throw new ArgumentNullException(nameof(services));
             services.ConfigureDynamicProxy(configure);
-            services.AddAspectCoreContainer();
-            return resolver = services.ToServiceContainer().Build();
+            services.AddAspectServiceContext();
+            return resolver = services.ToServiceContext().Build();
         }
 
         public static T Resolve<T>()

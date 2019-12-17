@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyModel;
+using Zxw.Framework.NetCore.Consts;
 
 namespace Zxw.Framework.NetCore.Helpers
 {
@@ -17,7 +18,8 @@ namespace Zxw.Framework.NetCore.Helpers
         {
             var list = new List<Assembly>();
             var deps = DependencyContext.Default;
-            var libs = deps.CompileLibraries.Where(lib => !lib.Serviceable && lib.Type != "package");//排除所有的系统程序集、Nuget下载包
+            //var libs = deps.CompileLibraries.Where(lib => !lib.Serviceable && lib.Type != "package" && lib.Type!= "referenceassembly");//排除所有的系统程序集、Nuget下载包
+            var libs = deps.CompileLibraries.Where(lib => lib.Type == AssembleTypeConsts.Project);//只获取本项目用到的包
             foreach (var lib in libs)
             {
                 try

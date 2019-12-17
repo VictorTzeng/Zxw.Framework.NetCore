@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.NetCore.Services
 {
-    public interface IService<T,TKey> where T:IBaseModel<TKey>
+    public interface IService<T,TKey>: ITransientDependency, IDisposable where T:IBaseModel<TKey>
     {
         #region Insert
 

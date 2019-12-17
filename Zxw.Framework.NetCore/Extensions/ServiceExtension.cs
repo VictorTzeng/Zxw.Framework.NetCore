@@ -1,6 +1,5 @@
 ﻿using AspectCore.Configuration;
 using AspectCore.Extensions.DependencyInjection;
-using AspectCore.Injector;
 using CSRedis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
@@ -17,6 +16,8 @@ using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Options;
+using LightInject;
+using AspectCore.DependencyInjection;
 
 namespace Zxw.Framework.NetCore.Extensions
 {
@@ -309,12 +310,13 @@ namespace Zxw.Framework.NetCore.Extensions
             return ServiceLocator.Current = AutofacContainer.Build(services, configure);
         }
 
-        public static IServiceContainer BuildAspectCoreServiceContainer(this IServiceCollection services,
+        public static IServiceContext BuildAspectCoreServiceContainer(this IServiceCollection services,
             Action<IAspectConfiguration> configure = null)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
+            services.AddAspectServiceContext();
             services.ConfigureDynamicProxy(configure);
-            return services.ToServiceContainer();
+            return services.ToServiceContext();
         }
 
         public static IServiceProvider BuildAspectCoreServiceProvider(this IServiceCollection services,
@@ -405,6 +407,22 @@ namespace Zxw.Framework.NetCore.Extensions
                 m.PopulateFeature(feature);
                 builder.Services.AddSingleton(feature.Controllers.Where(filter).Select(t => t.AsType()).ToArray());
             });
+        }
+
+        /// <summary>
+        /// 框架入口。默认开启注入实现了ISingletonDependency、IScopedDependency、ITransientDependency三种不同生命周期的类，以及AddHttpContextAccessor和AddDataProtection。
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="config"></param>
+        /// <param name="aspectConfig"></param>
+        /// <returns></returns>
+        public static IServiceProvider AddCoreX(this IServiceCollection services, Action<IServiceCollection> config = null, Action<IAspectConfiguration> aspectConfig = null)
+        {
+            config.Invoke(services);
+            services.RegisterServiceLifetimeDependencies();
+            services.AddHttpContextAccessor();
+            services.AddDataProtection();
+            return services.BuildAspectCoreServiceProvider(aspectConfig);
         }
     }
 }
