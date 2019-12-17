@@ -3,11 +3,11 @@
 
 基于EF Core的Code First模式的DotNetCore快速开发框架
 
-**Nuget [最新版本：3.1.0]**
+**Nuget [最新版本：3.1.2]**
 
-[Zxw.Framework.NetCore](https://www.nuget.org/packages/Zxw.Framework.NetCore/3.1.0) 
-* Install-Package Zxw.Framework.NetCore -Version 3.1.0
-* dotnet add package Zxw.Framework.NetCore --version 3.1.0
+[Zxw.Framework.NetCore](https://www.nuget.org/packages/Zxw.Framework.NetCore/3.1.2) 
+* Install-Package Zxw.Framework.NetCore -Version 3.1.2
+* dotnet add package Zxw.Framework.NetCore --version 3.1.2
 
 **开发环境**
 * VS2019 / VS Code
@@ -44,6 +44,16 @@
 * 请参考我的博客：[http://www.cnblogs.com/zengxw/p/7673952.html](http://www.cnblogs.com/zengxw/p/7673952.html)
 
 # 更新日志
+
+**2019/12/17**
+* 1. 添加框架同一入口扩展方法AddCoreX
+```
+services.AddCoreX(config=> { })
+```
+
+* 2. AddCoreX方法里面默认开启注入实现了ISingletonDependency、IScopedDependency、ITransientDependency三种不同生命周期的类，以及AddHttpContextAccessor和AddDataProtection。如需要自动注入，只需要按需实现ISingletonDependency、IScopedDependency、ITransientDependency这三种生命周期接口即可。
+
+* 3. 添加会话上下文[WebContext](https://github.com/VictorTzeng/Zxw.Framework.NetCore/blob/master/Zxw.Framework.NetCore/Web/WebContext.cs)
 
 **2019/09/16**
 * 1.更换Oracle for efcore驱动，使用Oracle官方驱动
