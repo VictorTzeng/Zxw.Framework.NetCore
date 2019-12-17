@@ -46,14 +46,14 @@
 # 更新日志
 
 **2019/12/17**
-* 1. 添加框架同一入口扩展方法AddCoreX
+* 1. 添加框架同一入口扩展方法 [AddCoreX](https://github.com/VictorTzeng/Zxw.Framework.NetCore/blob/66ce81a3ffa3eb9379631ba11a3fd36c4c369e60/Zxw.Framework.NetCore/Extensions/ServiceExtension.cs#L419)
 ```
 services.AddCoreX(config=> { })
 ```
 
 * 2. AddCoreX方法里面默认开启注入实现了ISingletonDependency、IScopedDependency、ITransientDependency三种不同生命周期的类，以及AddHttpContextAccessor和AddDataProtection。如需要自动注入，只需要按需实现ISingletonDependency、IScopedDependency、ITransientDependency这三种生命周期接口即可。
 
-* 3. 添加会话上下文[WebContext](https://github.com/VictorTzeng/Zxw.Framework.NetCore/blob/master/Zxw.Framework.NetCore/Web/WebContext.cs)
+* 3. 添加会话上下文 [WebContext](https://github.com/VictorTzeng/Zxw.Framework.NetCore/blob/master/Zxw.Framework.NetCore/Web/WebContext.cs)
 
 **2019/09/16**
 * 1.更换Oracle for efcore驱动，使用Oracle官方驱动
