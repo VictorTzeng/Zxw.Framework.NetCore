@@ -18,6 +18,7 @@ using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Options;
 using LightInject;
 using AspectCore.DependencyInjection;
+using Zxw.Framework.NetCore.Web;
 
 namespace Zxw.Framework.NetCore.Extensions
 {
@@ -409,6 +410,17 @@ namespace Zxw.Framework.NetCore.Extensions
             });
         }
 
+        public static IServiceCollection AddDefaultWebContext(this IServiceCollection services)
+        {
+            return services.AddSingleton<IWebContext, WebContext>();
+        }
+
+        public static IServiceCollection AddWebContext<T>(this IServiceCollection services) where T:WebContext
+        {
+            services.Remove(new ServiceDescriptor(typeof(IWebContext), typeof(WebContext), ServiceLifetime.Singleton));
+            return services.AddSingleton<IWebContext, T>();
+        }
+
         /// <summary>
         /// 框架入口。默认开启注入实现了ISingletonDependency、IScopedDependency、ITransientDependency三种不同生命周期的类，以及AddHttpContextAccessor和AddDataProtection。
         /// </summary>
@@ -422,6 +434,7 @@ namespace Zxw.Framework.NetCore.Extensions
             services.RegisterServiceLifetimeDependencies();
             services.AddHttpContextAccessor();
             services.AddDataProtection();
+            services.AddDefaultWebContext();
             return services.BuildAspectCoreServiceProvider(aspectConfig);
         }
     }

@@ -4,7 +4,7 @@ using Zxw.Framework.NetCore.Extensions;
 
 namespace Zxw.Framework.NetCore.Web
 {
-    public abstract class WebContext : IWebContext
+    public class WebContext : IWebContext
     {
         public HttpContext CoreContext { get; }
 
