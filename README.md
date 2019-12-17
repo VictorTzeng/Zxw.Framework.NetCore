@@ -55,6 +55,10 @@ services.AddCoreX(config=> { })
 
 * 3. 添加会话上下文 [WebContext](https://github.com/VictorTzeng/Zxw.Framework.NetCore/blob/master/Zxw.Framework.NetCore/Web/WebContext.cs)
 
+* 4. 升级 [AspectCore](https://github.com/dotnetcore/AspectCore-Framework) 至 2.0.0
+
+* 5. 示例 [Zxw.Framework.NetCore.Demo](https://github.com/VictorTzeng/Zxw.Framework.NetCore.Demo) 已同步更新。
+
 **2019/09/16**
 * 1.更换Oracle for efcore驱动，使用Oracle官方驱动
 
