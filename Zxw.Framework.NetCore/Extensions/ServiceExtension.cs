@@ -430,7 +430,7 @@ namespace Zxw.Framework.NetCore.Extensions
         /// <returns></returns>
         public static IServiceProvider AddCoreX(this IServiceCollection services, Action<IServiceCollection> config = null, Action<IAspectConfiguration> aspectConfig = null)
         {
-            config.Invoke(services);
+            config?.Invoke(services);
             services.RegisterServiceLifetimeDependencies();
             services.AddHttpContextAccessor();
             services.AddDataProtection();
