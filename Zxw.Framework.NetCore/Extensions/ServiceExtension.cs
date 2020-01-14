@@ -19,6 +19,7 @@ using Zxw.Framework.NetCore.Options;
 using LightInject;
 using AspectCore.DependencyInjection;
 using Zxw.Framework.NetCore.Web;
+using Zxw.Framework.NetCore.Attributes;
 
 namespace Zxw.Framework.NetCore.Extensions
 {
@@ -307,6 +308,13 @@ namespace Zxw.Framework.NetCore.Extensions
         public static IServiceProvider BuildAspectCoreWithAutofacServiceProvider(this IServiceCollection services, Action<IAspectConfiguration> configure = null)
         {
             if(services==null)throw new ArgumentNullException(nameof(services));
+            if (configure == null)
+            {
+                configure = config =>
+                {
+                    config.Interceptors.AddTyped<FromDbContextFactoryInterceptor>();
+                };
+            }
             services.ConfigureDynamicProxy(configure);
             return ServiceLocator.Current = AutofacContainer.Build(services, configure);
         }
@@ -315,6 +323,13 @@ namespace Zxw.Framework.NetCore.Extensions
             Action<IAspectConfiguration> configure = null)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
+            if (configure == null)
+            {
+                configure = config =>
+                {
+                    config.Interceptors.AddTyped<FromDbContextFactoryInterceptor>();
+                };
+            }
             services.AddAspectServiceContext();
             services.ConfigureDynamicProxy(configure);
             return services.ToServiceContext();
@@ -323,6 +338,13 @@ namespace Zxw.Framework.NetCore.Extensions
         public static IServiceProvider BuildAspectCoreServiceProvider(this IServiceCollection services,
             Action<IAspectConfiguration> configure = null)
         {
+            if (configure == null)
+            {
+                configure = config =>
+                {
+                    config.Interceptors.AddTyped<FromDbContextFactoryInterceptor>();
+                };
+            }
             return ServiceLocator.Current = AspectCoreContainer.BuildServiceProvider(services, configure);
         }
 
@@ -435,6 +457,13 @@ namespace Zxw.Framework.NetCore.Extensions
             services.AddHttpContextAccessor();
             services.AddDataProtection();
             services.AddDefaultWebContext();
+            if (aspectConfig == null)
+            {
+                aspectConfig = config =>
+                {
+                    config.Interceptors.AddTyped<FromDbContextFactoryInterceptor>();
+                };
+            }
             return services.BuildAspectCoreServiceProvider(aspectConfig);
         }
     }

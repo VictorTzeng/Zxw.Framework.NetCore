@@ -352,8 +352,7 @@ namespace Zxw.Framework.UnitTest
             services.AddDbContextFactory(factory =>
             {
                 factory.AddDbContext<PostgreSQLDbContext>(new DbContextOption(){ TagName = "db1", ConnectionString = "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=ZxwPgDemo;Pooling=true;" });
-                factory.AddDbContext<SqlServerDbContext>(new DbContextOption() { TagName = "db2", ConnectionString = "Data Source=101.201.73.98;Initial Catalog=HardwarePlatform;User ID=sa;password=cry.cap.fox-999;" });
-                factory.AddDbContext<MongoDbContext>(new DbContextOption() { TagName = "db3", ConnectionString = "mongodb://root:crycapfox-999@dds-2ze7435b510c69c41131-pub.mongodb.rds.aliyuncs.com:3717,dds-2ze7435b510c69c42914-pub.mongodb.rds.aliyuncs.com:3717/HardwareData?replicaSet=mgset-12939431" });
+                factory.AddDbContext<SqlServerDbContext>(new DbContextOption() { TagName = "db2", ConnectionString = "Data Source=127.0.0.1;Initial Catalog=HardwarePlatform;User ID=sa;password=123456;" });
             });
 
             services.AddScoped<IDbContextCore, PostgreSQLDbContext>(); //注入EF上下文

@@ -40,7 +40,7 @@ public class EFLoggerFactory : ILoggerFactory
                 Console.WriteLine(logContent);
                 Console.ResetColor();
 
-                Log4NetHelper.WriteInfo(GetType(), logContent);
+                this.Log(LogLevel.Trace, logContent);
             }
         }
 

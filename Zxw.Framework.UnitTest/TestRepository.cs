@@ -13,10 +13,6 @@ namespace Zxw.Framework.UnitTest
         public IDbContextCore DbContext1 { get; set; }
         [FromDbContextFactory("db2")]
         public IDbContextCore DbContext2 { get; set; }
-        [FromDbContextFactory("db3")]
-        public IDbContextCore DbContext3 { get; set; }
-
-
 
         public void Run()
         {
