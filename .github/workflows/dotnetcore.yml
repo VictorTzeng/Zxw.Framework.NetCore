@@ -15,12 +15,3 @@ jobs:
         dotnet-version: 3.1.100
     - name: Build with dotnet
       run: dotnet build --configuration Release
-    - name: Publish NuGet
-      uses: rohith/publish-nuget@v1.2.0
-      with:
-        # Project (csproj) directory path relative from the root of repository
-        project_dir: Zxw.Framework.NetCore.csproj
-        # Format of the tag to be created, `*` is placeholder for actual version
-        tag_format: v3.1.3.3
-        # API key for the NuGet feed
-        nuget_key: d7e499c09b0185c93a428b243207687e1b34a84c
