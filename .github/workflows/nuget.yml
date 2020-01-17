@@ -1,0 +1,17 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup NuGet.exe for use with actions
+      uses: NuGet/setup-nuget@v1.0.2
+      with:
+        # NuGet version to install. Can be `latest`, `preview`, a concrete version like `5.3.1`, or a semver range specifier like `5.x`.
+        nuget-version: 3.1.3.3
+        # NuGet API Key to configure.
+        nuget-api-key: oy2jnrhpqk5yab7vchwaxkr7og7ejwnenppbnevokx26vm
