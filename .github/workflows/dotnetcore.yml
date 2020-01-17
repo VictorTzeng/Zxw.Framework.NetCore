@@ -18,4 +18,4 @@ jobs:
     - name: Publish NuGet
       run: dotnet pack ./Zxw.Framework.NetCore/Zxw.Framework.NetCore.csproj --configuration Release
     - name: Pack
-      run: dotnet nuget push "./Zxw.Framework.NetCore/bin/Release/Zxw.Framework.NetCore.3.1.3.2.nupkg" --source "github"
+      run: dotnet nuget push "./Zxw.Framework.NetCore/bin/Release/Zxw.Framework.NetCore.3.1.3.2.nupkg" --source "https://nuget.pkg.github.com/VictorTzeng/index.json"
