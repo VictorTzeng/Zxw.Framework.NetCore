@@ -15,6 +15,8 @@ jobs:
         nuget-version: latest
         # NuGet API Key to configure.
         nuget-api-key: oy2jnrhpqk5yab7vchwaxkr7og7ejwnenppbnevokx26vm
+    - name: CD Dir
+      run: cd Zxw.Framework.NetCore
     - name: Publish NuGet
       run: dotnet pack --configuration Release
     - name: Pack
