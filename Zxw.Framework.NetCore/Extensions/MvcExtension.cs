@@ -8,5 +8,6 @@ namespace Zxw.Framework.NetCore.Extensions
         public static T GetService<T>(this HttpContext httpContext) => (T)httpContext.RequestServices.GetService(typeof(T));
         public static T GetService<T>(this ActionContext actionContext) => actionContext.HttpContext.GetService<T>();
         public static T GetService<T>(this Controller controller) => controller.HttpContext.GetService<T>();
+        public static T GetService<T>(this ControllerBase controller) => controller.HttpContext.GetService<T>();
     }
 }
