@@ -16,7 +16,6 @@ using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Options;
-using LightInject;
 using AspectCore.DependencyInjection;
 using Zxw.Framework.NetCore.Web;
 using Zxw.Framework.NetCore.Attributes;
