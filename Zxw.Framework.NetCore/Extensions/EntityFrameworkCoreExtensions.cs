@@ -7,7 +7,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using DotNetCore.CAP;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis.Extensions.Core.Extensions;
 using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IDbContext;
@@ -272,6 +276,56 @@ namespace Zxw.Framework.NetCore.Extensions
                 sql.AppendLine($"delete from {table};");
             }
             context.ExecuteSqlWithNonQuery(sql.ToString());
+        }
+        public static ICapTransaction Begin(this ICapTransaction transaction,
+            IDbTransaction dbTransaction, bool autoCommit = false)
+        {
+            transaction.DbTransaction = dbTransaction;
+            transaction.AutoCommit = autoCommit;
+
+            return transaction;
+        }
+
+        public static ICapTransaction Begin(this ICapTransaction transaction,
+            IDbContextTransaction dbTransaction, bool autoCommit = false)
+        {
+            transaction.DbTransaction = dbTransaction;
+            transaction.AutoCommit = autoCommit;
+
+            return transaction;
+        }
+
+        /// <summary>
+        /// Start the CAP transaction
+        /// </summary>
+        /// <param name="dbConnection">The <see cref="IDbConnection" />.</param>
+        /// <param name="publisher">The <see cref="ICapPublisher" />.</param>
+        /// <param name="autoCommit">Whether the transaction is automatically committed when the message is published</param>
+        /// <returns>The <see cref="ICapTransaction" /> object.</returns>
+        public static IDbTransaction BeginTransaction(this IDbConnection dbConnection,
+            ICapPublisher publisher, bool autoCommit = false)
+        {
+            if (dbConnection.State == ConnectionState.Closed) dbConnection.Open();
+
+            var dbTransaction = dbConnection.BeginTransaction();
+            publisher.Transaction.Value = publisher.ServiceProvider.GetService<ICapTransaction>();
+            var capTransaction = publisher.Transaction.Value.Begin(dbTransaction, autoCommit);
+            return (IDbTransaction)capTransaction.DbTransaction;
+        }
+        /// <summary>
+        /// Start the CAP transaction
+        /// </summary>
+        /// <param name="database">The <see cref="DatabaseFacade" />.</param>
+        /// <param name="publisher">The <see cref="ICapPublisher" />.</param>
+        /// <param name="autoCommit">Whether the transaction is automatically committed when the message is published</param>
+        /// <returns>The <see cref="IDbContextTransaction" /> of EF DbContext transaction object.</returns>
+        public static IDbContextTransaction BeginTransaction(this DatabaseFacade database,
+            ICapPublisher publisher, bool autoCommit = false)
+        {
+            var trans = database.BeginTransaction();
+            publisher.Transaction.Value = publisher.ServiceProvider.GetService<CapTransactionBase>();
+            var capTrans = publisher.Transaction.Value.Begin(trans, autoCommit);
+            return new CapEFDbTransaction(capTrans);
         }
     }
 }

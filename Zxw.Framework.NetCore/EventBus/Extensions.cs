@@ -2,6 +2,7 @@
 using DotNetCore.CAP;
 using DotNetCore.CAP.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using Zxw.Framework.NetCore.Transaction;
 
 namespace Zxw.Framework.NetCore.EventBus
 {
@@ -16,8 +17,10 @@ namespace Zxw.Framework.NetCore.EventBus
         public static IServiceCollection AddEventBus(this IServiceCollection services, Action<CapOptions> capAction)
         {
             services.AddCap(capAction);
-            // 替换cap默认的消费者服务查找器
             services.AddSingleton<IConsumerServiceSelector, DefaultConsumerServiceSelector>();
+            services.AddSingleton<IEventPublisher, DefaultEventPublisher>();
+            services.AddScoped<IScopedTransaction, DefaultCapScopedTransaction>();
+
             return services;
         }
     }

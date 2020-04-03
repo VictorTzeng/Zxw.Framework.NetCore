@@ -9,10 +9,11 @@ using DotNetCore.CAP.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Zxw.Framework.NetCore.Extensions;
+using Zxw.Framework.NetCore.IoC;
 
 namespace Zxw.Framework.NetCore.EventBus
 {
-    internal class DefaultConsumerServiceSelector : IConsumerServiceSelector
+    internal class DefaultConsumerServiceSelector : IConsumerServiceSelector,ISingletonDependency
     {
         private readonly CapOptions _capOptions;
         private readonly IServiceProvider _serviceProvider;

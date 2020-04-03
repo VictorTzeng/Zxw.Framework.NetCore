@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage;
 using Zxw.Framework.NetCore.Models;
 using Zxw.Framework.NetCore.Options;
 
@@ -76,5 +77,6 @@ namespace Zxw.Framework.NetCore.IDbContext
         Task<T> FirstOrDefaultWithTrackingByCompileQueryAsync<T>(Expression<Func<T, bool>> filter) where T : class;
         int CountByCompileQuery<T>(Expression<Func<T, bool>> filter) where T : class;
         Task<int> CountByCompileQueryAsync<T>(Expression<Func<T, bool>> filter) where T : class;
+        IDbContextTransaction GetCurrentTransaction();
     }
 }

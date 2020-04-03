@@ -57,7 +57,6 @@
     <PackageReference Include="Blueshift.EntityFrameworkCore.MongoDB-aleksamagicka" Version="2.2.0-rtm-1" />
     <PackageReference Include="Caching.CSRedis" Version="3.5.5" />
     <PackageReference Include="DotNetCore.CAP" Version="3.0.2" />
-    <PackageReference Include="DotNetCore.NPOI" Version="1.2.0" />
     <PackageReference Include="CSRedisCore" Version="3.5.5" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.2" />
     <PackageReference Include="Exceptionless" Version="4.3.2027" />

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Options;
 using Z.EntityFramework.Plus;
 using Zxw.Framework.NetCore.Attributes;
@@ -430,6 +431,11 @@ namespace Zxw.Framework.NetCore.DbContextCore
         {
             if (filter == null) filter = m => true;
             return EF.CompileAsyncQuery((DbContext context) => context.Set<T>().Count(filter))(this);
+        }
+
+        public IDbContextTransaction GetCurrentTransaction()
+        {
+            return this.Database.CurrentTransaction ?? Database.BeginTransaction();
         }
     }
 }

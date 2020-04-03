@@ -17,8 +17,12 @@ using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Options;
 using AspectCore.DependencyInjection;
+using DotNetCore.CAP;
 using Zxw.Framework.NetCore.Web;
 using Zxw.Framework.NetCore.Attributes;
+using Zxw.Framework.NetCore.EventBus;
+using DotNetCore.CAP.Internal;
+using Zxw.Framework.NetCore.Transaction;
 
 namespace Zxw.Framework.NetCore.Extensions
 {
@@ -451,16 +455,15 @@ namespace Zxw.Framework.NetCore.Extensions
         /// <returns></returns>
         public static IServiceProvider AddCoreX(this IServiceCollection services, Action<IServiceCollection> config = null, Action<IAspectConfiguration> aspectConfig = null)
         {
-            config?.Invoke(services);
-            services.RegisterServiceLifetimeDependencies();
             services.AddHttpContextAccessor();
-            services.AddDataProtection();
             services.AddDefaultWebContext();
+            services.RegisterServiceLifetimeDependencies();
+            config?.Invoke(services);
             if (aspectConfig == null)
             {
-                aspectConfig = config =>
+                aspectConfig = x =>
                 {
-                    config.Interceptors.AddTyped<FromDbContextFactoryInterceptor>();
+                    x.Interceptors.AddTyped<FromDbContextFactoryInterceptor>();
                 };
             }
             return services.BuildAspectCoreServiceProvider(aspectConfig);
