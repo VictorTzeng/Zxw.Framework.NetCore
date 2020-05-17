@@ -17,8 +17,10 @@ using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Options;
 using AspectCore.DependencyInjection;
+using AspectCore.DynamicProxy;
 using Zxw.Framework.NetCore.Web;
 using Zxw.Framework.NetCore.Attributes;
+using AspectCore.Extensions.Reflection;
 
 namespace Zxw.Framework.NetCore.Extensions
 {
@@ -358,10 +360,15 @@ namespace Zxw.Framework.NetCore.Extensions
             return factory.ServiceCollection;
         }
 
-        public static IDbContextCore GetDbContext(this IServiceProvider provider, string dbContextTagName)
+        public static object GetDbContext(this IServiceProvider provider, string dbContextTagName, Type serviceType)
         {
             if (provider == null) throw new ArgumentNullException(nameof(provider));
-            return provider.GetServices<IDbContextCore>().FirstOrDefault(m => m.Option.TagName == dbContextTagName);
+            var implService = provider.GetRequiredService(serviceType); 
+            var option = provider.GetServices<DbContextOption>().FirstOrDefault(m => m.TagName == dbContextTagName);
+
+            var context = Activator.CreateInstance(implService.GetType(), option);
+
+            return context;
         }
 
         public static IServiceCollection AddDbContext<IT, T>(this IServiceCollection services, string tag,
@@ -379,13 +386,14 @@ namespace Zxw.Framework.NetCore.Extensions
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (option == null) throw new ArgumentNullException(nameof(option));
-            services.Configure<DbContextOption>(options =>
-            {
-                options.IsOutputSql = option.IsOutputSql;
-                options.ConnectionString = option.ConnectionString;
-                options.ModelAssemblyName = option.ModelAssemblyName;
-                options.TagName = option.TagName;
-            });
+            //services.Configure<DbContextOption>(options =>
+            //{
+            //    options.IsOutputSql = option.IsOutputSql;
+            //    options.ConnectionString = option.ConnectionString;
+            //    options.ModelAssemblyName = option.ModelAssemblyName;
+            //    options.TagName = option.TagName;
+            //});
+            services.AddSingleton(option);
             return services.AddDbContext<IT, T>();
         }
         /// <summary>

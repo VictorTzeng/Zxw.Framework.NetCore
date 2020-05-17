@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AspectCore.DynamicProxy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -14,6 +15,7 @@ using Zxw.Framework.NetCore.Options;
 
 namespace Zxw.Framework.NetCore.IDbContext
 {
+    [NonAspect]
     public interface IDbContextCore: IDisposable
     {
         DbContextOption Option { get; }

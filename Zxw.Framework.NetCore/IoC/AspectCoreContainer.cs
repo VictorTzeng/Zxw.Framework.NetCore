@@ -58,7 +58,7 @@ namespace Zxw.Framework.NetCore.IoC
         {
             if (resolver == null)
                 throw new ArgumentNullException(nameof(resolver), "调用此方法时必须先调用BuildServiceProvider！");
-            return (T) resolver.GetDbContext(tagName);
+            return (T) resolver.GetDbContext(tagName, typeof(T));
         }
     }
 }

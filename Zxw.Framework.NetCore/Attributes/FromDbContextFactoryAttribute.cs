@@ -31,7 +31,7 @@ namespace Zxw.Framework.NetCore.Attributes
                 foreach (var property in properties)
                 {
                     var attribute = property.GetCustomAttribute<FromDbContextFactoryAttribute>();
-                    var dbContext = context.ServiceProvider.GetDbContext(attribute.DbContextTagName);
+                    var dbContext = context.ServiceProvider.GetDbContext(attribute.DbContextTagName, property.PropertyType);
                     property.SetValue(context.Implementation, dbContext);
                 }
             }
