@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading;
 using DotNetCore.CAP;
 using Microsoft.EntityFrameworkCore.Storage;
+using Zxw.Framework.NetCore.EventBus;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.IDbContext;
 
@@ -18,20 +20,20 @@ namespace Zxw.Framework.NetCore.Transaction
         IDbContextTransaction Begin();
     }
 
-    internal class DefaultCapScopedTransaction : IScopedTransaction
+    public class DefaultCapScopedTransaction : IScopedTransaction
     {
         IDbContextCore DbContext { get; }
-        ICapPublisher CapPublisher { get; }
+        IEventPublisher EventPublisher { get; }
 
         public DefaultCapScopedTransaction(IDbContextCore dbContext,
-            ICapPublisher capPublisher)
+            IEventPublisher capPublisher)
         {
             DbContext = dbContext ?? throw new ArgumentException(nameof(dbContext));
-            CapPublisher = capPublisher;
+            EventPublisher = capPublisher;
         }
         public IDbContextTransaction Begin()
         {
-            return DbContext.GetDatabase().BeginTransaction(CapPublisher);
+            return DbContext.GetDatabase().BeginTransaction(EventPublisher.CapPublisher);
         }
     }
 }

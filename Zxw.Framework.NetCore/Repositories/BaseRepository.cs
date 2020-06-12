@@ -26,22 +26,26 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public virtual int Add(T entity)
         {
-            return DbContext.Add(entity);
+            DbContext.Add(entity);
+            return DbContext.SaveChanges();
         }
 
         public virtual async Task<int> AddAsync(T entity)
         {
-            return await DbContext.AddAsync(entity);
+            await DbContext.AddAsync(entity);
+            return await DbContext.SaveChangesAsync();
         }
 
         public virtual int AddRange(ICollection<T> entities)
         {
-            return DbContext.AddRange(entities);
+            DbContext.AddRange(entities);
+            return DbContext.SaveChanges();
         }
 
         public virtual async Task<int> AddRangeAsync(ICollection<T> entities)
         {
-            return await DbContext.AddRangeAsync(entities);
+            await DbContext.AddRangeAsync(entities);
+            return await DbContext.SaveChangesAsync();
         }
 
         public virtual void BulkInsert(IList<T> entities, string destinationTableName = null)
@@ -65,12 +69,14 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public virtual int Edit(T entity)
         {
-            return DbContext.Edit<T>(entity);
+            DbContext.Edit<T>(entity);
+            return DbContext.SaveChanges();
         }
 
         public virtual int EditRange(ICollection<T> entities)
         {
-            return DbContext.EditRange(entities);
+            DbContext.EditRange(entities);
+            return DbContext.SaveChanges();
         }
         /// <summary>
         /// update query datas by columns.
@@ -81,12 +87,14 @@ namespace Zxw.Framework.NetCore.Repositories
         /// <returns></returns>
         public virtual int BatchUpdate(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
         {
-            return DbContext.Update(where, updateExp);
+            DbContext.Update(where, updateExp);
+            return DbContext.SaveChanges();
         }
 
         public virtual async Task<int> BatchUpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateExp)
         {
-            return await DbContext.UpdateAsync(@where, updateExp);
+            await DbContext.UpdateAsync(@where, updateExp);
+            return await DbContext.SaveChangesAsync();
         }
         public virtual int Update(T model, params string[] updateColumns)
         {
@@ -96,12 +104,14 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public virtual int Update(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
         {
-            return DbContext.Update(where, updateFactory);
+            DbContext.Update(where, updateFactory);
+            return DbContext.SaveChanges();
         }
 
         public virtual async Task<int> UpdateAsync(Expression<Func<T, bool>> @where, Expression<Func<T, T>> updateFactory)
         {
-            return await DbContext.UpdateAsync(where, updateFactory);
+            await DbContext.UpdateAsync(where, updateFactory);
+            return await DbContext.SaveChangesAsync();
         }
 
         public int UpdateBySql(string sql)
@@ -115,17 +125,20 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public virtual int Delete(TKey key)
         {
-            return DbContext.Delete<T,TKey>(key);
+            DbContext.Delete<T,TKey>(key);
+            return DbContext.SaveChanges();
         }
 
         public virtual int Delete(Expression<Func<T, bool>> @where)
         {
-            return DbContext.Delete(where);
+            DbContext.Delete(where);
+            return DbContext.SaveChanges();
         }
 
         public virtual async Task<int> DeleteAsync(Expression<Func<T, bool>> @where)
         {
-            return await DbContext.DeleteAsync(where);
+            await DbContext.DeleteAsync(where);
+            return await DbContext.SaveChangesAsync();
         }
         
 

@@ -5,7 +5,7 @@ using DotNetCore.CAP;
 
 namespace Zxw.Framework.NetCore.EventBus
 {
-    class DefaultEventPublisher : IEventPublisher
+    internal class DefaultEventPublisher : IEventPublisher
     {
         public DefaultEventPublisher(ICapPublisher publisher)
         {

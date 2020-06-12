@@ -2,54 +2,130 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using DotNetCore.CAP;
+using DotNetCore.CAP.Internal;
+using DotNetCore.CAP.Persistence;
+using DotNetCore.CAP.Transport;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Storage;
 
 // ReSharper disable once CheckNamespace
-namespace Microsoft.EntityFrameworkCore.Storage
+namespace Zxw.Framework.NetCore.Transaction
 {
-    internal class CapEFDbTransaction : IDbContextTransaction
+    public class DefaultCapDbTransaction : CapTransactionBase
     {
-        private readonly ICapTransaction _transaction;
+        private readonly DiagnosticProcessorObserver _diagnosticProcessor;
 
-        public CapEFDbTransaction(ICapTransaction transaction)
+        public DefaultCapDbTransaction(
+            IDispatcher dispatcher) : base(dispatcher)
         {
-            _transaction = transaction;
-            var dbContextTransaction = (IDbContextTransaction) _transaction.DbTransaction;
-            TransactionId = dbContextTransaction.TransactionId;
+            _diagnosticProcessor = new DiagnosticProcessorObserver(dispatcher);
         }
 
-        public Guid TransactionId { get; }
-
-        public void Dispose()
+        protected override void AddToSent(MediumMessage msg)
         {
-            _transaction.Dispose();
+            if (DbTransaction is NoopTransaction)
+            {
+                base.AddToSent(msg);
+                return;
+            }
+
+            var dbTransaction = DbTransaction as IDbTransaction;
+            if (dbTransaction == null)
+            {
+                if (DbTransaction is IDbContextTransaction dbContextTransaction)
+                    dbTransaction = dbContextTransaction.GetDbTransaction();
+
+                if (dbTransaction == null) throw new ArgumentNullException(nameof(DbTransaction));
+            }
+
+            var transactionKey = ((SqlConnection)dbTransaction.Connection).ClientConnectionId;
+            if (_diagnosticProcessor.BufferList.TryGetValue(transactionKey, out var list))
+            {
+                list.Add(msg);
+            }
+            else
+            {
+                var msgList = new List<MediumMessage>(1) { msg };
+                _diagnosticProcessor.BufferList.TryAdd(transactionKey, msgList);
+            }
         }
 
-        public void Commit()
+        public override void Commit()
         {
-            _transaction.Commit();
+            switch (DbTransaction)
+            {
+                case NoopTransaction _:
+                    Flush();
+                    break;
+                case IDbTransaction dbTransaction:
+                    dbTransaction.Commit();
+                    break;
+                case IDbContextTransaction dbContextTransaction:
+                    dbContextTransaction.Commit();
+                    break;
+            }
         }
 
-        public void Rollback()
+        public override async Task CommitAsync(CancellationToken cancellationToken = default)
         {
-            _transaction.Rollback();
+            switch (DbTransaction)
+            {
+                case NoopTransaction _:
+                    Flush();
+                    break;
+                case IDbTransaction dbTransaction:
+                    dbTransaction.Commit();
+                    break;
+                case IDbContextTransaction dbContextTransaction:
+                    await dbContextTransaction.CommitAsync(cancellationToken);
+                    break;
+            }
         }
 
-        public async Task CommitAsync(CancellationToken cancellationToken = default)
+        public override void Rollback()
         {
-            await _transaction.CommitAsync(cancellationToken);
+            switch (DbTransaction)
+            {
+                case IDbTransaction dbTransaction:
+                    dbTransaction.Rollback();
+                    break;
+                case IDbContextTransaction dbContextTransaction:
+                    dbContextTransaction.Rollback();
+                    break;
+            }
         }
 
-        public async Task RollbackAsync(CancellationToken cancellationToken = default)
+        public override async Task RollbackAsync(CancellationToken cancellationToken = default)
         {
-            await _transaction.RollbackAsync(cancellationToken);
+            switch (DbTransaction)
+            {
+                case IDbTransaction dbTransaction:
+                    dbTransaction.Rollback();
+                    break;
+                case IDbContextTransaction dbContextTransaction:
+                    await dbContextTransaction.RollbackAsync(cancellationToken);
+                    break;
+            }
         }
 
-        public ValueTask DisposeAsync()
+        public override void Dispose()
         {
-            return new ValueTask(Task.Run(() => _transaction.Dispose()));
+            switch (DbTransaction)
+            {
+                case IDbTransaction dbTransaction:
+                    dbTransaction.Dispose();
+                    break;
+                case IDbContextTransaction dbContextTransaction:
+                    dbContextTransaction.Dispose();
+                    break;
+            }
+
+            DbTransaction = null;
         }
     }
 }

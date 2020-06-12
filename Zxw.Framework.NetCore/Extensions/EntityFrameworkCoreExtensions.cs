@@ -16,6 +16,7 @@ using StackExchange.Redis.Extensions.Core.Extensions;
 using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.Models;
+using Zxw.Framework.NetCore.Transaction;
 
 namespace Zxw.Framework.NetCore.Extensions
 {
@@ -323,7 +324,7 @@ namespace Zxw.Framework.NetCore.Extensions
             ICapPublisher publisher, bool autoCommit = false)
         {
             var trans = database.BeginTransaction();
-            publisher.Transaction.Value = publisher.ServiceProvider.GetService<CapTransactionBase>();
+            publisher.Transaction.Value = publisher.ServiceProvider.GetService<ICapTransaction>();
             var capTrans = publisher.Transaction.Value.Begin(trans, autoCommit);
             return new CapEFDbTransaction(capTrans);
         }

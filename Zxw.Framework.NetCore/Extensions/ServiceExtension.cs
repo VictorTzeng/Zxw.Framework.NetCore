@@ -456,16 +456,16 @@ namespace Zxw.Framework.NetCore.Extensions
         public static IServiceProvider AddCoreX(this IServiceCollection services, Action<IServiceCollection> config = null, Action<IAspectConfiguration> aspectConfig = null)
         {
             services.AddHttpContextAccessor();
-            services.AddDefaultWebContext();
             services.RegisterServiceLifetimeDependencies();
             config?.Invoke(services);
-            if (aspectConfig == null)
-            {
-                aspectConfig = x =>
-                {
-                    x.Interceptors.AddTyped<FromDbContextFactoryInterceptor>();
-                };
-            }
+            //services.AddDefaultWebContext();
+            //if (aspectConfig == null) 
+            //{
+            //    aspectConfig = x =>
+            //    {
+            //        x.Interceptors.AddTyped<FromDbContextFactoryInterceptor>();
+            //    };
+            //}
             return services.BuildAspectCoreServiceProvider(aspectConfig);
         }
     }

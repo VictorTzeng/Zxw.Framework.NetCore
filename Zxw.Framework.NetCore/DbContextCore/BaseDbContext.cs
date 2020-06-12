@@ -27,10 +27,9 @@ namespace Zxw.Framework.NetCore.DbContextCore
     {
         public DbContextOption Option { get; }
         public DatabaseFacade GetDatabase() => Database;
-        public new virtual int Add<T>(T entity) where T : class
+        public new virtual void Add<T>(T entity) where T : class
         {
             base.Add(entity);
-            return  SaveChanges();
         }
 
         protected BaseDbContext(DbContextOption option)
@@ -110,22 +109,19 @@ namespace Zxw.Framework.NetCore.DbContextCore
             }
         }
 
-        public virtual async Task<int> AddAsync<T>(T entity) where T : class
+        public virtual async Task AddAsync<T>(T entity) where T : class
         {
             await base.AddAsync(entity);
-            return await SaveChangesAsync();
         }
 
-        public virtual int AddRange<T>(ICollection<T> entities) where T : class
+        public virtual void AddRange<T>(ICollection<T> entities) where T : class
         {
             base.AddRange(entities);
-            return  SaveChanges();
         }
 
-        public virtual async Task<int> AddRangeAsync<T>(ICollection<T> entities) where T : class
+        public virtual async Task AddRangeAsync<T>(ICollection<T> entities) where T : class
         {
             await base.AddRangeAsync(entities);
-            return await SaveChangesAsync();
         }
 
         public virtual int Count<T>(Expression<Func<T, bool>> @where = null) where T : class
@@ -140,12 +136,11 @@ namespace Zxw.Framework.NetCore.DbContextCore
             return await (where == null ? GetDbSet<T>().CountAsync() : GetDbSet<T>().CountAsync(@where));
         }
 
-        public virtual int Delete<T,TKey>(TKey key) where T : BaseModel<TKey>
+        public virtual void Delete<T,TKey>(TKey key) where T : BaseModel<TKey>
         {
             var entity = Find<T>(key);
             //var entity = GetByCompileQuery<T, TKey>(key);
             Remove(entity);
-            return  SaveChanges();
         }
 
         public virtual bool EnsureCreated()
@@ -185,28 +180,10 @@ namespace Zxw.Framework.NetCore.DbContextCore
         /// <typeparam name="TKey"></typeparam>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public virtual int Edit<T>(T entity) where T : class 
+        public virtual void Edit<T>(T entity) where T : class 
         {
-            //var dbModel = Find<T, TKey>(entity.Id);
-            //if (dbModel == null) return -1;
-            ////Entry(model).CurrentValues.SetValues(entity);
-            //var properties = typeof(T).GetProperties();
-            //var changedProperties = new List<string>();
-            //foreach (var property in properties)
-            //{
-            //    var reflector = property.GetReflector();
-
-            //    var value = reflector.GetValue(entity);
-            //    var dbvalue = reflector.GetValue(dbModel);
-            //    if (value != dbvalue)
-            //    {
-            //        changedProperties.Add(property.Name);
-            //    }
-            //}
             base.Update(entity);
             base.Entry(entity).State = EntityState.Modified;
-            return SaveChanges();
-            //return Update(entity, changedProperties.ToArray());
         }
 
         /// <summary>
@@ -215,16 +192,14 @@ namespace Zxw.Framework.NetCore.DbContextCore
         /// <typeparam name="T"></typeparam>
         /// <param name="entities"></param>
         /// <returns></returns>
-        public virtual int EditRange<T>(ICollection<T> entities) where T : class
+        public virtual void EditRange<T>(ICollection<T> entities) where T : class
         {
             GetDbSet<T>().AttachRange(entities.ToArray());
-            return  SaveChanges();
         }
 
         public virtual bool Exist<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
             return @where == null ? GetDbSet<T>().Any() : GetDbSet<T>().Any(@where);
-            //return CountByCompileQuery(where) > 0;
         }
 
         public virtual IQueryable<T> FilterWithInclude<T>(Func<IQueryable<T>, IQueryable<T>> include, Expression<Func<T, bool>> @where) where T : class
@@ -240,7 +215,6 @@ namespace Zxw.Framework.NetCore.DbContextCore
         public virtual async Task<bool> ExistAsync<T>(Expression<Func<T, bool>> @where = null) where T : class
         {
             return await Task.FromResult(Exist(where));
-            //return await CountByCompileQueryAsync(where) > 0;
         }
 
         public virtual T Find<T>(object key) where T : class
@@ -304,7 +278,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         /// <param name="updateColumns"></param>
         /// <returns></returns>
-        public virtual int Update<T>(T model, params string[] updateColumns) where T : class
+        public virtual void Update<T>(T model, params string[] updateColumns) where T : class
         {
             if (updateColumns != null && updateColumns.Length > 0)
             {
@@ -319,17 +293,16 @@ namespace Zxw.Framework.NetCore.DbContextCore
             {
                 Entry(model).State = EntityState.Modified;
             }
-            return  SaveChanges();
         }
 
-        public virtual int Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
+        public virtual void Update<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
         {
-            return GetDbSet<T>().Where(where).Update(updateFactory);
+            GetDbSet<T>().Where(where).Update(updateFactory);
         }
 
-        public virtual async Task<int> UpdateAsync<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
+        public virtual async Task UpdateAsync<T>(Expression<Func<T, bool>> @where, Expression<Func<T,T>> updateFactory) where T : class
         {
-            return await GetDbSet<T>().Where(where).UpdateAsync(updateFactory);
+            await GetDbSet<T>().Where(where).UpdateAsync(updateFactory);
         }
 
         /// <summary>
@@ -338,14 +311,14 @@ namespace Zxw.Framework.NetCore.DbContextCore
         /// <typeparam name="T"></typeparam>
         /// <param name="where"></param>
         /// <returns></returns>
-        public virtual int Delete<T>(Expression<Func<T, bool>> @where) where T : class
+        public virtual void Delete<T>(Expression<Func<T, bool>> @where) where T : class
         {
-            return GetDbSet<T>().Where(@where).Delete();
+            GetDbSet<T>().Where(@where).Delete();
         }
 
-        public virtual async Task<int> DeleteAsync<T>(Expression<Func<T, bool>> @where) where T : class
+        public virtual async Task DeleteAsync<T>(Expression<Func<T, bool>> @where) where T : class
         {
-            return await GetDbSet<T>().Where(@where).DeleteAsync();
+            await GetDbSet<T>().Where(@where).DeleteAsync();
         }
 
         /// <summary>
