@@ -55,7 +55,7 @@ namespace Zxw.Framework.NetCore.IDbContext
             where T : class ;
         List<TView> SqlQuery<T, TView>(string sql, params object[] parameters) 
             where T : class;
-        PaginationResult SqlQueryByPagnation<T, TView>(string sql, string[] orderBys, int pageIndex, int pageSize, Action<TView> eachAction = null)
+        PaginationResult SqlQueryByPagination<T, TView>(string sql, string[] orderBys, int pageIndex, int pageSize, Action<TView> eachAction = null)
             where T : class
             where TView : class;
         Task<List<TView>> SqlQueryAsync<T, TView>(string sql, params object[] parameters)
@@ -67,6 +67,9 @@ namespace Zxw.Framework.NetCore.IDbContext
         Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,CancellationToken cancellationToken = default(CancellationToken));
 
         DataTable GetDataTable(string sql, params DbParameter[] parameters);
+
+        PaginationResult SqlQueryByPagination<T>(string sql, string[] orderBys, int pageIndex, int pageSize,
+            params DbParameter[] parameters) where T : class, new();
         List<DataTable> GetDataTables(string sql, params DbParameter[] parameters);
         T GetByCompileQuery<T,TKey>(TKey id) where T : BaseModel<TKey>;
         Task<T> GetByCompileQueryAsync<T, TKey>(TKey id) where T : BaseModel<TKey>;

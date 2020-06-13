@@ -366,7 +366,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
             return GetDbSet<T>().FromSqlRaw(sql, parameters).Cast<TView>().ToList();
         }
 
-        public virtual PaginationResult SqlQueryByPagnation<T, TView>(string sql, string[] orderBys, int pageIndex, int pageSize,
+        public virtual PaginationResult SqlQueryByPagination<T, TView>(string sql, string[] orderBys, int pageIndex, int pageSize,
             Action<TView> eachAction = null) where T : class where TView : class
         {
             throw new NotImplementedException();
@@ -380,6 +380,13 @@ namespace Zxw.Framework.NetCore.DbContextCore
         }
 
         public abstract DataTable GetDataTable(string sql, params DbParameter[] parameters);
+
+        public virtual PaginationResult SqlQueryByPagination<T>(string sql, string[] orderBys, int pageIndex, int pageSize,
+            params DbParameter[] parameters) where T:class, new()
+        {
+            throw new NotImplementedException();
+        }
+
         public abstract List<DataTable> GetDataTables(string sql, params DbParameter[] parameters);
         public T GetByCompileQuery<T, TKey>(TKey id) where T : BaseModel<TKey>
         {

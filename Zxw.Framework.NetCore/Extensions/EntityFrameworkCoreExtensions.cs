@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
@@ -168,7 +167,7 @@ namespace Zxw.Framework.NetCore.Extensions
             var columns = context.GetTableColumns(tables.Select(m=>m.TableName).ToArray()).ToList<DbTableColumn>();
             tables.ForEach(item =>
             {
-                var dt = context.GetDataTable($"select * from {item.TableName} where 1 != 1");
+                var dt = context.GetDataTable($"select * from [{item.TableName}] where 1 != 1");
                 item.Columns = columns.Where(m=>m.TableName == item.TableName).ToList();
                 item.Columns.ForEach(x =>
                 {
@@ -182,9 +181,9 @@ namespace Zxw.Framework.NetCore.Extensions
         /// <summary>
         /// 执行SQL返回受影响的行数
         /// </summary>
-        public static int ExecuteSqlNoQuery<T>(this IDbContextCore context, string sql, DbParameter[] sqlParams = null) where T : new()
+        public static int ExecuteSqlNoQuery(this IDbContextCore context, string sql, DbParameter[] sqlParams = null)
         {
-            return ExecuteNoQuery<T>(context, sql, sqlParams);
+            return ExecuteNoQuery(context, sql, sqlParams);
         }
         /// <summary>
         /// 执行存储过程返回IEnumerable数据集
@@ -200,7 +199,7 @@ namespace Zxw.Framework.NetCore.Extensions
         {
             return Execute<T>(context, sql, CommandType.Text, sqlParams);
         }
-        private static int ExecuteNoQuery<T>(this IDbContextCore context, string sql, DbParameter[] sqlParams) where T : new()
+        private static int ExecuteNoQuery(this IDbContextCore context, string sql, DbParameter[] sqlParams)
         {
             var db = context.GetDatabase();
             var connection = db.GetDbConnection();
@@ -217,7 +216,7 @@ namespace Zxw.Framework.NetCore.Extensions
             connection.Close();
             return result;
         }
-        private static IEnumerable<T> Execute<T>(this IDbContextCore context, string sql, CommandType type, DbParameter[] sqlParams) where T : new()
+        private static IEnumerable<T> Execute<T>(this IDbContextCore context, string sql, CommandType type, params DbParameter[] sqlParams) where T : new()
         {
             var db = context.GetDatabase();
             var connection = db.GetDbConnection();
@@ -272,6 +271,25 @@ namespace Zxw.Framework.NetCore.Extensions
                 sql.AppendLine($"delete from {table};");
             }
             context.ExecuteSqlWithNonQuery(sql.ToString());
+        }
+
+        public static object ExecuteScalar(this IDbContextCore context, string sql, params DbParameter[] sqlParams)
+        {
+            var db = context.GetDatabase();
+            var connection = db.GetDbConnection();
+            var cmd = connection.CreateCommand();
+            if (connection.State == ConnectionState.Closed)
+                connection.Open();
+            cmd.CommandText = sql;
+            cmd.CommandType = CommandType.Text;
+            if (sqlParams != null)
+            {
+                cmd.Parameters.AddRange(sqlParams);
+            }
+
+            var result = cmd.ExecuteScalar();
+            connection.Close();
+            return result;
         }
     }
 }

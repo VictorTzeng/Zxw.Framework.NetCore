@@ -97,7 +97,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
             }
         }
 
-        public override PaginationResult SqlQueryByPagnation<T, TView>(string sql, string[] orderBys, int pageIndex, int pageSize,
+        public override PaginationResult SqlQueryByPagination<T, TView>(string sql, string[] orderBys, int pageIndex, int pageSize,
             Action<TView> eachAction = null)
         {
             var total = SqlQuery<T, int>($"select count(1) from ({sql}) as s").FirstOrDefault();
@@ -120,6 +120,21 @@ namespace Zxw.Framework.NetCore.DbContextCore
         public override DataTable GetDataTable(string sql, params DbParameter[] parameters)
         {
             return GetDataTables(sql, parameters).FirstOrDefault();
+        }
+
+        public override PaginationResult SqlQueryByPagination<T>(string sql, string[] orderBys, int pageIndex, int pageSize,
+            params DbParameter[] parameters)
+        {
+            var total = (int)this.ExecuteScalar($"select count(1) from ({sql}) as s");
+            var jsonResults = GetDataTable(
+                    $"select * from (select *,row_number() over (order by {string.Join(",", orderBys)}) as RowId from ({sql}) as s) as t where RowId between {pageSize * (pageIndex - 1) + 1} and {pageSize * pageIndex} order by {string.Join(",", orderBys)}")
+                .ToList<T>();
+            return new PaginationResult(true, string.Empty, jsonResults)
+            {
+                pageIndex = pageIndex,
+                pageSize = pageSize,
+                total = total
+            };
         }
 
         public override List<DataTable> GetDataTables(string sql, params DbParameter[] parameters)
