@@ -47,11 +47,6 @@
         /// </summary>
         public int pageIndex { get; set; }
 
-        /// <summary>
-        /// 总页数
-        /// </summary>
-        public int pageCount => total % pageSize == 0 ? total / pageSize : total / pageSize + 1;
-
         public PaginationResult(bool success, string msg, object rows) : base(success, msg, rows)
         {
         }

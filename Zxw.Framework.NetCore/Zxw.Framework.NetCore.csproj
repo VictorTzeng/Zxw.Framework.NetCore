@@ -4,15 +4,14 @@
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <Authors>victor.tzeng</Authors>
     <NeutralLanguage></NeutralLanguage>
-    <Version>3.1.4.3</Version>
-    <AssemblyVersion>3.1.4.3</AssemblyVersion>
-    <FileVersion>3.1.4.3</FileVersion>
+    <Version>3.1.4.4</Version>
+    <AssemblyVersion>3.1.4.4</AssemblyVersion>
+    <FileVersion>3.1.4.4</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>victor.tzeng@outlook.com</Copyright>
     <PackageProjectUrl>https://github.com/VictorTzeng/Zxw.Framework.NetCore</PackageProjectUrl>
     <Description>基于EF Core的Code First模式的DotNetCore快速开发框架</Description>
-    <PackageReleaseNotes>1.修复代码生成器bug
-2.BaseDbContext新增SqlQueryByPagination方法，子类如需使用须先重写这个方法。SqlServerDbContext已经实现</PackageReleaseNotes>
+    <PackageReleaseNotes>fixed bugs</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
