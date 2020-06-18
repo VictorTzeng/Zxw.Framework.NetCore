@@ -66,11 +66,11 @@ namespace Zxw.Framework.NetCore.IDbContext
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
         Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,CancellationToken cancellationToken = default(CancellationToken));
 
-        DataTable GetDataTable(string sql, params DbParameter[] parameters);
+        DataTable GetDataTable(string sql, int cmdTimeout = 30, params DbParameter[] parameters);
 
         PaginationResult SqlQueryByPagination<T>(string sql, string[] orderBys, int pageIndex, int pageSize,
             params DbParameter[] parameters) where T : class, new();
-        List<DataTable> GetDataTables(string sql, params DbParameter[] parameters);
+        List<DataTable> GetDataTables(string sql, int cmdTimeout=30, params DbParameter[] parameters);
         T GetByCompileQuery<T,TKey>(TKey id) where T : BaseModel<TKey>;
         Task<T> GetByCompileQueryAsync<T, TKey>(TKey id) where T : BaseModel<TKey>;
         IList<T> GetByCompileQuery<T>(Expression<Func<T, bool>> filter) where T : class;

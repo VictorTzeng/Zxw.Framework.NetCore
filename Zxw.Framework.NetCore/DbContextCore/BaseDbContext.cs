@@ -379,7 +379,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
             return await GetDbSet<T>().FromSqlRaw(sql, parameters).Cast<TView>().ToListAsync();
         }
 
-        public abstract DataTable GetDataTable(string sql, params DbParameter[] parameters);
+        public abstract DataTable GetDataTable(string sql, int cmdTimeout = 30, params DbParameter[] parameters);
 
         public virtual PaginationResult SqlQueryByPagination<T>(string sql, string[] orderBys, int pageIndex, int pageSize,
             params DbParameter[] parameters) where T:class, new()
@@ -387,7 +387,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
             throw new NotImplementedException();
         }
 
-        public abstract List<DataTable> GetDataTables(string sql, params DbParameter[] parameters);
+        public abstract List<DataTable> GetDataTables(string sql, int cmdTimeout = 30, params DbParameter[] parameters);
         public T GetByCompileQuery<T, TKey>(TKey id) where T : BaseModel<TKey>
         {
             return EF.CompileQuery((DbContext context, TKey id) => context.Set<T>().Find(id))(this, id);
