@@ -4,14 +4,14 @@
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <Authors>victor.tzeng</Authors>
     <NeutralLanguage></NeutralLanguage>
-    <Version>3.1.4.5</Version>
-    <AssemblyVersion>3.1.4.5</AssemblyVersion>
-    <FileVersion>3.1.4.5</FileVersion>
+    <Version>3.1.4.6</Version>
+    <AssemblyVersion>3.1.4.6</AssemblyVersion>
+    <FileVersion>3.1.4.6</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>victor.tzeng@outlook.com</Copyright>
     <PackageProjectUrl>https://github.com/VictorTzeng/Zxw.Framework.NetCore</PackageProjectUrl>
     <Description>基于EF Core的Code First模式的DotNetCore快速开发框架</Description>
-    <PackageReleaseNotes>GetDataTable方法添加可自定义CommandTimeOut</PackageReleaseNotes>
+    <PackageReleaseNotes>fixed ExecuteSqlWithNonQuery</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

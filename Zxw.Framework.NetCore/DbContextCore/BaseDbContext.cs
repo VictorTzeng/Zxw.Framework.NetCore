@@ -165,16 +165,12 @@ namespace Zxw.Framework.NetCore.DbContextCore
         /// <returns></returns>
         public virtual int ExecuteSqlWithNonQuery(string sql, params object[] parameters)
         {
-            return Database.ExecuteSqlRaw(sql,
-                CancellationToken.None,
-                parameters);
+            return Database.ExecuteSqlRaw(sql, parameters);
         }
 
         public virtual async Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters)
         {
-            return await Database.ExecuteSqlRawAsync(sql,
-                CancellationToken.None,
-                parameters);
+            return await Database.ExecuteSqlRawAsync(sql, parameters);
         }
 
         /// <summary>
