@@ -140,7 +140,7 @@ namespace Zxw.Framework.NetCore.Services
             return await Repository.GetAsync(where);
         }
 
-        public virtual IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true, params Func<T, object>[] @orderby)
+        public virtual IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true, params Expression<Func<T, object>>[] @orderby)
         {
             return Repository.GetByPagination(where, pageSize, pageIndex, asc, orderby);
         }

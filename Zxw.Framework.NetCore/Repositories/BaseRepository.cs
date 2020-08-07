@@ -215,7 +215,7 @@ namespace Zxw.Framework.NetCore.Repositories
         /// <summary>
         /// 分页获取实体列表。建议：如需使用Include和ThenInclude请重载此方法。
         /// </summary>
-        public virtual IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true, params Func<T, object>[] @orderby)
+        public virtual IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true, params Expression<Func<T, object>>[] @orderby)
         {
             var filter = DbContext.Get(where);
             if (orderby != null)
