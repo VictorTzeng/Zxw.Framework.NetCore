@@ -201,7 +201,7 @@ namespace Zxw.Framework.NetCore.Repositories
         /// </summary>
         public virtual IList<T> Get(Expression<Func<T, bool>> @where = null)
         {
-            return DbContext.GetByCompileQuery(where);
+            return DbContext.Get(where).ToList();
         }
 
         /// <summary>
@@ -209,7 +209,7 @@ namespace Zxw.Framework.NetCore.Repositories
         /// </summary>
         public virtual async Task<List<T>> GetAsync(Expression<Func<T, bool>> @where = null)
         {
-            return await DbContext.GetByCompileQueryAsync(where);
+            return await DbContext.Get(where).ToListAsync();
         }
 
         /// <summary>
