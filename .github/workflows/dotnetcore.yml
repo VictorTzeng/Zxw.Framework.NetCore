@@ -12,11 +12,11 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 6.0.100
     - name: Build with dotnet
       run: dotnet build --configuration Release
     - name: Pack
-      run: dotnet pack "Zxw.Framework.NetCore/Zxw.Framework.NetCore.csproj" --configuration Release -p:PackageVersion=5.0.0 --output nupkgs
+      run: dotnet pack "Zxw.Framework.NetCore/Zxw.Framework.NetCore.csproj" --configuration Release -p:PackageVersion=6.0.0 --output nupkgs
     - name: Publish
-      run: dotnet nuget push "nupkgs/Zxw.Framework.NetCore.5.0.0.nupkg" --skip-duplicate --api-key oy2irsgtchjxgn24iz2aotr6su7hjgse3b6w6zqn5re6qi --source "https://api.nuget.org/v3/index.json"
+      run: dotnet nuget push "nupkgs/Zxw.Framework.NetCore.6.0.0.nupkg" --skip-duplicate --api-key oy2irsgtchjxgn24iz2aotr6su7hjgse3b6w6zqn5re6qi --source "https://api.nuget.org/v3/index.json"
  
