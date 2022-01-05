@@ -18,5 +18,5 @@ jobs:
     - name: Pack
       run: dotnet pack "Zxw.Framework.NetCore/Zxw.Framework.NetCore.csproj" --configuration Release -p:PackageVersion=6.0.0 --output nupkgs
     - name: Publish
-      run: dotnet nuget push "nupkgs/Zxw.Framework.NetCore.6.0.0.nupkg" --skip-duplicate --api-key oy2irsgtchjxgn24iz2aotr6su7hjgse3b6w6zqn5re6qi --source "https://api.nuget.org/v3/index.json"
+      run: dotnet nuget push "nupkgs/Zxw.Framework.NetCore.6.0.0.nupkg" --skip-duplicate --api-key oy2mt5urxjxze72ta63qtei2crwt5fgeldmsgmwb6pfvee --source "https://api.nuget.org/v3/index.json"
  
