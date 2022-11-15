@@ -205,7 +205,7 @@ namespace Zxw.Framework.NetCore.Repositories
         /// </summary>
         public virtual IList<T> Get(Expression<Func<T, bool>> @where = null)
         {
-            return DbContext.GetByCompileQuery(where);
+            return DbContext.Get(where).ToList();
         }
 
         /// <summary>
@@ -213,13 +213,13 @@ namespace Zxw.Framework.NetCore.Repositories
         /// </summary>
         public virtual async Task<List<T>> GetAsync(Expression<Func<T, bool>> @where = null)
         {
-            return await DbContext.GetByCompileQueryAsync(where);
+            return await DbContext.Get(where).ToListAsync();
         }
 
         /// <summary>
         /// 分页获取实体列表。建议：如需使用Include和ThenInclude请重载此方法。
         /// </summary>
-        public virtual IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true, params Func<T, object>[] @orderby)
+        public virtual IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true, params Expression<Func<T, object>>[] @orderby)
         {
             var filter = DbContext.Get(where);
             if (orderby != null)

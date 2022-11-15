@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using Zxw.Framework.NetCore.Extensions;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.Options;
@@ -29,7 +29,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySql(Option.ConnectionString);
+            optionsBuilder.UseMySql(ServerVersion.AutoDetect(Option.ConnectionString));
             base.OnConfiguring(optionsBuilder);
         }
 

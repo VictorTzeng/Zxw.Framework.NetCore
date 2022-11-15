@@ -53,7 +53,7 @@ namespace Zxw.Framework.NetCore.Services
         IList<T> Get(Expression<Func<T, bool>> @where = null);
         Task<List<T>> GetAsync(Expression<Func<T, bool>> @where = null);
         IEnumerable<T> GetByPagination(Expression<Func<T, bool>> @where, int pageSize, int pageIndex, bool asc = true,
-            params Func<T, object>[] @orderby);
+            params Expression<Func<T, object>>[] @orderby);
         #endregion
     }
 }
