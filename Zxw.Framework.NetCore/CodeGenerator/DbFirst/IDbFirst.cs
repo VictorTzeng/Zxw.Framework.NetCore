@@ -8,7 +8,6 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
 {
     public interface IDbFirst
     {
-        IDbContextCore DbContext { get; set; }
         void GenerateAll(bool ifExistCovered = false);
         IDbFirst Generate(Func<DbTable, bool> selector, bool ifExistCovered = false);
         IDbFirst GenerateEntity(Func<DbTable, bool> selector, bool ifExistCovered = false);
@@ -31,7 +30,6 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
             var dbFirst = ServiceLocator.Resolve<IDbFirst>();
             if(dbFirst == null)
                 throw new Exception("请先在Startup.cs文件的ConfigureServices方法中调用UseCodeGenerator方法以注册。");
-            dbFirst.DbContext = dbContext;
             return dbFirst;
         }
     }

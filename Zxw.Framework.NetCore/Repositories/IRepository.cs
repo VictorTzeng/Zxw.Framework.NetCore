@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ using Zxw.Framework.NetCore.Models;
 namespace Zxw.Framework.NetCore.Repositories
 {
     [FromDbContextFactoryInterceptor]
-    public interface IRepository<T, in TKey>: ITransientDependency, IDisposable where T : IBaseModel<TKey>
+    public interface IRepository<T, in TKey>: ITransientDependency, IDisposable where T : class, IBaseModel<TKey> ,new()
     {
         #region Insert
 
@@ -65,6 +66,10 @@ namespace Zxw.Framework.NetCore.Repositories
         List<TView> GetViews<TView>(string sql);
         List<TView> GetViews<TView>(string viewName, Func<TView, bool> where);
 
+        PaginationResult SqlQueryByPagination(string sql, string[] orderBys, int pageIndex, int pageSize,
+            params DbParameter[] parameters);
+        PaginationResult SqlQueryByPagination<TView>(string sql, string[] orderBys, int pageIndex, int pageSize)
+            where TView : class;
         #endregion
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -10,16 +11,19 @@ using Zxw.Framework.NetCore.Models;
 
 namespace Zxw.Framework.NetCore.Repositories
 {
-    public abstract class BaseRepository<T, TKey>:IRepository<T, TKey> where T : BaseModel<TKey>
+    public abstract class BaseRepository<T, TKey>:IRepository<T, TKey> where T : BaseModel<TKey>, new()
     {
         protected readonly IDbContextCore DbContext;
+        protected readonly ISqlOperatorUtility SqlOperatorUtility;
 
         protected DbSet<T> DbSet => DbContext.GetDbSet<T>();
 
-        protected BaseRepository(IDbContextCore dbContext)
+        protected BaseRepository(IDbContextCore dbContext, ISqlOperatorUtility sqlOperator)
         {
             DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             DbContext.EnsureCreated();
+
+            SqlOperatorUtility = sqlOperator;
         }
 
         #region Insert
@@ -60,7 +64,7 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public int DeleteBySql(string sql)
         {
-            return DbContext.ExecuteSqlWithNonQuery(sql);
+            return SqlOperatorUtility.ExecuteSqlCommand(sql);
         }
 
         public virtual int Edit(T entity)
@@ -106,7 +110,7 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public int UpdateBySql(string sql)
         {
-            return DbContext.ExecuteSqlWithNonQuery(sql);
+            return SqlOperatorUtility.ExecuteSqlCommand(sql);
         }
 
         #endregion
@@ -230,24 +234,35 @@ namespace Zxw.Framework.NetCore.Repositories
 
         public List<T> GetBySql(string sql)
         {
-            return DbContext.SqlQuery<T, T>(sql);
+            return SqlOperatorUtility.SqlQuery<T>(sql).ToList();
         }
 
         public List<TView> GetViews<TView>(string sql)
         {
-            var list = DbContext.SqlQuery<T, TView>(sql);
+            var list = SqlOperatorUtility.SqlQuery<TView>(sql).ToList();
             return list;
         }
 
         public List<TView> GetViews<TView>(string viewName, Func<TView, bool> @where)
         {
-            var list = DbContext.SqlQuery<T, TView>($"select * from {viewName}");
+            var list = SqlOperatorUtility.SqlQuery<TView>($"select * from {viewName}").ToList();
             if (where != null)
             {
                 return list.Where(where).ToList();
             }
 
             return list;
+        }
+
+        public virtual PaginationResult SqlQueryByPagination(string sql, string[] orderBys, int pageIndex, int pageSize,
+            params DbParameter[] parameters)
+        {
+            return DbContext.SqlQueryByPagination<T>(sql, orderBys, pageIndex, pageSize, parameters);
+        }
+
+        public virtual PaginationResult SqlQueryByPagination<TView>(string sql, string[] orderBys, int pageIndex, int pageSize) where TView : class
+        {
+            return DbContext.SqlQueryByPagination<T,TView>(sql, orderBys, pageIndex, pageSize);
         }
 
         #endregion

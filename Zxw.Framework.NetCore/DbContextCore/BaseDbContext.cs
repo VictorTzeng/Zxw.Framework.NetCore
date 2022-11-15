@@ -5,16 +5,19 @@ using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Z.EntityFramework.Plus;
 using Zxw.Framework.NetCore.Attributes;
 using Zxw.Framework.NetCore.DbLogProvider;
 using Zxw.Framework.NetCore.Extensions;
+using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.IoC;
 using Zxw.Framework.NetCore.Models;
@@ -26,6 +29,11 @@ namespace Zxw.Framework.NetCore.DbContextCore
     {
         public DbContextOption Option { get; }
         public DatabaseFacade GetDatabase() => Database;
+        public T GetService<T>()
+        {
+            return this.Database.GetService<T>();
+        }
+
         public new virtual int Add<T>(T entity) where T : class
         {
             base.Add(entity);
@@ -61,13 +69,18 @@ namespace Zxw.Framework.NetCore.DbContextCore
         {
             if(Option.IsOutputSql)
             {
-                optionsBuilder.UseLoggerFactory(new EFLoggerFactory());
+                optionsBuilder.UseLoggerFactory(new EntityFrameworkCommandLoggerFactory());
             }
 
-            optionsBuilder
-                //.UseLazyLoadingProxies() /* 开启后AOP缓存会报错 */
-                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-                ;
+            if (Option.EnableNoTracking)
+            {
+                optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            }
+
+            if (Option.EnableLazyLoadingProxy)
+            {
+                optionsBuilder.UseLazyLoadingProxies();
+            }
 
             base.OnConfiguring(optionsBuilder);
         }
@@ -355,11 +368,37 @@ namespace Zxw.Framework.NetCore.DbContextCore
             if (!Database.IsSqlServer()&&!Database.IsMySql())
              throw new NotSupportedException("This method only supports for SQL Server or MySql.");
         }
-
-        public virtual List<TView> SqlQuery<T,TView>(string sql, params object[] parameters) 
-            where T : class
+        [Obsolete]
+        public virtual List<TView> SqlQuery<T, TView>(string sql, params object[] parameters) where T : class
         {
-            return GetDbSet<T>().FromSqlRaw(sql, parameters).Cast<TView>().ToList();
+            return GetDbSet<T>().FromSqlRaw(sql).Cast<TView>().ToList();
+        }
+
+        public virtual List<TView> SqlQuery<TView>(string sql, int cmdTimeout = 30, params object[] parameters) 
+        {
+            var result = new List<TView>();
+            var connection = Database.GetDbConnection();
+            if (connection.State != ConnectionState.Open)
+                connection.Open();
+
+            using (var cmd = connection.CreateCommand())
+            {
+                cmd.CommandText = sql;
+                if (parameters != null && parameters.Length > 0)
+                {
+                    cmd.Parameters.AddRange(parameters);
+                }
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    result = reader.ToList<TView>().ToList();
+
+                    reader.Close();
+                }
+            }
+            connection.Close();
+
+            return result;
         }
 
         public virtual PaginationResult SqlQueryByPagination<T, TView>(string sql, string[] orderBys, int pageIndex, int pageSize,
@@ -368,14 +407,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
             throw new NotImplementedException();
         }
 
-        public virtual async Task<List<TView>> SqlQueryAsync<T,TView>(string sql, params object[] parameters) 
-            where T : class
-            where TView : class
-        {
-            return await GetDbSet<T>().FromSqlRaw(sql, parameters).Cast<TView>().ToListAsync();
-        }
-
-        public abstract DataTable GetDataTable(string sql, int cmdTimeout = 30, params DbParameter[] parameters);
+        public virtual DataTable GetDataTable(string sql, int cmdTimeout = 30, params DbParameter[] parameters) =>
+            GetDataTables(sql, cmdTimeout, parameters)?.FirstOrDefault();
 
         public virtual PaginationResult SqlQueryByPagination<T>(string sql, string[] orderBys, int pageIndex, int pageSize,
             params DbParameter[] parameters) where T:class, new()
@@ -383,7 +416,42 @@ namespace Zxw.Framework.NetCore.DbContextCore
             throw new NotImplementedException();
         }
 
-        public abstract List<DataTable> GetDataTables(string sql, int cmdTimeout = 30, params DbParameter[] parameters);
+        public virtual List<DataTable> GetDataTables(string sql, int cmdTimeout = 30, params DbParameter[] parameters)
+        {
+            var dts = new List<DataTable>();
+            //TODO： connection 不能dispose 或者 用using，否则下次获取connection会报错提示“the connectionstring property has not been initialized。”
+            var connection = Database.GetDbConnection();
+            if (connection.State != ConnectionState.Open)
+                connection.Open();
+
+            using (var cmd = connection.CreateCommand())
+            {
+                cmd.CommandText = sql;
+                cmd.CommandTimeout = cmdTimeout;
+                if (parameters != null && parameters.Length > 0)
+                {
+                    cmd.Parameters.AddRange(parameters);
+                }
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    var dt = reader.Fill();
+
+                    dts.Add(dt);
+
+                    while (reader.NextResult())
+                    {
+                        dt = reader.Fill();
+                        dts.Add(dt);
+                    }
+                    reader.Close();
+                }
+            }
+            connection.Close();
+
+            return dts;
+        }
+
         public T GetByCompileQuery<T, TKey>(TKey id) where T : BaseModel<TKey>
         {
             return EF.CompileQuery((DbContext context, TKey id) => context.Set<T>().Find(id))(this, id);

@@ -110,6 +110,10 @@ namespace Zxw.Framework.UnitTest
                 var dt2 = dbContext.GetTableColumns(row["TableName"].ToString());
                 Assert.IsNotNull(dt2);
             }
+
+            var sqlOperator = ServiceLocator.Resolve<ISqlOperatorUtility>();
+            var ds = sqlOperator.SqlQuery("select * from SysMenu");
+            Assert.IsNotNull(ds);
         }
 
         [TestMethod]
@@ -314,6 +318,7 @@ namespace Zxw.Framework.UnitTest
                 //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
             });
             services.AddScoped<IDbContextCore, SqlServerDbContext>(); //注入EF上下文
+            services.AddScoped<ISqlOperatorUtility, SqlOperatorUtility>();
             return services;
         }
 

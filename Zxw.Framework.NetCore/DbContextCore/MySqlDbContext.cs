@@ -70,43 +70,5 @@ namespace Zxw.Framework.NetCore.DbContextCore
             conn.Close();
             File.Delete(csvFileName);
         }
-        public override DataTable GetDataTable(string sql, int cmdTimeout = 30, params DbParameter[] parameters)
-        {
-            return GetDataTables(sql, cmdTimeout, parameters).FirstOrDefault();
-        }
-
-        public override List<DataTable> GetDataTables(string sql, int cmdTimeout = 30, params DbParameter[] parameters)
-        {
-            var dts = new List<DataTable>();
-            //TODO： connection 不能dispose 或者 用using，否则下次获取connection会报错提示“the connectionstring property has not been initialized。”
-            var connection = Database.GetDbConnection();
-            if (connection.State != ConnectionState.Open)
-                connection.Open();
-
-            using (var cmd = new MySqlCommand(sql, (MySqlConnection) connection))
-            {
-                cmd.CommandTimeout = cmdTimeout;
-                if (parameters != null && parameters.Length > 0)
-                {
-                    cmd.Parameters.AddRange(parameters);
-                }
-                
-                using (var da = new MySqlDataAdapter(cmd))
-                {
-                    using (var ds = new DataSet())
-                    {
-                        da.Fill(ds);
-                        foreach (DataTable table in ds.Tables)
-                        {
-                            dts.Add(table);
-                        }
-                    }
-                }
-            }
-            connection.Close();
-
-            return dts;
-        }
-
     }
 }

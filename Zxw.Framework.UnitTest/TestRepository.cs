@@ -19,7 +19,7 @@ namespace Zxw.Framework.UnitTest
             Console.WriteLine("Over!");
         }
 
-        public TestRepository(IDbContextCore dbContext) : base(dbContext)
+        public TestRepository(IDbContextCore dbContext, ISqlOperatorUtility sqlOperator) : base(dbContext, sqlOperator)
         {
         }
     }

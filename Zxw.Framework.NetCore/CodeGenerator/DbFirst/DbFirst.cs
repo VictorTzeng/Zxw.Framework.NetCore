@@ -15,20 +15,12 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
         private CodeGenerator Instance { get; set; }
 
         private IDbContextCore _dbContext;
-        public IDbContextCore DbContext
-        {
-            get => _dbContext;
-            set
-            {
-                _dbContext = value;
-                AllTables = _dbContext.GetCurrentDatabaseTableList().ToList();
-            }
-        }
 
-        private List<DbTable> AllTables { get; set; }
+        private List<DbTable> AllTables => _dbContext.GetCurrentDatabaseTableList().ToList();
 
-        public DbFirst(IOptions<CodeGenerateOption> option)
+        public DbFirst(IDbContextCore dbContext, IOptions<CodeGenerateOption> option)
         {
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             if (option == null) throw new ArgumentNullException(nameof(option));
             Instance = new CodeGenerator(option.Value);
         }
@@ -162,7 +154,7 @@ namespace Zxw.Framework.NetCore.CodeGenerator.DbFirst
         public IDbFirst GenerateViewModel(string viewName, bool ifExistCovered = false)
         {
             var sql = $"select top 1 * from {viewName}";
-            var dt = DbContext.GetDataTable(sql);
+            var dt = _dbContext.GetDataTable(sql);
             GenerateViewModel(dt, viewName, ifExistCovered);
             return this;
         }

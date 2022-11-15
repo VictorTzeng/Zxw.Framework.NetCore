@@ -1,10 +1,10 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Zxw.Framework.NetCore.Helpers;
 
 namespace Zxw.Framework.NetCore.DbLogProvider
 {
-public class EFLoggerFactory : ILoggerFactory
+    public class EntityFrameworkCommandLoggerFactory : ILoggerFactory
     {
         public void AddProvider(ILoggerProvider provider)
         {
@@ -12,7 +12,7 @@ public class EFLoggerFactory : ILoggerFactory
 
         public ILogger CreateLogger(string categoryName)
         {
-            return new EFLogger(categoryName);//创建EFLogger类的实例
+            return new EntityFrameworkCommandLogger(categoryName); //创建EFLogger类的实例
         }
 
         public void Dispose()
@@ -21,18 +21,21 @@ public class EFLoggerFactory : ILoggerFactory
         }
     }
 
-    public class EFLogger : ILogger
+    public class EntityFrameworkCommandLogger : ILogger
     {
         private readonly string categoryName;
 
-        public EFLogger(string categoryName) => this.categoryName = categoryName;
+        public EntityFrameworkCommandLogger(string categoryName) => this.categoryName = categoryName;
 
-        public bool IsEnabled(LogLevel logLevel) => true;
+        public virtual bool IsEnabled(LogLevel logLevel) => true;
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter) {
+        public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
+            Func<TState, Exception, string> formatter)
+        {
             //ef core执行数据库查询时的categoryName为Microsoft.EntityFrameworkCore.Database.Command,日志级别为Information
-            if (categoryName == "Microsoft.EntityFrameworkCore.Database.Command"
-                && logLevel == LogLevel.Information) {
+            if (categoryName == DbLoggerCategory.Database.Command.Name
+                && logLevel == LogLevel.Information)
+            {
                 var logContent = formatter(state, exception);
                 //TODO: 拿到日志内容想怎么玩就怎么玩吧
                 Console.WriteLine();
@@ -44,6 +47,6 @@ public class EFLoggerFactory : ILoggerFactory
             }
         }
 
-        public IDisposable BeginScope<TState>(TState state) => null;
+        public virtual IDisposable BeginScope<TState>(TState state) => null;
     }
 }

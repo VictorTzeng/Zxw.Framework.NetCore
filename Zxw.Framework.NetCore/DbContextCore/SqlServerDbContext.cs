@@ -100,8 +100,8 @@ namespace Zxw.Framework.NetCore.DbContextCore
         public override PaginationResult SqlQueryByPagination<T, TView>(string sql, string[] orderBys, int pageIndex, int pageSize,
             Action<TView> eachAction = null)
         {
-            var total = SqlQuery<T, int>($"select count(1) from ({sql}) as s").FirstOrDefault();
-            var jsonResults = SqlQuery<T, TView>(
+            var total = SqlQuery<int>($"select count(1) from ({sql}) as s").FirstOrDefault();
+            var jsonResults = SqlQuery<TView>(
                     $"select * from (select *,row_number() over (order by {string.Join(",", orderBys)}) as RowId from ({sql}) as s) as t where RowId between {pageSize * (pageIndex - 1) + 1} and {pageSize * pageIndex} order by {string.Join(",", orderBys)}")
                 .ToList();
             if (eachAction != null)
@@ -137,37 +137,37 @@ namespace Zxw.Framework.NetCore.DbContextCore
             };
         }
 
-        public override List<DataTable> GetDataTables(string sql, int cmdTimeout = 30, params DbParameter[] parameters)
-        {
-            var dts = new List<DataTable>();
-            //TODO： connection 不能dispose 或者 用using，否则下次获取connection会报错提示“the connectionstring property has not been initialized。”
-            var connection = Database.GetDbConnection();
-            if (connection.State != ConnectionState.Open)
-                connection.Open();
+        //public override List<DataTable> GetDataTables(string sql, int cmdTimeout = 30, params DbParameter[] parameters)
+        //{
+        //    var dts = new List<DataTable>();
+        //    //TODO： connection 不能dispose 或者 用using，否则下次获取connection会报错提示“the connectionstring property has not been initialized。”
+        //    var connection = Database.GetDbConnection();
+        //    if (connection.State != ConnectionState.Open)
+        //        connection.Open();
 
-            using (var cmd = new SqlCommand(sql, (SqlConnection) connection))
-            {
-                cmd.CommandTimeout = cmdTimeout;
-                if (parameters != null && parameters.Length > 0)
-                {
-                    cmd.Parameters.AddRange(parameters);
-                }
+        //    using (var cmd = new SqlCommand(sql, (SqlConnection) connection))
+        //    {
+        //        cmd.CommandTimeout = cmdTimeout;
+        //        if (parameters != null && parameters.Length > 0)
+        //        {
+        //            cmd.Parameters.AddRange(parameters);
+        //        }
                 
-                using (var da = new SqlDataAdapter(cmd))
-                {
-                    using (var ds = new DataSet())
-                    {
-                        da.Fill(ds);
-                        foreach (DataTable table in ds.Tables)
-                        {
-                            dts.Add(table);
-                        }
-                    }
-                }
-            }
-            connection.Close();
+        //        using (var da = new SqlDataAdapter(cmd))
+        //        {
+        //            using (var ds = new DataSet())
+        //            {
+        //                da.Fill(ds);
+        //                foreach (DataTable table in ds.Tables)
+        //                {
+        //                    dts.Add(table);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    connection.Close();
 
-            return dts;
-        }
+        //    return dts;
+        //}
     }
 }

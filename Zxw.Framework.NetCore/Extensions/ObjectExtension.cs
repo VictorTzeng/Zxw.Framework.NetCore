@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -1454,6 +1455,31 @@ namespace Zxw.Framework.NetCore.Extensions
         public static string Join(this IEnumerable<object> source, string separator)
         {
             return string.Join(separator, source);
+        }
+
+        public static DataTable Fill(this DbDataReader reader)
+        {
+            var dt = new DataTable();
+            var schemaTable = reader.GetSchemaTable();
+            if (schemaTable == null) return null;
+            foreach (DataRow row in schemaTable.Rows)
+            {
+                dt.Columns.Add(row["ColumnName"].ToString(), Type.GetType(row["DataType"].ToString()) ?? throw new InvalidOperationException());
+            }
+
+            while (reader.Read())
+            {
+                var row = dt.NewRow();
+                foreach (DataRow r in schemaTable.Rows)
+                {
+                    var col = r["ColumnName"].ToString();
+                    row[col] = reader.GetValue(col);
+                }
+
+                dt.Rows.Add(row);
+            }
+
+            return dt;
         }
     }
 }

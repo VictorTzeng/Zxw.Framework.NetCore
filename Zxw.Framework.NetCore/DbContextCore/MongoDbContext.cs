@@ -31,15 +31,5 @@ namespace Zxw.Framework.NetCore.DbContextCore
             optionsBuilder.UseMongoDb(Option.ConnectionString);
             base.OnConfiguring(optionsBuilder);
         }
-
-        public override DataTable GetDataTable(string sql, int cmdTimeout = 30, params DbParameter[] parameters)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override List<DataTable> GetDataTables(string sql, int cmdTimeout = 30, params DbParameter[] parameters)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

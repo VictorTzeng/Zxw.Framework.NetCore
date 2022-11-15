@@ -15,5 +15,13 @@
         /// 是否在控制台输出SQL语句，默认开启
         /// </summary>
         public bool IsOutputSql { get; set; } = true;
+        /// <summary>
+        /// 是否开启跟踪
+        /// </summary>
+        public bool EnableNoTracking { get; set; } = true;
+        /// <summary>
+        /// 是否开启LazyLoadingProxy
+        /// </summary>
+        public bool EnableLazyLoadingProxy { get; set; } = true;
     }
 }

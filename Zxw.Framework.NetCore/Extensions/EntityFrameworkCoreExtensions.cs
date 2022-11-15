@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
-using StackExchange.Redis.Extensions.Core.Extensions;
-using Zxw.Framework.NetCore.Helpers;
 using Zxw.Framework.NetCore.IDbContext;
 using Zxw.Framework.NetCore.Models;
 
@@ -165,112 +160,16 @@ namespace Zxw.Framework.NetCore.Extensions
                 throw new NotImplementedException("This method does not support current database yet.");
             }
             var columns = context.GetTableColumns(tables.Select(m=>m.TableName).ToArray()).ToList<DbTableColumn>();
-            tables.ForEach(item =>
+            tables.Each(item =>
             {
                 var dt = context.GetDataTable($"select * from [{item.TableName}] where 1 != 1");
                 item.Columns = columns.Where(m=>m.TableName == item.TableName).ToList();
-                item.Columns.ForEach(x =>
+                item.Columns.Each(x =>
                 {
                     x.CSharpType = dt.Columns[x.ColName].DataType.Name;
                 });
             });
             return tables;
-        }
-
-
-        /// <summary>
-        /// 执行SQL返回受影响的行数
-        /// </summary>
-        public static int ExecuteSqlNoQuery(this IDbContextCore context, string sql, DbParameter[] sqlParams = null)
-        {
-            return ExecuteNoQuery(context, sql, sqlParams);
-        }
-        /// <summary>
-        /// 执行存储过程返回IEnumerable数据集
-        /// </summary>
-        public static IEnumerable<T> ExecuteStoredProcedure<T>(this IDbContextCore context, string sql, DbParameter[] sqlParams = null) where T : new()
-        {
-            return Execute<T>(context, sql, CommandType.StoredProcedure, sqlParams);
-        }
-        /// <summary>
-        /// 执行sql返回IEnumerable数据集
-        /// </summary>
-        public static IEnumerable<T> ExecuteSqlReader<T>(this IDbContextCore context, string sql, DbParameter[] sqlParams = null) where T : new()
-        {
-            return Execute<T>(context, sql, CommandType.Text, sqlParams);
-        }
-        private static int ExecuteNoQuery(this IDbContextCore context, string sql, DbParameter[] sqlParams)
-        {
-            var db = context.GetDatabase();
-            var connection = db.GetDbConnection();
-            var cmd = connection.CreateCommand();
-            if (connection.State == ConnectionState.Closed)
-                connection.Open();
-            cmd.CommandText = sql;
-            cmd.CommandType = CommandType.Text;
-            if (sqlParams != null)
-            {
-                cmd.Parameters.AddRange(sqlParams);
-            }
-            var result = cmd.ExecuteNonQuery();
-            connection.Close();
-            return result;
-        }
-        private static IEnumerable<T> Execute<T>(this IDbContextCore context, string sql, CommandType type, params DbParameter[] sqlParams) where T : new()
-        {
-            var db = context.GetDatabase();
-            var connection = db.GetDbConnection();
-            var cmd = connection.CreateCommand();
-            if (connection.State == ConnectionState.Closed)
-                connection.Open();
-            cmd.CommandText = sql;
-            cmd.CommandType = type;
-            if (sqlParams != null)
-            {
-                cmd.Parameters.AddRange(sqlParams);
-            }
-
-            var reader = cmd.ExecuteReader();
-            var result = reader.ToList<T>();
-            connection.Close();
-            return result;
-        }
-
-        public static void ClearDatabase(this IDbContextCore context)
-        {
-            context.ClearDataTables();
-        }
-
-        public static void ClearDataTables(this IDbContextCore context, params string[] tables)
-        {
-            if (tables == null)
-            {
-                var tableList = new List<string>();
-                var types = context.GetAllEntityTypes();
-                if (types.Any())
-                {
-                    foreach (var type in types)
-                    {
-                        var tableName = type.ClrType.GetCustomAttribute<TableAttribute>()?.Name;
-                        if (tableName.IsNullOrWhiteSpace())
-                            tableName = type.ClrType.Name;
-                        tableList.Add(tableName);
-                    }
-                }
-                else
-                {
-                    tableList.AddRange(context.GetCurrentDatabaseTableList().Select(m=>m.TableName));
-                }
-
-                tables = tableList.ToArray();
-            }
-
-            var sql = new StringBuilder();
-            foreach (var table in tables)
-            {
-                sql.AppendLine($"delete from {table};");
-            }
-            context.ExecuteSqlWithNonQuery(sql.ToString());
         }
 
         public static object ExecuteScalar(this IDbContextCore context, string sql, params DbParameter[] sqlParams)
