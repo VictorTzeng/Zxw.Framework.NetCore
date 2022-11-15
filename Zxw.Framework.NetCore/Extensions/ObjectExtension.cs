@@ -11,6 +11,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
@@ -611,24 +613,24 @@ namespace Zxw.Framework.NetCore.Extensions
         {
             if (obj == null)
                 return null;
-            var bf = new BinaryFormatter();
-            using (var ms = new MemoryStream())
-            {
-                bf.Serialize(ms, obj);
-                return ms.ToArray();
-            }
+            return Encoding.UTF8.GetBytes(JsonSerializer.Serialize(obj, GetJsonSerializerOptions()));
         }
 
         public static object ToObject(this byte[] source)
         {
-            using (var memStream = new MemoryStream())
+            if (source == null || !source.Any())
+                return default;
+            return JsonSerializer.Deserialize<object>(source, GetJsonSerializerOptions());
+        }
+        private static JsonSerializerOptions GetJsonSerializerOptions()
+        {
+            return new JsonSerializerOptions()
             {
-                var bf = new BinaryFormatter();
-                memStream.Write(source, 0, source.Length);
-                memStream.Seek(0, SeekOrigin.Begin);
-                var obj = bf.Deserialize(memStream);
-                return obj;
-            }
+                PropertyNamingPolicy = null,
+                WriteIndented = true,
+                AllowTrailingCommas = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            };
         }
 
         /// <summary>

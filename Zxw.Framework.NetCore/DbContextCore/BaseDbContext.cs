@@ -29,7 +29,7 @@ namespace Zxw.Framework.NetCore.DbContextCore
     {
         public DbContextOption Option { get; }
         public DatabaseFacade GetDatabase() => Database;
-        public T GetService<T>()
+        public T GetService<T>() where T:class,new()
         {
             return this.Database.GetService<T>();
         }

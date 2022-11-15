@@ -20,7 +20,7 @@ namespace Zxw.Framework.NetCore.IDbContext
     {
         DbContextOption Option { get; }
         DatabaseFacade GetDatabase();
-        T GetService<T>();
+        T GetService<T>() where T : class, new();
         int Add<T>(T entity) where T : class;
         Task<int> AddAsync<T>(T entity) where T : class;
         int AddRange<T>(ICollection<T> entities) where T : class;
