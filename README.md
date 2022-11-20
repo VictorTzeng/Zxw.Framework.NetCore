@@ -3,11 +3,11 @@
 
 基于EF Core的Code First模式的DotNetCore快速开发框架
 
-**Nuget [最新版本：3.1.3.5]**
+**Nuget [最新版本：6.1.0]**
 
-[Zxw.Framework.NetCore](https://www.nuget.org/packages/Zxw.Framework.NetCore/3.1.3.5) 
-* Install-Package Zxw.Framework.NetCore -Version 3.1.3.5
-* dotnet add package Zxw.Framework.NetCore --version 3.1.3.5
+[Zxw.Framework.NetCore](https://www.nuget.org/packages/Zxw.Framework.NetCore/6.1.0) 
+* Install-Package Zxw.Framework.NetCore -Version 6.1.0
+* dotnet add package Zxw.Framework.NetCore --version 6.1.0
 
 **开发环境**
 * VS2019 / VS Code
@@ -20,7 +20,7 @@
 * InMemory
 * PostgreSQL
 * Oracle
-* MongoDB (Beta)(第三方驱动[Blueshift.EntityFrameworkCore.MongoDB](https://github.com/BlueshiftSoftware/EntityFrameworkCore))
+* MongoDB (已移除)
 
 **日志组件**
 * log4net
@@ -44,6 +44,11 @@
 * 请参考我的博客：[http://www.cnblogs.com/zengxw/p/7673952.html](http://www.cnblogs.com/zengxw/p/7673952.html)
 
 # 更新日志
+
+**2022/11/20**
+* 1.兼容.net7.0，
+* 2.移除对MongoDB的支持
+* 3.HttpRequestHelper标识为已过时，请用HttpClient
 
 **2019/12/17**
 * 1. 添加框架同一入口扩展方法 [AddCoreX](https://github.com/VictorTzeng/Zxw.Framework.NetCore/blob/66ce81a3ffa3eb9379631ba11a3fd36c4c369e60/Zxw.Framework.NetCore/Extensions/ServiceExtension.cs#L419)
