@@ -4,14 +4,14 @@
     <TargetFrameworks>net6.0;net7.0;</TargetFrameworks>
     <Authors>victor.tzeng</Authors>
     <NeutralLanguage></NeutralLanguage>
-    <Version>5.0.0.0</Version>
-    <AssemblyVersion>5.0.0.0</AssemblyVersion>
-    <FileVersion>5.0.0.0</FileVersion>
+    <Version>6.1.0.0</Version>
+    <AssemblyVersion>6.1.0.0</AssemblyVersion>
+    <FileVersion>6.1.0.0</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>victor.tzeng@outlook.com</Copyright>
     <PackageProjectUrl>https://github.com/VictorTzeng/Zxw.Framework.NetCore</PackageProjectUrl>
     <Description>基于EF Core的Code First模式的DotNetCore快速开发框架</Description>
-    <PackageReleaseNotes>升级至.net5.0，如遇任何问题请至https://github.com/VictorTzeng/Zxw.Framework.NetCore/issues反馈，感谢支持。</PackageReleaseNotes>
+    <PackageReleaseNotes>兼容.net7.0，并移除对MongoDB的支持，如遇任何问题请至https://github.com/VictorTzeng/Zxw.Framework.NetCore/issues反馈，感谢支持。</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -56,7 +56,6 @@
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="AutoMapper" Version="12.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
-    <PackageReference Include="Blueshift.EntityFrameworkCore.MongoDB-aleksamagicka" Version="2.2.0-rtm-1" />
     <PackageReference Include="Caching.CSRedis" Version="3.8.669" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.0" />
     <PackageReference Include="CSRedisCore" Version="3.8.669" />
@@ -64,6 +63,7 @@
     <PackageReference Include="Exceptionless" Version="4.8.0" />
     <PackageReference Include="Jil" Version="2.17.0" />
     <PackageReference Include="log4net" Version="2.0.15" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
@@ -85,6 +85,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.0" />
     <PackageReference Include="Oracle.EntityFrameworkCore" Version="6.21.61" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />

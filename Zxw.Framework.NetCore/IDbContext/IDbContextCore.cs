@@ -30,9 +30,7 @@ namespace Zxw.Framework.NetCore.IDbContext
         int Delete<T,TKey>(TKey key) where T : BaseModel<TKey>;
         bool EnsureCreated();
         Task<bool> EnsureCreatedAsync();
-        [Obsolete("请使用SqlOperatorUtility类提供对应的方法")]
         int ExecuteSqlWithNonQuery(string sql, params object[] parameters);
-        [Obsolete("请使用SqlOperatorUtility类提供对应的方法")]
         Task<int> ExecuteSqlWithNonQueryAsync(string sql, params object[] parameters);
         int Edit<T>(T entity) where T : class;
         int EditRange<T>(ICollection<T> entities) where T : class;
@@ -56,12 +54,9 @@ namespace Zxw.Framework.NetCore.IDbContext
         Task<int> DeleteAsync<T>(Expression<Func<T, bool>> @where) where T : class;
         void BulkInsert<T>(IList<T> entities, string destinationTableName = null)
             where T : class ;
-        [Obsolete("请使用SqlOperatorUtility类提供对应的方法")]
         List<TView> SqlQuery<T, TView>(string sql, params object[] parameters)
             where T : class;
-        [Obsolete("请使用SqlOperatorUtility类提供对应的方法")]
         List<TView> SqlQuery<TView>(string sql, int cmdTimeout = 30, params object[] parameters);
-        [Obsolete("请使用SqlOperatorUtility类提供对应的方法")]
         PaginationResult SqlQueryByPagination<T, TView>(string sql, string[] orderBys, int pageIndex, int pageSize, Action<TView> eachAction = null)
             where T : class
             where TView : class;
@@ -69,12 +64,9 @@ namespace Zxw.Framework.NetCore.IDbContext
         int SaveChanges(bool acceptAllChangesOnSuccess);
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
         Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,CancellationToken cancellationToken = default(CancellationToken));
-        [Obsolete("请使用SqlOperatorUtility类提供对应的方法")]
         DataTable GetDataTable(string sql, int cmdTimeout = 30, params DbParameter[] parameters);
-        [Obsolete("请使用SqlOperatorUtility类提供对应的方法")]
         PaginationResult SqlQueryByPagination<T>(string sql, string[] orderBys, int pageIndex, int pageSize,
             params DbParameter[] parameters) where T : class, new();
-        [Obsolete("请使用SqlOperatorUtility类提供对应的方法")]
         List<DataTable> GetDataTables(string sql, int cmdTimeout=30, params DbParameter[] parameters);
         T GetByCompileQuery<T,TKey>(TKey id) where T : BaseModel<TKey>;
         Task<T> GetByCompileQueryAsync<T, TKey>(TKey id) where T : BaseModel<TKey>;

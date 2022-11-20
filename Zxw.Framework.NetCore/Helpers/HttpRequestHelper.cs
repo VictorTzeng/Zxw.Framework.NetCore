@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json;
 
 namespace Zxw.Framework.NetCore.Helpers
 {
+    [Obsolete("请使用HttpClient")]
     public static class HttpRequestHelper
     {
         #region 同步方法

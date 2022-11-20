@@ -63,9 +63,6 @@ namespace Zxw.Framework.UnitTest
         public void TestGetDataTableForPostgreSql()
         {
             BuildServiceForPostgreSql();
-            var test = ServiceLocator.Resolve<IMongoRepository>();
-
-            test.Run();
 
             var dbContext = ServiceLocator.Resolve<IDbContextCore>();
             var dt1 = dbContext.GetCurrentDatabaseAllTables();
@@ -186,22 +183,6 @@ namespace Zxw.Framework.UnitTest
         
         #endregion
 
-        [TestMethod]
-        public void TestForMongoDb()
-        {
-            BuildServiceForMongoDB();
-            var context = ServiceLocator.Resolve<IDbContextCore>();
-            Assert.IsTrue(context.Add(new MongoModel()
-            {
-                Age = 28,
-                Birthday = Convert.ToDateTime("1999-01-22"),
-                IsBitch = false,
-                UserName = "帝王蟹",
-                Wage = 100000000
-            }) > 0);
-            context.Dispose();
-        }
-
         #region public methods
 
         public void BuildServiceForPostgreSql()
@@ -278,15 +259,7 @@ namespace Zxw.Framework.UnitTest
             services.AddOptions();
             services.BuildAspectCoreServiceProvider(); 
         }
-        public void BuildServiceForMongoDB()
-        {
-            IServiceCollection services = new ServiceCollection();
 
-            //在这里注册EF上下文
-            services = RegisterMongoDbContext(services);
-            services.AddOptions();
-            services.BuildAspectCoreServiceProvider(); 
-        }
         public void BuildServiceForOracle()
         {
             IServiceCollection services = new ServiceCollection();
@@ -361,7 +334,6 @@ namespace Zxw.Framework.UnitTest
             });
 
             services.AddScoped<IDbContextCore, PostgreSQLDbContext>(); //注入EF上下文
-            services.AddScoped<IMongoRepository,TestRepository>();
             return services;
         }
 
@@ -378,22 +350,6 @@ namespace Zxw.Framework.UnitTest
                 //options.ModelAssemblyName = "Zxw.Framework.Website.Models";
             });
             services.AddScoped<IDbContextCore, SQLiteDbContext>(); //注入EF上下文
-            return services;
-        }
-
-        /// <summary>
-        /// 注册SQLite上下文
-        /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public IServiceCollection RegisterMongoDbContext(IServiceCollection services)
-        {
-            services.Configure<DbContextOption>(options =>
-            {
-                options.ConnectionString = "mongodb://localhost";
-                options.ModelAssemblyName = "Zxw.Framework.UnitTest";
-            });
-            services.AddScoped<IDbContextCore, MongoDbContext>(); //注入EF上下文
             return services;
         }
 
