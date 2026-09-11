@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -12,12 +13,34 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Zxw.Framework.AI.Abstractions;
+using Zxw.Framework.AI.Credentials;
 using Zxw.Framework.AI.Options;
 
 namespace Zxw.Framework.AI.Clients
 {
     /// <summary>
+    /// Raised when OrcaRouter rejects the credential. This is terminal: OrcaRouter keys are
+    /// durable and there is no refresh grant, so the user must reconnect or supply a new key.
+    /// The message never contains the key.
+    /// <para>
+    /// Derives from <see cref="InvalidOperationException"/>: an unusable credential is an invalid
+    /// operation for the caller, not a transport fault.
+    /// </para>
+    /// </summary>
+    public class OrcaAuthenticationException : InvalidOperationException
+    {
+        public OrcaAuthenticationException(string message) : base(message)
+        {
+        }
+    }
+
+    /// <summary>
     /// OrcaRouter OpenAI 兼容 Chat Completions 客户端。
+    /// <para>
+    /// The credential comes from <see cref="IOrcaCredentialStore"/>, the same seam a pasted API key
+    /// and an OAuth 2.0 + PKCE authorization both feed. This client cannot tell which one produced
+    /// the key, by design.
+    /// </para>
     /// </summary>
     public class OrcaRouterChatClient : IChatClient
     {
@@ -29,11 +52,21 @@ namespace Zxw.Framework.AI.Clients
 
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly OrcaRouterOptions _options;
+        private readonly IOrcaCredentialStore _credentialStore;
 
         public OrcaRouterChatClient(IHttpClientFactory httpClientFactory, IOptions<OrcaRouterOptions> options)
+            : this(httpClientFactory, options, null)
+        {
+        }
+
+        public OrcaRouterChatClient(
+            IHttpClientFactory httpClientFactory,
+            IOptions<OrcaRouterOptions> options,
+            IOrcaCredentialStore credentialStore)
         {
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+            _credentialStore = credentialStore;
         }
 
         public async Task<ChatCompletionResponse> CompleteAsync(
@@ -42,14 +75,14 @@ namespace Zxw.Framework.AI.Clients
         {
             Validate(request);
 
-            var client = CreateClient();
+            var credential = ResolveCredential();
+            var client = CreateClient(credential);
             using var httpRequest = CreateHttpRequest(request, stream: false);
             using var response = await client.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
-                throw new HttpRequestException(
-                    $"OrcaRouter chat completion failed: {(int)response.StatusCode} {response.ReasonPhrase}. Body: {Truncate(body, 500)}");
+                HandleFailure(response.StatusCode, body, credential);
             }
 
             var result = JsonSerializer.Deserialize<ChatCompletionResponse>(body, JsonOptions);
@@ -64,7 +97,8 @@ namespace Zxw.Framework.AI.Clients
         {
             Validate(request);
 
-            var client = CreateClient();
+            var credential = ResolveCredential();
+            var client = CreateClient(credential);
             using var httpRequest = CreateHttpRequest(request, stream: true);
             using var response = await client
                 .SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
@@ -73,8 +107,7 @@ namespace Zxw.Framework.AI.Clients
             if (!response.IsSuccessStatusCode)
             {
                 var errorBody = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                throw new HttpRequestException(
-                    $"OrcaRouter streaming failed: {(int)response.StatusCode} {response.ReasonPhrase}. Body: {Truncate(errorBody, 500)}");
+                HandleFailure(response.StatusCode, errorBody, credential);
             }
 
             await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
@@ -121,17 +154,59 @@ namespace Zxw.Framework.AI.Clients
                 throw new ArgumentException("Messages 不能为空。", nameof(request));
         }
 
-        private HttpClient CreateClient()
+        /// <summary>
+        /// Resolve the credential through the seam. When no store was supplied, the configured
+        /// value is used directly so an existing <c>AddOrcaRouter()</c> host keeps working.
+        /// </summary>
+        private OrcaCredential ResolveCredential()
         {
-            var apiKey = _options.ResolveApiKey();
-            if (string.IsNullOrWhiteSpace(apiKey))
+            if (_credentialStore != null)
             {
-                throw new InvalidOperationException(
-                    $"未配置 OrcaRouter API Key。请设置 {nameof(OrcaRouterOptions)}.{nameof(OrcaRouterOptions.ApiKey)} 或环境变量 {OrcaRouterOptions.ApiKeyEnvironmentVariable}。");
+                var credential = _credentialStore.Load();
+                if (credential != null && credential.HasKey)
+                    return credential;
+            }
+            else
+            {
+                var apiKey = _options.ResolveApiKey();
+                if (!string.IsNullOrWhiteSpace(apiKey))
+                    return new OrcaCredential(apiKey, OrcaCredentialSource.ApiKey);
             }
 
+            throw new InvalidOperationException(
+                $"未配置 OrcaRouter API Key。请设置 {nameof(OrcaRouterOptions)}.{nameof(OrcaRouterOptions.ApiKey)} 或环境变量 {OrcaRouterOptions.ApiKeyEnvironmentVariable}，或使用 Connect with OrcaRouter。");
+        }
+
+        /// <summary>
+        /// Terminal reauthentication. A rejected credential marks exactly the generation that made
+        /// the rejected request, so a late failure raised by an older request cannot mark a
+        /// credential that has since been replaced. No refresh is attempted: OrcaRouter does not
+        /// issue refreshable tokens.
+        /// </summary>
+        private void HandleFailure(HttpStatusCode statusCode, string body, OrcaCredential credential)
+        {
+            var safeBody = OrcaSecretRedaction.Scrub(Truncate(body, 500), credential?.ApiKey);
+
+            if ((int)statusCode == 401 || (int)statusCode == 403)
+            {
+                var marked = _credentialStore?.MarkNeedsReauth(credential?.Generation) ?? false;
+
+                throw new OrcaAuthenticationException(
+                    $"OrcaRouter rejected the credential ({(int)statusCode}). " +
+                    (marked
+                        ? "The account has been marked for reauthentication and will not be used until a new login succeeds. "
+                        : "The account is already marked for reauthentication. ") +
+                    "Reconnect with OrcaRouter or supply a new API key. OrcaRouter keys are durable and are not refreshed.");
+            }
+
+            throw new HttpRequestException(
+                $"OrcaRouter chat completion failed: {(int)statusCode} {statusCode}. Body: {safeBody}");
+        }
+
+        private HttpClient CreateClient(OrcaCredential credential)
+        {
             var client = _httpClientFactory.CreateClient(OrcaRouterOptions.HttpClientName);
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", credential.ApiKey);
             return client;
         }
 
@@ -152,7 +227,9 @@ namespace Zxw.Framework.AI.Clients
                 Models = fallback != null && fallback.Count > 0 ? fallback : null
             };
 
-            var baseUrl = (_options.BaseUrl ?? OrcaRouterOptions.DefaultBaseUrl).TrimEnd('/');
+            var baseUrl = _options
+                .ResolveApiBaseUrl()
+                .TrimEnd('/');
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/chat/completions")
             {
                 Content = JsonContent.Create(payload, options: JsonOptions)

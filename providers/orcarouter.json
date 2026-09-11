@@ -4,24 +4,62 @@
   "type": "openai-compat",
   "api": "openai-completions",
   "base_url": "https://api.orcarouter.ai/v1",
+  "auth_base_url": "https://www.orcarouter.ai",
   "api_key_env": "ORCAROUTER_API_KEY",
   "default_model": "orcarouter/auto",
-  "models": [
-    {
-      "id": "orcarouter/auto",
-      "name": "OrcaRouter Auto"
-    }
-  ],
+  "models_source": "https://api.orcarouter.ai/v1/models",
+  "model_namespace": "vendor/model",
   "headers": {
     "HTTP-Referer": "https://www.orcarouter.ai/ref/ref_4efd338f7db91cf2aa1d",
     "X-Title": "Zxw.Framework.NetCore"
+  },
+  "auth": [
+    {
+      "id": "orcarouter",
+      "label": "OrcaRouter - API",
+      "method": "api_key",
+      "key_prefix": "sk-orca-",
+      "key_env": "ORCAROUTER_API_KEY",
+      "adapter": "Zxw.Framework.AI.Credentials.OrcaApiKeyCredentialProvider",
+      "console_url": "https://www.orcarouter.ai/console/authorized-apps"
+    },
+    {
+      "id": "orcarouter-oauth",
+      "label": "OrcaRouter - Auth",
+      "method": "oauth2-pkce",
+      "flow": "B-out-of-band",
+      "authorize_url": "https://www.orcarouter.ai/auth",
+      "exchange_url": "https://www.orcarouter.ai/api/v1/auth/keys",
+      "challenge_method": "S256",
+      "callback_url": "oob",
+      "scope": "api",
+      "client_secret_required": false,
+      "redirect_uri_preregistration_required": false,
+      "adapter": "Zxw.Framework.AI.Credentials.OrcaPkceCredentialProvider"
+    }
+  ],
+  "capabilities": {
+    "chat": "?capability=chat, restricted to openai/anthropic/gemini/openai-response endpoints",
+    "multimodal": "chat, plus a declared architecture.input_modalities match for every uploaded modality",
+    "embedding": "?capability=embedding, endpoint embeddings",
+    "image": "?capability=image, endpoint image-generation",
+    "video": "endpoint openai-video",
+    "rerank": "endpoint jina-rerank"
   },
   "implementation": {
     "package": "Zxw.Framework.AI",
     "nuget": "https://www.nuget.org/packages/Zxw.Framework.AI",
     "di": "services.AddOrcaRouter()",
     "client": "Zxw.Framework.AI.Clients.OrcaRouterChatClient",
-    "interface": "Zxw.Framework.AI.Abstractions.IChatClient"
+    "interface": "Zxw.Framework.AI.Abstractions.IChatClient",
+    "credential_seam": "Zxw.Framework.AI.Credentials.IOrcaCredentialStore",
+    "catalog": "Zxw.Framework.AI.Models.OrcaModelCatalogClient",
+    "selector": "Zxw.Framework.AI.Models.OrcaModelSelector"
+  },
+  "overrides": {
+    "shared_base": "ORCA_BASE_URL",
+    "auth_base": "ORCA_AUTH_BASE_URL",
+    "api_base": "ORCA_API_BASE_URL"
   },
   "docs": "https://docs.orcarouter.ai/introduction",
   "referral": "https://www.orcarouter.ai/ref/ref_4efd338f7db91cf2aa1d"

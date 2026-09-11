@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OrcaRouter provider configuration</title>
+  <style>
+    :root {
+      --border: #cbd5e1;
+      --panel: #ffffff;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --accent: #2563eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 32px;
+      font: 14px/1.5 -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: var(--ink); background: #f8fafc;
+    }
+    h1 { font-size: 20px; margin: 0 0 4px; }
+    .sub { color: var(--muted); margin-bottom: 24px; }
+    .card {
+      background: #fff; border: 1px solid var(--border); border-radius: 10px;
+      padding: 20px; max-width: 720px; margin-bottom: 20px;
+    }
+    .card h2 { font-size: 15px; margin: 0 0 12px; }
+    .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .brand .mark {
+      width: 28px; height: 28px; border-radius: 6px; background: var(--accent);
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px;
+    }
+    .brand .name { font-weight: 600; font-size: 15px; }
+    .brand .id { color: var(--muted); font-size: 12px; }
+
+    .method { border-top: 1px solid #e2e8f0; padding-top: 16px; margin-top: 16px; }
+    .method:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+    .method h3 { font-size: 13px; margin: 0 0 4px; }
+    .method p { color: var(--muted); margin: 0 0 10px; font-size: 12.5px; }
+    label.field { display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 6px; }
+    input[type=password] {
+      width: 320px; padding: 8px 10px; border: 1px solid var(--border);
+      border-radius: 6px; font: inherit;
+    }
+    button {
+      font: inherit; padding: 8px 14px; border-radius: 6px;
+      border: 1px solid var(--border); background: #fff; color: var(--ink);
+      cursor: pointer;
+    }
+    button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .status { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+    .status.active { color: #15803d; }
+    .status.warn { color: #b45309; }
+    .status.error { color: #b91c1c; }
+    .connect-box { margin-top: 12px; }
+    .connect-box code {
+      display: block; word-break: break-all; background: #f1f5f9;
+      padding: 8px; border-radius: 6px; font-size: 12px; margin: 8px 0;
+    }
+
+    /* ---------- model selector ---------- */
+    .selector { position: relative; display: inline-block; }
+    .trigger {
+      width: 360px; text-align: left; padding: 9px 12px;
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    }
+    .trigger .caret { color: var(--muted); }
+    .panel {
+      position: absolute; right: 0; top: calc(100% + 4px);
+      width: 360px; max-height: 280px; overflow-y: auto;
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 8px; box-shadow: 0 8px 20px rgba(15, 23, 42, .12);
+      padding: 4px; z-index: 30;
+    }
+    .panel[hidden] { display: none; }
+    .option {
+      padding: 7px 10px; border-radius: 6px; cursor: pointer;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .option:hover, .option[aria-selected=true] { background: #eff6ff; }
+    .option .opt-id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
+    .option .opt-meta { color: var(--muted); font-size: 11.5px; }
+    .empty { padding: 12px; color: var(--muted); font-size: 12.5px; }
+    .badge {
+      display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 999px;
+      background: #fef3c7; color: #92400e; margin-left: 6px;
+    }
+    .badge.live { background: #dcfce7; color: #166534; }
+  </style>
+</head>
+<body>
+  <h1>OrcaRouter provider</h1>
+  <div class="sub">
+    OpenAI-compatible AI gateway &middot; inference and model catalog at
+    <code>https://api.orcarouter.ai/v1</code> &middot; authorization at
+    <code>https://www.orcarouter.ai</code>
+  </div>
+
+  <!-- Both authentication choices, shown side by side. -->
+  <div class="card" id="authCard">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">OR</div>
+      <div>
+        <div class="name">OrcaRouter</div>
+        <div class="id">provider id: orcarouter</div>
+      </div>
+    </div>
+
+    <div class="method" id="apiKeyMethod">
+      <h3>API key</h3>
+      <p>Paste an existing <code>sk-orca-…</code> key, or set <code>ORCAROUTER_API_KEY</code> on the host.</p>
+      <label class="field" for="apiKeyInput">OrcaRouter API key</label>
+      <div class="row">
+        <input id="apiKeyInput" type="password" autocomplete="off" spellcheck="false"
+               placeholder="sk-orca-…" aria-label="OrcaRouter API key" />
+        <button id="saveKeyBtn" class="primary" type="button">Save key</button>
+        <button id="clearKeyBtn" type="button">Clear</button>
+      </div>
+      <div class="status" id="apiKeyStatus" role="status">Loading…</div>
+    </div>
+
+    <div class="method" id="pkceMethod">
+      <h3>Connect with OrcaRouter</h3>
+      <p>Authorize in a browser with OAuth 2.0 + PKCE. No client secret, and no redirect URI to register.</p>
+      <div class="row">
+        <button id="connectBtn" class="primary" type="button">Connect with OrcaRouter</button>
+        <button id="cancelConnectBtn" type="button" disabled>Cancel</button>
+      </div>
+      <div class="connect-box" id="connectBox" hidden>
+        <div class="status" id="connectHint" role="status"></div>
+        <code id="authorizeUrl"></code>
+        <div class="row">
+          <input id="codeInput" type="text" autocomplete="off" spellcheck="false"
+                 placeholder="Paste the code shown in your browser" aria-label="Authorization code"
+                 style="width:320px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font:inherit" />
+          <button id="completeConnectBtn" class="primary" type="button">Finish sign-in</button>
+        </div>
+      </div>
+      <div class="status" id="pkceStatus" role="status"></div>
+    </div>
+  </div>
+
+  <!-- The model dropdown, rebuilt from the live catalog per capability. -->
+  <div class="card">
+    <h2>Model</h2>
+    <div class="row" style="margin-bottom:12px">
+      <label class="row" style="gap:6px">
+        <input id="imageAttachment" type="checkbox" />
+        <span>Attach an image (multimodal understanding)</span>
+      </label>
+    </div>
+    <div class="selector" id="modelSelector">
+      <button id="modelTrigger" class="trigger" type="button"
+              aria-haspopup="listbox" aria-expanded="false" aria-controls="modelListbox">
+        <span id="modelTriggerLabel">Select a model</span>
+        <span class="caret" aria-hidden="true">▾</span>
+      </button>
+      <div id="modelListbox" class="panel" role="listbox"
+           aria-label="OrcaRouter models" tabindex="-1" hidden></div>
+    </div>
+    <div class="status" id="modelStatus" role="status">Loading…</div>
+    <div class="status" id="selectionNotice" role="status"></div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
