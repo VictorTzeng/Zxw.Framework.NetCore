@@ -17,6 +17,16 @@ namespace Zxw.Framework.UnitTest
     [TestClass]
     public class OrcaRouterChatClientTests
     {
+        private string _ambientApiKey;
+
+        [TestInitialize]
+        public void SuspendAmbientCredential() =>
+            _ambientApiKey = OrcaTestEnvironment.SuspendAmbientApiKey();
+
+        [TestCleanup]
+        public void RestoreAmbientCredential() =>
+            OrcaTestEnvironment.RestoreAmbientApiKey(_ambientApiKey);
+
         [TestMethod]
         public async Task CompleteAsync_SendsOpenAiCompatibleRequest_AndParsesResponse()
         {
@@ -47,8 +57,7 @@ namespace Zxw.Framework.UnitTest
             var client = BuildChatClient(handler, new OrcaRouterOptions
             {
                 ApiKey = "sk-orca-test",
-                ReferralCode = OrcaRouterOptions.DefaultReferralCode,
-                AppTitle = "Zxw.Framework.AI.Tests",
+                HttpReferer = new OrcaRouterOptions().ResolveReferralLink(),
                 FallbackModels = new List<string> { "openai/gpt-4o-mini" }
             });
 
@@ -67,7 +76,7 @@ namespace Zxw.Framework.UnitTest
             Assert.IsTrue(captured.Headers.Contains("HTTP-Referer"));
             Assert.IsTrue(captured.Headers.Contains("X-Title"));
             Assert.AreEqual(
-                new OrcaRouterOptions { ReferralCode = OrcaRouterOptions.DefaultReferralCode }.ResolveReferralLink(),
+                new OrcaRouterOptions().ResolveReferralLink(),
                 captured.Headers.GetValues("HTTP-Referer").First());
 
             StringAssert.Contains(capturedBody, "\"model\":\"orcarouter/auto\"");

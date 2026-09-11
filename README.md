@@ -138,6 +138,78 @@ public class MyService(IChatClient chat)
 * 协议：OpenAI 兼容 `/chat/completions`（含 SSE 流式）
 * 文档：[docs.orcarouter.ai](https://docs.orcarouter.ai/introduction)
 
+## 两种接入方式（API Key / 账号授权）
+
+两种方式最终都只产生同一种普通 OrcaRouter API Key（`sk-orca-…`），下游 provider、模型目录与各入口使用同一个凭据 seam
+（`IOrcaCredentialStore`），不需要各自复制认证逻辑。
+
+| 方式 | Provider ID | 标签 | 凭据来源 |
+| --- | --- | --- | --- |
+| 已有 Key | `orcarouter` | `OrcaRouter - API` | 用户粘贴或配置 `sk-orca-…` |
+| 账号登录 | `orcarouter-oauth` | `OrcaRouter - Auth` | 浏览器授权（OAuth 2.0 + PKCE，Flow B out-of-band） |
+
+**方式一：API Key** — 沿用本框架既有的配置/环境变量习惯，支持更新与清除，鉴权失败时给出明确提示：
+
+```csharp
+services.AddOrcaRouter(o => o.ApiKey = Configuration["OrcaRouter:ApiKey"]); // 或 ORCAROUTER_API_KEY
+```
+
+**方式二：Connect with OrcaRouter（OAuth 2.0 + PKCE）** — 无需 client secret，无需预注册 redirect URI。
+采用 Flow B（out-of-band code）：本库由 ASP.NET Core 应用承载，部署地址各不相同且库不应接管宿主的 socket 生命周期，
+因此没有可预注册的回环地址。
+
+```csharp
+var pkce = services.BuildServiceProvider().GetRequiredService<OrcaPkceCredentialProvider>();
+var session = pkce.Start(appName: "My App");
+Console.WriteLine(session.AuthorizeUrl);          // 在浏览器打开并同意
+var result = await session.CompleteAsync(codeFromScreen);  // 输入屏幕上显示的 code
+```
+
+* 授权 origin：`https://www.orcarouter.ai`，authorize 固定 `/auth`，exchange 固定 `/api/v1/auth/keys`
+* 推理与模型目录 origin：`https://api.orcarouter.ai/v1`（两个 origin 相互独立，不会互相推导）
+* 覆盖顺序：显式 `AuthBaseUrl` / `ApiBaseUrl` > 共享 `SharedBaseUrl` / `ORCA_BASE_URL` > 公开默认值
+* 始终使用 S256；verifier 每次尝试由加密 RNG 新建，且不进入 URL / 日志 / 遥测
+* PKCE 换回的是**持久 API Key，不是 refresh token**：重启后直接复用直到被撤销，不会主动刷新，
+  也不会每次启动重新授权（每用户 24 小时最多签发 10 个 PKCE key）
+* 中继返回 `401` 时按 terminal reauthentication 处理：只标记发出被拒请求的那个账号与凭据 generation
+
+## 模型目录与能力下拉
+
+模型清单的唯一事实源是当前配置 origin 下的 `GET /v1/models`，模型 ID 原样保留 `vendor/model` 命名空间。
+`OrcaModelSelector` 是唯一向上层提供下拉选项的地方，按入口能力过滤：
+
+| 入口 | 过滤规则 |
+| --- | --- |
+| 文本 chat / agent | `?capability=chat`，且 `supported_endpoint_types` 命中 openai / anthropic / gemini / openai-response，排除 image-generation / openai-video / jina-rerank / embeddings |
+| 多模态理解 | 先满足 chat，再要求 `architecture.input_modalities` 明确包含实际上传的模态（image / audio / video）；未声明的模型 fail closed |
+| Embedding | `?capability=embedding` 或 `embeddings` endpoint |
+| 图片生成 | `?capability=image` 或 `image-generation` endpoint |
+| 视频生成 | 严格匹配 `openai-video` endpoint |
+| Rerank | 严格匹配 `jina-rerank` endpoint |
+
+```csharp
+var catalog = await selector.GetOptionsAsync(OrcaModelCapability.Multimodal, new[] { "image" });
+// catalog.Status: Live / SeedFallback / LastKnownGood / Empty，配合 catalog.IsDegraded 显示降级状态
+```
+
+* 实时发现成功时其结果为权威目录，**不会**混入 seed
+* 发现失败时回退到小型已验证 seed（`openai/gpt-5.5`、`anthropic/claude-opus-4.8`、
+  `google/gemini-3.5-flash`、`deepseek/deepseek-v4-pro`、`orcarouter/auto`），保留已验证的
+  context / input-modality / reasoning 元数据，并明确标注为降级，不会退回自由文本输入
+* 多模态开关 / 附件类型变化时重新计算选项；已选模型不再兼容时清空并提示用户重新选择
+
+## 示例宿主
+
+[`samples/Zxw.Framework.AI.SampleHost`](samples/Zxw.Framework.AI.SampleHost) 同时演示两种接入方式、模型下拉，
+以及 OAuth 登录锁在成功 / 拒绝 / 交换失败 / 超时 / 显式取消 / 切换方式 / 关闭弹窗 / `pagehide` 下的释放：
+
+```bash
+dotnet run --project samples/Zxw.Framework.AI.SampleHost -- --live-check   # 真实目录 + 真实推理
+dotnet run --project samples/Zxw.Framework.AI.SampleHost -- --urls http://127.0.0.1:5080
+```
+
+API Key 只保留在服务端，浏览器只拿到模型元数据。
+
 **2022/11/20**
 * 1.兼容.net7.0，
 * 2.移除对MongoDB的支持

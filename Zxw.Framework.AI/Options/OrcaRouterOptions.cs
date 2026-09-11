@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Zxw.Framework.AI.Credentials;
 
 namespace Zxw.Framework.AI.Options
 {
@@ -8,7 +9,8 @@ namespace Zxw.Framework.AI.Options
     /// </summary>
     public class OrcaRouterOptions
     {
-        public const string DefaultBaseUrl = "https://api.orcarouter.ai/v1";
+        public const string DefaultBaseUrl = Credentials.OrcaAuthEndpoints.DefaultApiBaseUrl;
+        public const string DefaultAuthBaseUrl = Credentials.OrcaAuthEndpoints.DefaultAuthBaseUrl;
         public const string DefaultModelId = "orcarouter/auto";
         public const string HttpClientName = "OrcaRouter";
         public const string ApiKeyEnvironmentVariable = "ORCAROUTER_API_KEY";
@@ -19,6 +21,52 @@ namespace Zxw.Framework.AI.Options
         /// 网关 Base URL，默认 https://api.orcarouter.ai/v1
         /// </summary>
         public string BaseUrl { get; set; } = DefaultBaseUrl;
+
+        /// <summary>
+        /// Inference + model-catalog base URL override. Explicit value wins; when unset the shared
+        /// <c>ORCA_BASE_URL</c> fallback is used, then <see cref="DefaultBaseUrl"/>. Never derived
+        /// from <see cref="AuthBaseUrl"/>.
+        /// </summary>
+        public string ApiBaseUrl { get; set; }
+
+        /// <summary>
+        /// Authentication origin override, e.g. <c>https://www.orcarouter.ai</c>. Explicit value
+        /// wins; when unset the shared <c>ORCA_BASE_URL</c> fallback is used, then
+        /// <see cref="DefaultAuthBaseUrl"/>. Never derived from <see cref="ApiBaseUrl"/>.
+        /// </summary>
+        public string AuthBaseUrl { get; set; }
+
+        /// <summary>
+        /// Shared self-hosted base URL, used for <b>both</b> roles when a deployment serves auth
+        /// and inference from one origin. It is a fallback only: <see cref="AuthBaseUrl"/> and
+        /// <see cref="ApiBaseUrl"/> each take precedence over it for their own role. Equivalent to
+        /// the <c>ORCA_BASE_URL</c> environment variable.
+        /// </summary>
+        public string SharedBaseUrl { get; set; }
+
+        /// <summary>
+        /// Resolve the authentication origin: <see cref="AuthBaseUrl"/>, then
+        /// <c>ORCA_AUTH_BASE_URL</c>, then the shared base, then the public default.
+        /// </summary>
+        public string ResolveAuthBaseUrl() =>
+            OrcaAuthEndpoints.ResolveAuthBaseUrl(AuthBaseUrl, SharedBaseUrl);
+
+        /// <summary>
+        /// Resolve the inference and model-catalog origin: <see cref="ApiBaseUrl"/>, then the
+        /// legacy <see cref="BaseUrl"/> when it was changed from its default, then
+        /// <c>ORCA_API_BASE_URL</c>, then the shared base, then the public default.
+        /// </summary>
+        public string ResolveApiBaseUrl()
+        {
+            var explicitApi = !string.IsNullOrWhiteSpace(ApiBaseUrl)
+                ? ApiBaseUrl
+                : (!string.IsNullOrWhiteSpace(BaseUrl) &&
+                   !string.Equals(BaseUrl, DefaultBaseUrl, StringComparison.OrdinalIgnoreCase)
+                    ? BaseUrl
+                    : null);
+
+            return OrcaAuthEndpoints.ResolveApiBaseUrl(explicitApi, SharedBaseUrl);
+        }
 
         /// <summary>
         /// API Key（sk-orca-...）。为空时回退读取环境变量 ORCAROUTER_API_KEY。
